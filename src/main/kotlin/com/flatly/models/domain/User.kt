@@ -5,15 +5,15 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 data class User(
-    val id: Long,
-    val username: String,
-    val password: String,
+    val id: Long? = null,
+    val name: String,
+    val pass: String,
     val email: String
 ) : UserDetails {
 
-    override fun getUsername() = username
+    override fun getUsername() = name
 
-    override fun getPassword() = password
+    override fun getPassword() = pass
 
     override fun getAuthorities() = emptyList<GrantedAuthority>()
 
