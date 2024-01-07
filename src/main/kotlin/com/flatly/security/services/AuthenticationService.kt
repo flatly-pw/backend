@@ -1,4 +1,4 @@
-package com.flatly.security
+package com.flatly.security.services
 
 import com.flatly.security.models.Credentials
 
