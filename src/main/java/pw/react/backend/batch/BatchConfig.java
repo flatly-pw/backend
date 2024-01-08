@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pw.react.backend.dao.CompanyRepository;
 import pw.react.backend.dao.UserRepository;
 import pw.react.backend.models.Company;
-import pw.react.backend.models.User;
+import pw.react.backend.models.UserEntity;
 import pw.react.backend.services.CompanyService;
 import pw.react.backend.services.UserService;
 
@@ -32,7 +32,7 @@ public class BatchConfig {
     }
 
     @Bean
-    public UserService userService(UserRepository userRepository, PasswordEncoder passwordEncoder, BatchRepository<User> userBatchRepository) {
+    public UserService userService(UserRepository userRepository, PasswordEncoder passwordEncoder, BatchRepository<UserEntity> userBatchRepository) {
         return new UserBatchService(userRepository, passwordEncoder, userBatchRepository);
     }
 

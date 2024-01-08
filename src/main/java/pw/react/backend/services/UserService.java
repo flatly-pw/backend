@@ -1,11 +1,11 @@
 package pw.react.backend.services;
 
-import pw.react.backend.models.User;
+import pw.react.backend.models.UserEntity;
 
 import java.util.Collection;
 
 public interface UserService {
-    User validateAndSave(User user);
-    User updatePassword(User user, String password);
-    Collection<User> batchSave(Collection<User> users);
+    UserEntity validateAndSave(UserEntity user);
+    UserEntity updatePassword(UserEntity user, String password);
+    Collection<UserEntity> batchSave(Collection<UserEntity> users);
 }

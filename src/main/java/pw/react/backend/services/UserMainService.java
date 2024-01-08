@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pw.react.backend.dao.UserRepository;
 import pw.react.backend.exceptions.UserValidationException;
-import pw.react.backend.models.User;
+import pw.react.backend.models.UserEntity;
 
 import java.util.*;
 
@@ -22,10 +22,10 @@ public class UserMainService implements UserService {
     }
 
     @Override
-    public User validateAndSave(User user) {
+    public UserEntity validateAndSave(UserEntity user) {
         if (isValidUser(user)) {
             log.info("User is valid");
-            Optional<User> dbUser = userRepository.findByUsername(user.getUsername());
+            Optional<UserEntity> dbUser = userRepository.findByUsername(user.getUsername());
             if (dbUser.isPresent()) {
                 log.info("User already exists. Updating it.");
                 user.setId(dbUser.get().getId());
@@ -37,7 +37,7 @@ public class UserMainService implements UserService {
         return user;
     }
 
-    private boolean isValidUser(User user) {
+    private boolean isValidUser(UserEntity user) {
         if (user != null) {
             if (isValid(user.getUsername())) {
                 log.error("Empty username.");
@@ -62,7 +62,7 @@ public class UserMainService implements UserService {
     }
 
     @Override
-    public User updatePassword(User user, String password) {
+    public UserEntity updatePassword(UserEntity user, String password) {
         if (isValidUser(user)) {
             if (passwordEncoder != null) {
                 log.debug("Encoding password.");
@@ -77,9 +77,9 @@ public class UserMainService implements UserService {
     }
 
     @Override
-    public Collection<User> batchSave(Collection<User> users) {
+    public Collection<UserEntity> batchSave(Collection<UserEntity> users) {
         if (users != null && !users.isEmpty()) {
-            for (User user : users) {
+            for (UserEntity user : users) {
                 isValidUser(user);
                 user.setPassword(passwordEncoder.encode(user.getPassword()));
             }

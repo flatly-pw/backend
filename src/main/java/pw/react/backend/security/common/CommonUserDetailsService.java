@@ -2,6 +2,7 @@ package pw.react.backend.security.common;
 
 import org.springframework.security.core.userdetails.*;
 import pw.react.backend.dao.UserRepository;
+import pw.react.backend.models.UserEntity;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ public class CommonUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<pw.react.backend.models.User> user = userRepository.findByUsername(username);
+        Optional<UserEntity> user = userRepository.findByUsername(username);
         if (user.isPresent()) {
             return user.get();
         } else {
