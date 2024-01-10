@@ -19,16 +19,17 @@ class UserBatchRepository implements BatchRepository<UserEntity> {
     @Override
     @Transactional
     public Collection<UserEntity> insertAll(Collection<UserEntity> entities) {
-        String sql = "INSERT INTO `USER_ENTITY` (EMAIL, PASSWORD, USERNAME) VALUES(?,?,?)";
+        String sql = "INSERT INTO `USER_ENTITY` (NAME, LAST_NAME, EMAIL, PASSWORD) VALUES(?,?,?,?)";
 
         final var users = new ArrayList<>(entities);
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 UserEntity user = users.get(i);
-                ps.setString(1, user.getEmail());
-                ps.setString(2, user.getPassword());
-                ps.setString(3, user.getUsername());
+                ps.setString(1, user.getName());
+                ps.setString(2, user.getLastName());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPassword());
             }
             @Override
             public int getBatchSize() {
