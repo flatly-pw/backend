@@ -11,12 +11,12 @@ data class UserDto(
 ) {
     companion object {
         @JvmStatic
-        fun valueFrom(user: UserEntity): UserDto {
+        fun toDto(user: UserEntity): UserDto {
             return UserDto(user.id, user.username, null, user.email)
         }
 
         @JvmStatic
-        fun convertToUser(userDto: UserDto): UserEntity {
+        fun toEntity(userDto: UserDto): UserEntity {
             val user = UserEntity()
             user.id = userDto.id
             user.username = userDto.username
