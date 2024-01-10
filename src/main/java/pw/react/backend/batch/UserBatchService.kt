@@ -7,12 +7,11 @@ import pw.react.backend.models.UserEntity
 import pw.react.backend.services.UserMainService
 
 class UserBatchService(
-    userRepository: UserRepository?,
-    passwordEncoder: PasswordEncoder?,
+    userRepository: UserRepository,
+    passwordEncoder: PasswordEncoder,
     private val batchRepository: BatchRepository<UserEntity>
-) : UserMainService(
-    userRepository!!, passwordEncoder!!
-) {
+) : UserMainService(userRepository, passwordEncoder) {
+
     override fun batchSave(users: Collection<UserEntity>): Collection<UserEntity> {
         log.info("Batch insert.")
         return if (users.isNotEmpty()) {
