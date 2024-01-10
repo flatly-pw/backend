@@ -29,8 +29,8 @@ class JwtAuthenticationController(
         @RequestBody authenticationRequest: @Valid JwtRequest,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        authenticationService.authenticate(authenticationRequest.username, authenticationRequest.password)
-        val userDetails = userDetailsService.loadUserByUsername(authenticationRequest.username)
+        authenticationService.authenticate(authenticationRequest.mail, authenticationRequest.password)
+        val userDetails = userDetailsService.loadUserByUsername(authenticationRequest.mail)
         val token = jwtTokenService.generateToken(userDetails, request)
         return ResponseEntity.ok(JwtResponse(token))
     }

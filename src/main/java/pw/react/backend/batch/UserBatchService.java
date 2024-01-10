@@ -28,7 +28,7 @@ public class UserBatchService extends UserMainService {
                     .peek(it -> it.setPassword(passwordEncoder.encode(it.getPassword())))
                     .toList()
             );
-            return userRepository.findAllByUsernameIn(insertedUsers.stream().map(UserEntity::getUsername).toList());
+            return userRepository.findAllByEmailIn(insertedUsers.stream().map(UserEntity::getEmail).toList());
 
         } else {
             log.warn("User collection is empty or null.");
