@@ -40,8 +40,8 @@ public class UserMainService implements UserService {
     private boolean isValidUser(UserEntity user) {
         if (user != null) {
             if (isValid(user.getUsername())) {
-                log.error("Empty username.");
-                throw new UserValidationException("Empty username.");
+                log.error("Empty mail.");
+                throw new UserValidationException("Empty mail.");
             }
             if (isValid(user.getPassword())) {
                 log.error("Empty user password.");
