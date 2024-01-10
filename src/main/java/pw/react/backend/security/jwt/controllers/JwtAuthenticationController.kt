@@ -15,6 +15,8 @@ import pw.react.backend.security.common.CommonUserDetailsService
 import pw.react.backend.security.jwt.models.JwtRequest
 import pw.react.backend.security.jwt.models.JwtResponse
 import pw.react.backend.security.jwt.services.JwtTokenService
+import pw.react.backend.services.UserService
+import pw.react.backend.web.UserDto
 
 @RestController
 @RequestMapping(JwtAuthenticationController.AUTHENTICATION_PATH)
@@ -22,15 +24,29 @@ import pw.react.backend.security.jwt.services.JwtTokenService
 class JwtAuthenticationController(
     private val authenticationService: AuthenticationService,
     private val jwtTokenService: JwtTokenService,
-    private val userDetailsService: CommonUserDetailsService
+    private val userDetailsService: CommonUserDetailsService,
+    private val userService: UserService,
 ) {
+
+    @PostMapping("/register")
+    fun registerUser(
+        @RequestBody registerRequest: UserDto,
+        request: HttpServletRequest,
+    ): ResponseEntity<*> {
+        userService.saveUnique(registerRequest.toEntity())
+        authenticationService.authenticate(registerRequest.email, registerRequest.password)
+        val userDetails = userDetailsService.loadUserByUsername(registerRequest.email)
+        val token = jwtTokenService.generateToken(userDetails, request)
+        return ResponseEntity.ok(JwtResponse(token))
+    }
+
     @PostMapping("/login")
     fun createAuthenticationToken(
         @RequestBody authenticationRequest: @Valid JwtRequest,
         request: HttpServletRequest
     ): ResponseEntity<*> {
-        authenticationService.authenticate(authenticationRequest.mail, authenticationRequest.password)
-        val userDetails = userDetailsService.loadUserByUsername(authenticationRequest.mail)
+        authenticationService.authenticate(authenticationRequest.email, authenticationRequest.password)
+        val userDetails = userDetailsService.loadUserByUsername(authenticationRequest.email)
         val token = jwtTokenService.generateToken(userDetails, request)
         return ResponseEntity.ok(JwtResponse(token))
     }

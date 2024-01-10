@@ -10,17 +10,19 @@ data class UserDto(
     val password: String?,
     val email: @Email String?
 ) {
+
+    fun toEntity() = UserEntity().also {
+        it.id = id
+        it.name = name
+        it.lastName = lastName
+        it.email = email
+        it.password = password
+    }
+
     companion object {
-        @JvmStatic
-        fun toDto(user: UserEntity) = UserDto(user.id, user.name, user.lastName, null, user.email)
 
         @JvmStatic
-        fun toEntity(userDto: UserDto) = UserEntity().apply {
-            id = userDto.id
-            name = userDto.name
-            email = userDto.email
-            password = userDto.password
-        }
+        fun UserEntity.toDto() = UserDto(id, name, lastName, null, email)
     }
 }
 

@@ -4,6 +4,6 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 
 data class JwtRequest(
-    val mail: @NotEmpty @Email String,
+    val email: @NotEmpty @Email String,
     val password: @NotEmpty String
 )
