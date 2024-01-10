@@ -1,105 +1,84 @@
-package pw.react.backend.services;
+package pw.react.backend.services
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import pw.react.backend.dao.UserRepository;
-import pw.react.backend.exceptions.UserValidationException;
-import pw.react.backend.models.UserEntity;
+import org.slf4j.LoggerFactory
+import org.springframework.security.crypto.password.PasswordEncoder
+import pw.react.backend.dao.UserRepository
+import pw.react.backend.exceptions.UserValidationException
+import pw.react.backend.models.UserEntity
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+open class UserMainService(
+    protected val userRepository: UserRepository,
+    protected val passwordEncoder: PasswordEncoder
+) : UserService {
 
-public class UserMainService implements UserService {
-
-    private static final Logger log = LoggerFactory.getLogger(UserMainService.class);
-
-    protected final UserRepository userRepository;
-    protected final PasswordEncoder passwordEncoder;
-
-    public UserMainService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-    }
-
-    @Override
-    public UserEntity validateAndSave(UserEntity user) {
+    override fun validateAndSave(user: UserEntity): UserEntity {
+        var user = user
         if (isValidUser(user)) {
-            log.info("User is valid");
-            Optional<UserEntity> dbUser = userRepository.findByEmail(user.getUsername());
-            if (dbUser.isPresent()) {
-                log.info("User already exists. Updating it.");
-                user.setId(dbUser.get().getId());
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
+            log.info("User is valid")
+            val dbUser = userRepository.findByEmail(user.username)
+            if (dbUser.isPresent) {
+                log.info("User already exists. Updating it.")
+                user.id = dbUser.get().id
+                user.password = passwordEncoder.encode(user.password)
             }
-            user = userRepository.save(user);
-            log.info("User was saved.");
+            user = userRepository.save(user)
+            log.info("User was saved.")
         }
-        return user;
+        return user
     }
 
-    private boolean isValidUser(UserEntity user) {
-        if (user != null) {
-            if (isValid(user.getUsername())) {
-                log.error("Empty mail.");
-                throw new UserValidationException("Empty mail.");
-            }
-            if (isValid(user.getPassword())) {
-                log.error("Empty user password.");
-                throw new UserValidationException("Empty user password.");
-            }
-            if (isValid(user.getEmail())) {
-                log.error("UEmpty email.");
-                throw new UserValidationException("Empty email.");
-            }
-            return true;
-        }
-        log.error("User is null.");
-        throw new UserValidationException("User is null.");
-    }
-
-    private boolean isValid(String value) {
-        return value == null || value.isBlank();
-    }
-
-    @Override
-    public UserEntity updatePassword(UserEntity user, String password) {
+    override fun updatePassword(user: UserEntity, password: String): UserEntity {
+        var user = user
         if (isValidUser(user)) {
-            if (passwordEncoder != null) {
-                log.debug("Encoding password.");
-                user.setPassword(passwordEncoder.encode(password));
-            } else {
-                log.debug("Password in plain text.");
-                user.setPassword(password);
-            }
-            user = userRepository.save(user);
+            log.debug("Encoding password.")
+            user.password = passwordEncoder.encode(password)
+            user = userRepository.save(user)
         }
-        return user;
+        return user
     }
 
-    @Override
-    public UserEntity saveUnique(UserEntity user) {
-        Optional<UserEntity> dbUser = userRepository.findByEmail(user.getEmail());
-        if (dbUser.isPresent()) {
-            log.error("User already exists");
-            throw new UserValidationException("User already exists.");
+    override fun saveUnique(user: UserEntity): UserEntity {
+        val dbUser = userRepository.findByEmail(user.email)
+        if (dbUser.isPresent) {
+            log.error("User already exists")
+            throw UserValidationException("User already exists.")
         }
-        return batchSave(List.of(user)).stream().toList().get(0);
+        return batchSave(listOf(user)).toList().first()
     }
 
-    @Override
-    public Collection<UserEntity> batchSave(Collection<UserEntity> users) {
-        if (users != null && !users.isEmpty()) {
-            for (UserEntity user : users) {
-                isValidUser(user);
-                user.setPassword(passwordEncoder.encode(user.getPassword()));
+    override fun batchSave(users: Collection<UserEntity>): Collection<UserEntity> {
+        return if (users.isNotEmpty()) {
+            for (user in users) {
+                isValidUser(user)
+                user.password = passwordEncoder!!.encode(user.password)
             }
-            return userRepository.saveAll(users);
+            userRepository.saveAll(users)
         } else {
-            log.warn("User collection is empty or null.");
-            return Collections.emptyList();
+            log.warn("User collection is empty or null.")
+            emptyList()
         }
+    }
+
+    private fun isValidUser(user: UserEntity): Boolean {
+        if (isValid(user.username)) {
+            log.error("Empty mail.")
+            throw UserValidationException("Empty mail.")
+        }
+        if (isValid(user.password)) {
+            log.error("Empty user password.")
+            throw UserValidationException("Empty user password.")
+        }
+        if (isValid(user.email)) {
+            log.error("UEmpty email.")
+            throw UserValidationException("Empty email.")
+        }
+        return true
+
+    }
+
+    private fun isValid(value: String) = value.isBlank()
+
+    companion object {
+        private val log = LoggerFactory.getLogger(UserMainService::class.java)
     }
 }
