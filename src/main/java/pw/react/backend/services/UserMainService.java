@@ -7,7 +7,10 @@ import pw.react.backend.dao.UserRepository;
 import pw.react.backend.exceptions.UserValidationException;
 import pw.react.backend.models.UserEntity;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class UserMainService implements UserService {
 
@@ -74,6 +77,16 @@ public class UserMainService implements UserService {
             user = userRepository.save(user);
         }
         return user;
+    }
+
+    @Override
+    public UserEntity saveUnique(UserEntity user) {
+        Optional<UserEntity> dbUser = userRepository.findByEmail(user.getEmail());
+        if (dbUser.isPresent()) {
+            log.error("User already exists");
+            throw new UserValidationException("User already exists.");
+        }
+        return batchSave(List.of(user)).stream().toList().get(0);
     }
 
     @Override
