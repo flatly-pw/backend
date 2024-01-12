@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.*;
 import pw.react.backend.security.jwt.controllers.JwtAuthenticationController;
 
@@ -53,6 +54,12 @@ public class ControllerExceptionHelper {
     @ExceptionHandler(value = { UsernameNotFoundException.class })
     public ResponseEntity<ExceptionDetails> handleBadRequest(UsernameNotFoundException ex) {
         log.error("Username Exception: {}", ex.getMessage());
+        return new ResponseEntity<>(new ExceptionDetails(HttpStatus.BAD_REQUEST, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = { MissingServletRequestParameterException.class})
+    public ResponseEntity<ExceptionDetails> handleMissingParameterException(MissingServletRequestParameterException ex) {
+        log.error("Missing parameter Exception: {}", ex.getMessage());
         return new ResponseEntity<>(new ExceptionDetails(HttpStatus.BAD_REQUEST, ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
