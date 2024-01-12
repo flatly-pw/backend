@@ -12,6 +12,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
 import pw.react.backend.dao.CompanyLogoRepository;
+import pw.react.backend.dao.FlatEntityRepository;
+import pw.react.backend.models.domain.Flat;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
 import pw.react.backend.security.jwt.services.JwtConfig;
@@ -60,6 +62,11 @@ public class MainConfig {
     @Bean
     public LogoService logoService(CompanyLogoRepository companyLogoRepository) {
         return new CompanyLogoService(companyLogoRepository);
+    }
+
+    @Bean
+    public FlatService flatService(FlatEntityRepository flatEntityRepository) {
+        return new FlatService(flatEntityRepository);
     }
 
     @Bean
