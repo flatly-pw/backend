@@ -1,6 +1,8 @@
 package pw.react.backend.security.common;
 
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import pw.react.backend.dao.UserRepository;
 import pw.react.backend.models.UserEntity;
 
@@ -15,12 +17,12 @@ public class CommonUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> user = userRepository.findByUsername(username);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<UserEntity> user = userRepository.findByEmail(email);
         if (user.isPresent()) {
             return user.get();
         } else {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException("User not found with email: " + email);
         }
     }
 }
