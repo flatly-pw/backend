@@ -14,8 +14,10 @@ import pw.react.backend.web.toDto
 class FlatController(private val flatService: FlatService) {
 
     @GetMapping("/flats")
-    fun getAllFlats(@RequestParam page: Int, @RequestParam pageSize: Int): ResponseEntity<PageDto<List<Flat>>> {
+    fun getAllFlats(@RequestParam page: Int, @RequestParam pageSize: Int): ResponseEntity<*> = try {
         val flatPage = flatService.findAll(PageRequest.of(page, pageSize))
-        return ResponseEntity.ok(flatPage.toDto())
+        ResponseEntity.ok(flatPage.toDto())
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 }
