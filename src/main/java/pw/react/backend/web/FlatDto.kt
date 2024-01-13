@@ -8,7 +8,7 @@ data class FlatDto(
     val bedrooms: Int,
     val bathrooms: Int,
     val capacity: Int,
-    val id: String?
+    val id: String
 )
 
-fun Flat.toDto() = FlatDto(description, area, bedrooms, bathrooms, capacity, id)
+fun Flat.toDto() = FlatDto(description, area, bedrooms, bathrooms, capacity, id!!)
