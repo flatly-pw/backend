@@ -19,7 +19,7 @@ class UserBatchRepository implements BatchRepository<UserEntity> {
     @Override
     @Transactional
     public Collection<UserEntity> insertAll(Collection<UserEntity> entities) {
-        String sql = "INSERT INTO `USER_ENTITY` (NAME, LAST_NAME, EMAIL, PASSWORD) VALUES(?,?,?,?)";
+        String sql = "INSERT INTO `user_entity` (NAME, LAST_NAME, EMAIL, PASSWORD) VALUES(?,?,?,?)";
 
         final var users = new ArrayList<>(entities);
         jdbcTemplate.batchUpdate(sql, new BatchPreparedStatementSetter() {
