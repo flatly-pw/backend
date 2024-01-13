@@ -7,4 +7,4 @@ data class PageDto<T>(
     val isLast: Boolean,
 )
 
-fun <T> Page<T>.toDto() = PageDto(content, isLast)
+fun <T, R> Page<T>.toDto(dataMapper: (T) -> R) = PageDto(content.map(dataMapper), isLast)
