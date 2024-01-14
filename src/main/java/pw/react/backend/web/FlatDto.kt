@@ -1,7 +1,9 @@
 package pw.react.backend.web
 
+import kotlinx.serialization.Serializable
 import pw.react.backend.models.domain.Flat
 
+@Serializable
 data class FlatDto(
     val description: String,
     val area: Int,

@@ -1,7 +1,9 @@
 package pw.react.backend.web
 
+import kotlinx.serialization.Serializable
 import org.springframework.data.domain.Page
 
+@Serializable
 data class PageDto<T>(
     val data: T,
     val isLast: Boolean,
