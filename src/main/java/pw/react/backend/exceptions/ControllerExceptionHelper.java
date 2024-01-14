@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MissingPathVariableException;
@@ -67,6 +68,11 @@ public class ControllerExceptionHelper {
     @ExceptionHandler(value = { MissingPathVariableException.class})
     public ResponseEntity<ExceptionDetails> handleMissingPathParameterException(MissingPathVariableException ex) {
         log.error("Missing path parameter Exception: {}", ex.getMessage());
+        return new ResponseEntity<>(new ExceptionDetails(HttpStatus.BAD_REQUEST, ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = { HttpMessageNotReadableException.class})
+    public ResponseEntity<ExceptionDetails> handleMessageNotReadableException(HttpMessageNotReadableException ex) {
+        log.error("Message not readable Exception: {}", ex.getMessage());
         return new ResponseEntity<>(new ExceptionDetails(HttpStatus.BAD_REQUEST, ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 }
