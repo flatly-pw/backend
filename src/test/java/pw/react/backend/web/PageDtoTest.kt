@@ -10,7 +10,7 @@ class PageDtoTest {
     @Test
     fun `toDto correctly maps data with provided mapper lambda`() {
         val intPage = PageImpl((1..10).toList(), Pageable.ofSize(10), 11)
-        val expectedDto = PageDto((1..10).map { it * it }, isLast = false)
+        val expectedDto = PageDto((1..10).map { it * it }, last = false)
         intPage.toDto { it * it } shouldBe expectedDto
     }
 }
