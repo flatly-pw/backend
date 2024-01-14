@@ -18,6 +18,7 @@
         <java.version>17</java.version>
         <mysql-connector-java.version>8.0.33</mysql-connector-java.version>
         <kotlin.version>1.9.22</kotlin.version>
+        <serialization.version>1.6.2</serialization.version>
     </properties>
 
     <dependencies>
@@ -194,6 +195,11 @@
             <version>4.0.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-serialization-json</artifactId>
+            <version>${serialization.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -242,6 +248,7 @@
                     <compilerPlugins>
                         <plugin>jpa</plugin>
                         <plugin>spring</plugin>
+                        <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
                     <args>
                         <arg>-Xjsr305=strict</arg>
@@ -257,6 +264,11 @@
                     <dependency>
                         <groupId>org.jetbrains.kotlin</groupId>
                         <artifactId>kotlin-maven-allopen</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-serialization</artifactId>
                         <version>${kotlin.version}</version>
                     </dependency>
                 </dependencies>
