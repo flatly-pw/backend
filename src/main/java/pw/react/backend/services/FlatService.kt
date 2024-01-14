@@ -17,6 +17,9 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
 
     private fun flatSpecification(flatQuery: FlatQuery): Specification<FlatEntity> = Specification { root, _, builder ->
         val predicates = listOf(
+            flatQuery.beds?.let {
+                builder.equal(root.get<Int>("beds"), it)
+            },
             flatQuery.bedrooms?.let {
                 builder.equal(root.get<Int>("bedrooms"), it)
             },
