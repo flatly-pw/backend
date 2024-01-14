@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatService
+import pw.react.backend.web.FlatQueryDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
 
@@ -26,8 +28,17 @@ class FlatController(private val flatService: FlatService) {
         ]
     )
     @GetMapping("/flats")
-    fun getAllFlats(@RequestParam page: Int, @RequestParam pageSize: Int): ResponseEntity<*> = try {
-        val flatPage = flatService.findAll(PageRequest.of(page, pageSize))
+    fun getAllFlats(
+        @RequestParam page: Int,
+        @RequestParam pageSize: Int,
+        @RequestBody(required = false) queryDto: FlatQueryDto?
+    ): ResponseEntity<*> = try {
+        val pageRequest = PageRequest.of(page, pageSize)
+        val flatPage = if (queryDto != null) {
+            flatService.findAll(queryDto.toDomain(), pageRequest)
+        } else {
+            flatService.findAll(pageRequest)
+        }
         ResponseEntity.ok(flatPage.toDto(Flat::toDto))
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
