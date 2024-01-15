@@ -94,13 +94,11 @@ class UserMainServiceTest {
 
     @Test
     fun `saveUnique calls password encoder`() {
-        val user = stubUser()
+        val user = stubUser(id = 1L)
         val savedUser = stubUserEntity(password = "encoded-password")
         every { repository.findByEmail(user.email) } returns Optional.empty()
         every {
-            repository.saveAll(
-                match<List<UserEntity>> { it.first().email == user.email }
-            )
+            repository.saveAll(match<List<UserEntity>> { it.first() == savedUser })
         } returns listOf(savedUser)
         service.saveUnique(user)
         verify(exactly = 1) { passwordEncoder.encode("password123") }
@@ -112,9 +110,7 @@ class UserMainServiceTest {
         val savedUser = stubUserEntity(password = "encoded-password")
         every { repository.findByEmail(user.email) } returns Optional.empty()
         every {
-            repository.saveAll(
-                match<List<UserEntity>> { it.first().email == user.email }
-            )
+            repository.saveAll(match<List<UserEntity>> { it.first() == savedUser })
         } returns listOf(savedUser)
         service.saveUnique(user)
         verify(exactly = 1) {
