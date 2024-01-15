@@ -15,8 +15,7 @@ open class UserMainService(
     protected val passwordEncoder: PasswordEncoder
 ) : UserService {
 
-    override fun validateAndSave(user: UserEntity): UserEntity {
-        val user = user.toDomain()
+    override fun validateAndSave(user: User): User {
         requireValidUser(user)
         log.info("User is valid")
         val dbUser = userRepository.findByEmail(user.email).getOrNull()?.let(UserEntity::toDomain)
@@ -24,39 +23,34 @@ open class UserMainService(
             log.info("User already exists. Updating it.")
             it.copy(password = passwordEncoder.encode(user.password))
         } ?: user
-        return userRepository.save(userToSave.toEntity()).also { log.info("User was saved") }
+        return userRepository.save(userToSave.toEntity()).toDomain().also { log.info("User was saved") }
     }
 
-    override fun updatePassword(user: UserEntity, password: String): UserEntity {
-        val user = user.toDomain()
+    override fun updatePassword(user: User, password: String): User {
         requireValidUser(user)
         log.debug("Encoding password.")
         val updatedUser = user.copy(password = passwordEncoder.encode(password))
-        return userRepository.save(updatedUser.toEntity())
+        return userRepository.save(updatedUser.toEntity()).toDomain()
     }
 
-    override fun saveUnique(user: UserEntity): UserEntity {
-        val user = user.toDomain()
+    override fun saveUnique(user: User): User {
         val dbUser = userRepository.findByEmail(user.email)
         if (dbUser.isPresent) {
             log.error("User already exists")
             throw UserValidationException("User already exists.")
         }
-        return batchSave(listOf(user.toEntity())).toList().first()
+        return batchSave(listOf(user)).toList().first()
     }
 
-    override fun batchSave(users: Collection<UserEntity>): Collection<UserEntity> {
-        val users = users.map { it.toDomain() }
-        return if (users.isNotEmpty()) {
-            val updatedUsers = users.map { user ->
-                requireValidUser(user)
-                user.copy(password = passwordEncoder.encode(user.password))
-            }
-            userRepository.saveAll(updatedUsers.map(User::toEntity))
-        } else {
-            log.warn("User collection is empty or null.")
-            emptyList()
+    override fun batchSave(users: List<User>): List<User> = if (users.isNotEmpty()) {
+        val updatedUsers = users.map { user ->
+            requireValidUser(user)
+            user.copy(password = passwordEncoder.encode(user.password))
         }
+        userRepository.saveAll(updatedUsers.map(User::toEntity)).map(UserEntity::toDomain)
+    } else {
+        log.warn("User collection is empty or null.")
+        emptyList()
     }
 
     private fun requireValidUser(user: User) {
