@@ -1,8 +1,8 @@
 package pw.react.backend
 
-import pw.react.backend.models.UserEntity
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.entity.FlatEntity
+import pw.react.backend.models.entity.UserEntity
 import pw.react.backend.web.UserDto
 
 fun stubFlat(
@@ -37,10 +37,4 @@ fun stubUserEntity(
     lastName: String = "Smith",
     password: String = "password123",
     email: String = "john.smith@mail.com"
-) = UserEntity().apply {
-    this.id = id
-    this.name = name
-    this.lastName = lastName
-    this.email = email
-    this.password = password
-}
+) = UserEntity(name, lastName, email, password, id)
