@@ -33,7 +33,7 @@ class JwtAuthenticationController(
         @RequestBody registerRequest: UserDto,
         request: HttpServletRequest,
     ): ResponseEntity<*> {
-        userService.saveUnique(registerRequest.toEntity())
+        userService.saveUnique(registerRequest.toDomain())
         authenticationService.authenticate(registerRequest.email, registerRequest.password)
         val userDetails = userDetailsService.loadUserByUsername(registerRequest.email)
         val token = jwtTokenService.generateToken(userDetails, request)
