@@ -3,7 +3,7 @@ package pw.react.backend.batch
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import pw.react.backend.dao.UserRepository
-import pw.react.backend.models.UserEntity
+import pw.react.backend.models.entity.UserEntity
 import pw.react.backend.services.UserMainService
 
 class UserBatchService(

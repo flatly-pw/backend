@@ -1,6 +1,6 @@
 package pw.react.backend.services
 
-import pw.react.backend.models.UserEntity
+import pw.react.backend.models.entity.UserEntity
 
 interface UserService {
     fun validateAndSave(user: UserEntity): UserEntity

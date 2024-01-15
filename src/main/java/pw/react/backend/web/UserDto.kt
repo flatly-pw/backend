@@ -1,7 +1,7 @@
 package pw.react.backend.web
 
 import jakarta.validation.constraints.Email
-import pw.react.backend.models.UserEntity
+import pw.react.backend.models.entity.UserEntity
 
 data class UserDto(
     val id: Long,

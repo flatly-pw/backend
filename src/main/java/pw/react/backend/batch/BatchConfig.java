@@ -7,7 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import pw.react.backend.dao.CompanyRepository;
 import pw.react.backend.dao.UserRepository;
 import pw.react.backend.models.Company;
-import pw.react.backend.models.UserEntity;
+import pw.react.backend.models.entity.UserEntity;
 import pw.react.backend.services.CompanyService;
 import pw.react.backend.services.UserService;
 

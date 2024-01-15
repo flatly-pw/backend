@@ -1,4 +1,4 @@
-package pw.react.backend.models;
+package pw.react.backend.models.entity;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;

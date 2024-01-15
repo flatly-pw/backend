@@ -4,7 +4,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import pw.react.backend.dao.UserRepository;
-import pw.react.backend.models.UserEntity;
+import pw.react.backend.models.entity.UserEntity;
 
 import java.util.Optional;
 
