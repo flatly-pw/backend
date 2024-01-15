@@ -1,7 +1,9 @@
 package pw.react.backend
 
+import pw.react.backend.models.UserEntity
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.entity.FlatEntity
+import pw.react.backend.web.UserDto
 
 fun stubFlat(
     id: String? = "1",
@@ -20,3 +22,25 @@ fun stubFlatEntity(
     bathrooms: Int = 2,
     capacity: Int = 3
 ) = FlatEntity(description, area, bedrooms, bathrooms, capacity, id)
+
+fun stubUserDto(
+    id: Long? = null,
+    name: String = "John",
+    lastName: String = "Smith",
+    password: String = "password123",
+    email: String = "john.smith@mail.com"
+) = UserDto(id, name, lastName, password, email)
+
+fun stubUserEntity(
+    id: Long? = 1L,
+    name: String = "John",
+    lastName: String = "Smith",
+    password: String = "password123",
+    email: String = "john.smith@mail.com"
+) = UserEntity().apply {
+    this.id = id
+    this.name = name
+    this.lastName = lastName
+    this.email = email
+    this.password = password
+}
