@@ -34,6 +34,8 @@ open class UserMainService(
     }
 
     override fun saveUnique(user: User): User {
+        requireValidUser(user)
+        log.info("User is valid")
         val dbUser = userRepository.findByEmail(user.email)
         if (dbUser.isPresent) {
             log.error("User already exists")
@@ -54,23 +56,46 @@ open class UserMainService(
     }
 
     private fun requireValidUser(user: User) {
-        if (isValid(user.email)) {
-            log.error("Empty mail.")
-            throw UserValidationException("Empty mail.")
-        }
-        if (isValid(user.password)) {
-            log.error("Empty user password.")
-            throw UserValidationException("Empty user password.")
-        }
-        if (isValid(user.email)) {
-            log.error("UEmpty email.")
-            throw UserValidationException("Empty email.")
+        when {
+            user.email.isEmpty() -> {
+                log.error("Empty email.")
+                throw UserValidationException("Empty email.")
+            }
+
+            !isNonEmptyOrBlank(user.name) -> {
+                log.error("Name is empty or blank")
+                throw UserValidationException("Name is empty or blank")
+            }
+
+            !isNonEmptyOrBlank(user.lastName) -> {
+                log.error("Last name is empty or blank")
+                throw UserValidationException("Last name is empty or blank")
+            }
+
+            !isValidMail(user.email) -> {
+                log.error("\'${user.email}\' is not a valid mail")
+                throw UserValidationException("\'${user.email}\' is not a valid mail")
+            }
+
+            !isValidPassword(user.password) -> {
+                log.error("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")
+                throw UserValidationException("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")
+            }
         }
     }
 
-    private fun isValid(value: String) = value.isBlank()
+    private fun isNonEmptyOrBlank(value: String) = value.isNotEmpty() && value.isNotBlank()
+
+    private fun isValidMail(mail: String): Boolean {
+        val mailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$", RegexOption.IGNORE_CASE)
+        return mail.matches(mailRegex)
+    }
+
+    private fun isValidPassword(password: String) = (MIN_PASSWORD_LENGTH..MAX_PASSWORD_LENGTH).contains(password.length)
 
     companion object {
         private val log = LoggerFactory.getLogger(UserMainService::class.java)
+        private const val MIN_PASSWORD_LENGTH = 8
+        private const val MAX_PASSWORD_LENGTH = 32
     }
 }
