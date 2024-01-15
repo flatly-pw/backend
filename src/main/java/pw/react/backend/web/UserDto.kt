@@ -1,12 +1,15 @@
 package pw.react.backend.web
 
 import jakarta.validation.constraints.Email
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import pw.react.backend.models.domain.User
 
+@Serializable
 data class UserDto(
-    val id: Long,
+    val id: Long? = null,
     val name: String,
-    val lastName: String,
+    @SerialName("last_name") val lastName: String,
     val password: String?,
     val email: @Email String
 ) {
