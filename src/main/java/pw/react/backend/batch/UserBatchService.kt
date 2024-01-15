@@ -18,7 +18,7 @@ class UserBatchService(
             val insertedUsers = batchRepository.insertAll(
                 users.onEach { it.password = passwordEncoder.encode(it.password) }
             )
-            userRepository.findAllByEmailIn(insertedUsers.map(UserEntity::getEmail))
+            userRepository.findAllByEmailIn(insertedUsers.map(UserEntity::email))
         } else {
             log.warn("User collection is empty or null.")
             emptyList()

@@ -8,21 +8,15 @@ data class UserDto(
     val name: String,
     val lastName: String,
     val password: String?,
-    val email: @Email String?
+    val email: @Email String
 ) {
 
-    fun toEntity() = UserEntity().also {
-        it.id = id
-        it.name = name
-        it.lastName = lastName
-        it.email = email
-        it.password = password
-    }
+    fun toEntity() = UserEntity(name, lastName, email, password!!, id)
 
     companion object {
 
         @JvmStatic
-        fun UserEntity.toDto() = UserDto(id, name, lastName, null, email)
+        fun UserEntity.toDto() = UserDto(id!!, name, lastName, null, email)
     }
 }
 
