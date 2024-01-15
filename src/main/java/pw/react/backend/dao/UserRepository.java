@@ -1,7 +1,7 @@
 package pw.react.backend.dao;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import pw.react.backend.models.UserEntity;
+import pw.react.backend.models.entity.UserEntity;
 
 import java.util.*;
 

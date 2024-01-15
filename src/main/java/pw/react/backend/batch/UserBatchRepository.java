@@ -3,7 +3,7 @@ package pw.react.backend.batch;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
-import pw.react.backend.models.UserEntity;
+import pw.react.backend.models.entity.UserEntity;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;

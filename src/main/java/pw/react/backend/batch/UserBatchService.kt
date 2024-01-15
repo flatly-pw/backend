@@ -3,7 +3,10 @@ package pw.react.backend.batch
 import org.slf4j.LoggerFactory
 import org.springframework.security.crypto.password.PasswordEncoder
 import pw.react.backend.dao.UserRepository
-import pw.react.backend.models.UserEntity
+import pw.react.backend.models.domain.User
+import pw.react.backend.models.domain.toDomain
+import pw.react.backend.models.domain.toEntity
+import pw.react.backend.models.entity.UserEntity
 import pw.react.backend.services.UserMainService
 
 class UserBatchService(
@@ -12,13 +15,13 @@ class UserBatchService(
     private val batchRepository: BatchRepository<UserEntity>
 ) : UserMainService(userRepository, passwordEncoder) {
 
-    override fun batchSave(users: Collection<UserEntity>): Collection<UserEntity> {
+    override fun batchSave(users: List<User>): List<User> {
         log.info("Batch insert.")
         return if (users.isNotEmpty()) {
             val insertedUsers = batchRepository.insertAll(
-                users.onEach { it.password = passwordEncoder.encode(it.password) }
+                users.map { it.copy(password = passwordEncoder.encode(it.password)).toEntity() }
             )
-            userRepository.findAllByEmailIn(insertedUsers.map(UserEntity::getEmail))
+            userRepository.findAllByEmailIn(insertedUsers.map(UserEntity::email)).map(UserEntity::toDomain)
         } else {
             log.warn("User collection is empty or null.")
             emptyList()

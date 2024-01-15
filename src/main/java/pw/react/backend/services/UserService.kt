@@ -1,10 +1,11 @@
 package pw.react.backend.services
 
-import pw.react.backend.models.UserEntity
+import pw.react.backend.models.domain.User
+
 
 interface UserService {
-    fun validateAndSave(user: UserEntity): UserEntity
-    fun updatePassword(user: UserEntity, password: String): UserEntity
-    fun saveUnique(user: UserEntity): UserEntity
-    fun batchSave(users: Collection<UserEntity>): Collection<UserEntity>
+    fun validateAndSave(user: User): User
+    fun updatePassword(user: User, password: String): User
+    fun saveUnique(user: User): User
+    fun batchSave(users: List<User>): List<User>
 }
