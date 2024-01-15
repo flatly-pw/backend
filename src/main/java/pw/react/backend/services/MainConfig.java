@@ -1,6 +1,9 @@
 package pw.react.backend.services;
 
 import jakarta.annotation.PostConstruct;
+import kotlinx.datetime.Clock;
+import kotlinx.datetime.Instant;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +20,7 @@ import pw.react.backend.models.domain.Flat;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
 import pw.react.backend.security.jwt.services.JwtConfig;
+import pw.react.backend.utils.TimeProvider;
 
 import java.util.*;
 
@@ -65,8 +69,19 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatService flatService(FlatEntityRepository flatEntityRepository) {
-        return new FlatService(flatEntityRepository);
+    public TimeProvider timeProvider() {
+        return new TimeProvider() {
+            @NotNull
+            @Override
+            public Instant invoke() {
+                return Clock.System.INSTANCE.now();
+            }
+        };
+    }
+
+    @Bean
+    public FlatService flatService(FlatEntityRepository flatEntityRepository, TimeProvider timeProvider) {
+        return new FlatService(flatEntityRepository, timeProvider);
     }
 
     @Bean

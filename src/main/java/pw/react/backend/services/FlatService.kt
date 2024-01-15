@@ -1,6 +1,5 @@
 package pw.react.backend.services
 
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -12,12 +11,16 @@ import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatQuery
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.entity.FlatEntity
+import pw.react.backend.utils.TimeProvider
 
-class FlatService(private val flatEntityRepository: FlatEntityRepository) {
+class FlatService(
+    private val flatEntityRepository: FlatEntityRepository,
+    private val timeProvider: TimeProvider,
+) {
 
     fun findAll(pageable: Pageable) = flatEntityRepository.findAll(pageable).map(FlatEntity::toDomain)
 
-    fun findAll(flatQuery: FlatQuery, pageable: Pageable) : Page<Flat> {
+    fun findAll(flatQuery: FlatQuery, pageable: Pageable): Page<Flat> {
         requireValidDates(flatQuery)
         requireValidGuestNumbers(flatQuery)
         requireValidRoomParameters(flatQuery)
@@ -44,7 +47,7 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
 
     private fun requireValidDates(query: FlatQuery) {
         require(query.startDate < query.endDate) { "startDate must be earlier than endDate." }
-        val now = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
+        val now = timeProvider().toLocalDateTime(TimeZone.currentSystemDefault())
         require(query.endDate > LocalDate(now.year, now.month, now.dayOfMonth)) { "endDate must be in the future." }
     }
 
