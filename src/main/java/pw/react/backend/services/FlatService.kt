@@ -55,7 +55,7 @@ class FlatService(
         require(adults >= 0) { "adults must not be less than 0" }
         require(children >= 0) { "children must not be less than 0" }
         require(pets >= 0) { "pets must not be less than 0" }
-        require(adults + children >= 0) { "There must be at least one guest: adult or children" }
+        require(adults + children > 0) { "There must be at least one guest: adult or children" }
     }
 
     private fun requireValidRoomParameters(query: FlatQuery) = with(query) {
