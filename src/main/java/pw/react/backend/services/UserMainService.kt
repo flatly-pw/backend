@@ -62,12 +62,12 @@ open class UserMainService(
                 throw UserValidationException("Empty email.")
             }
 
-            !isNonEmptyOrBlank(user.name) -> {
+            !isNonEmptyAndBlank(user.name) -> {
                 log.error("Name is empty or blank")
                 throw UserValidationException("Name is empty or blank")
             }
 
-            !isNonEmptyOrBlank(user.lastName) -> {
+            !isNonEmptyAndBlank(user.lastName) -> {
                 log.error("Last name is empty or blank")
                 throw UserValidationException("Last name is empty or blank")
             }
@@ -84,7 +84,7 @@ open class UserMainService(
         }
     }
 
-    private fun isNonEmptyOrBlank(value: String) = value.isNotEmpty() && value.isNotBlank()
+    private fun isNonEmptyAndBlank(value: String) = value.isNotEmpty() && value.isNotBlank()
 
     private fun isValidMail(mail: String): Boolean {
         val mailRegex = Regex("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$", RegexOption.IGNORE_CASE)
