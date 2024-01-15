@@ -8,8 +8,8 @@ import pw.react.backend.models.domain.FlatQuery
 @Serializable
 data class FlatQueryDto(
     val destination: DestinationQueryDto? = null,
-    @SerialName("start_date") val startDate: LocalDate,
-    @SerialName("end_date") val endDate: LocalDate,
+    @SerialName("start_date") val startDate: String,
+    @SerialName("end_date") val endDate: String,
     val beds: Int? = null,
     val bedrooms: Int? = null,
     val bathrooms: Int? = null,
@@ -20,8 +20,8 @@ data class FlatQueryDto(
 
     fun toDomain() = FlatQuery(
         destinationQuery = destination?.toDomain(),
-        startDate = startDate,
-        endDate = endDate,
+        startDate = LocalDate.parse(startDate),
+        endDate = LocalDate.parse(endDate),
         beds = beds,
         bedrooms = bedrooms,
         bathrooms = bathrooms,
