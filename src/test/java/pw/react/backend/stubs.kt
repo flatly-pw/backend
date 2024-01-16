@@ -13,21 +13,23 @@ import pw.react.backend.web.UserDto
 
 fun stubFlat(
     id: String? = "1",
+    title: String = "Flat $id",
     description: String = "description ${id.orEmpty()}",
     area: Int = 10,
     bedrooms: Int = 1,
     bathrooms: Int = 2,
     capacity: Int = 3
-) = Flat(description, area, bedrooms, bathrooms, capacity, id)
+) = Flat(title, description, area, bedrooms, bathrooms, capacity, id)
 
 fun stubFlatEntity(
     id: String? = "1",
+    title: String = "Flat $id",
     description: String = "description ${id.orEmpty()}",
     area: Int = 10,
     bedrooms: Int = 1,
     bathrooms: Int = 2,
     capacity: Int = 3
-) = FlatEntity(description, area, bedrooms, bathrooms, capacity, id)
+) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, id)
 
 fun stubUserDto(
     id: Long? = null,
