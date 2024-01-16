@@ -5,15 +5,14 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.data.domain.PageRequest
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatService
+import pw.react.backend.web.FlatDto
 import pw.react.backend.web.FlatQueryDto
 import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.PageDto
@@ -52,7 +51,7 @@ class FlatController(private val flatService: FlatService) {
         } else {
             flatService.findAll(pageRequest)
         }
-        ResponseEntity.ok(flatPage.toDto(Flat::toDto))
+        ResponseEntity.ok(flatPage.toDto { FlatDto(id = it.id!!, title = it.title) })
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }
