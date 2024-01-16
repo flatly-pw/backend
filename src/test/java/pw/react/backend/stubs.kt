@@ -5,10 +5,16 @@ import pw.react.backend.models.domain.DestinationQuery
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatQuery
 import pw.react.backend.models.domain.User
+import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.web.DestinationQueryDto
 import pw.react.backend.web.FlatQueryDto
+import pw.react.backend.models.entity.FlatOwnerEntity
+import pw.react.backend.models.entity.PriceEntity
 import pw.react.backend.models.entity.UserEntity
+import pw.react.backend.stubs.stubAddressEntity
+import pw.react.backend.stubs.stubFlatOwnerEntity
+import pw.react.backend.stubs.stubPriceEntity
 import pw.react.backend.web.UserDto
 
 fun stubFlat(
@@ -28,8 +34,11 @@ fun stubFlatEntity(
     area: Int = 10,
     bedrooms: Int = 1,
     bathrooms: Int = 2,
-    capacity: Int = 3
-) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, id)
+    capacity: Int = 3,
+    owner: FlatOwnerEntity = stubFlatOwnerEntity(),
+    address: AddressEntity = stubAddressEntity(),
+    price: PriceEntity = stubPriceEntity(),
+) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, address, owner, price, id)
 
 fun stubUserDto(
     id: Long? = null,
