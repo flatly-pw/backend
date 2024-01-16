@@ -9,6 +9,7 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "flat_entity")
 class FlatEntity(
+    var title: String,
     var description: String,
     var area: Int,
     var bedrooms: Int,
