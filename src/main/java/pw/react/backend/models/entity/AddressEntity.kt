@@ -1,7 +1,10 @@
 package pw.react.backend.models.entity
 
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
 
 @Entity
@@ -13,5 +16,9 @@ class AddressEntity(
     var country: String,
     var latitude: Double,
     var longitude: Double,
-    @Id var id: Long? = null
-)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null,
+) {
+
+    @OneToOne(mappedBy = "address")
+    lateinit var flat: FlatEntity
+}
