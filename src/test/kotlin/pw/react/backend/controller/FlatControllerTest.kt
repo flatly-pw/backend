@@ -23,6 +23,7 @@ import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatService
 import pw.react.backend.stubFlat
 import pw.react.backend.stubFlatQueryDto
+import pw.react.backend.web.FlatDto
 import pw.react.backend.web.toDto
 
 @WebMvcTest(controllers = [FlatController::class])
@@ -83,7 +84,7 @@ class FlatControllerTest {
         every {
             flatService.findAll(match { it.pageNumber == 0 && it.pageSize == 5 })
         } returns page
-        val expectedDto = page.toDto(Flat::toDto)
+        val expectedDto = page.toDto { FlatDto(id = it.id!!, title = it.title) }
         webMvc.get("/flats") {
             param("page", "0")
             param("pageSize", "5")
@@ -121,7 +122,7 @@ class FlatControllerTest {
         every {
             flatService.findAll(flatQueryDto.toDomain(), match { it.pageNumber == 0 && it.pageSize == 5 })
         } returns page
-        val expectedDto = page.toDto(Flat::toDto)
+        val expectedDto = page.toDto { FlatDto(id = it.id!!, title = it.title) }
         webMvc.get("/flats") {
             param("page", "0")
             param("pageSize", "5")
