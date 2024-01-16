@@ -7,10 +7,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatService
+import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
 
@@ -32,4 +34,7 @@ class FlatController(private val flatService: FlatService) {
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }
+
+    @GetMapping("/flats/{flatId}")
+    fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = ResponseEntity.ok(FlatDetailsDto())
 }
