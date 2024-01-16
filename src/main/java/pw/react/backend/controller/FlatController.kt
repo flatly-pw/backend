@@ -7,11 +7,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatService
+import pw.react.backend.web.FlatDto
+import pw.react.backend.web.FlatQueryDto
 import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
@@ -19,7 +21,13 @@ import pw.react.backend.web.toDto
 @RestController
 class FlatController(private val flatService: FlatService) {
 
-    @Operation(summary = "Get flat offers")
+    @Operation(
+        summary = "Get flat offers",
+        description = "FlatQueryDto is optional and has to have correct data. " +
+                "\n1. start_date and end_date are in yyyy-mm-dd format." +
+                "\n2. start_date, end_date, adults, children and pets are mandatory fields. " +
+                "\n3. Every field in destination is optional."
+    )
     @ApiResponse(
         responseCode = "200",
         description = "Successfully got flat list. data contains Flat",
@@ -27,10 +35,23 @@ class FlatController(private val flatService: FlatService) {
             Content(mediaType = "application/json", schema = Schema(oneOf = [PageDto::class]))
         ]
     )
+    @ApiResponse(
+        responseCode = "400",
+        description = "FlatQueryDto contained invalid data.",
+    )
     @GetMapping("/flats")
-    fun getAllFlats(@RequestParam page: Int, @RequestParam pageSize: Int): ResponseEntity<*> = try {
-        val flatPage = flatService.findAll(PageRequest.of(page, pageSize))
-        ResponseEntity.ok(flatPage.toDto(Flat::toDto))
+    fun getAllFlats(
+        @RequestParam page: Int,
+        @RequestParam pageSize: Int,
+        @RequestBody(required = false) queryDto: FlatQueryDto?
+    ): ResponseEntity<*> = try {
+        val pageRequest = PageRequest.of(page, pageSize)
+        val flatPage = if (queryDto != null) {
+            flatService.findAll(queryDto.toDomain(), pageRequest)
+        } else {
+            flatService.findAll(pageRequest)
+        }
+        ResponseEntity.ok(flatPage.toDto { FlatDto(id = it.id!!, title = it.title) })
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }

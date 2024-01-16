@@ -9,7 +9,7 @@ import pw.react.backend.models.domain.User
 data class UserDto(
     val id: Long? = null,
     val name: String,
-    @SerialName("last_name") val lastName: String,
+    val lastName: String,
     val password: String?,
     val email: @Email String
 ) {
