@@ -1,6 +1,5 @@
 package pw.react.backend.web
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -14,8 +13,8 @@ data class FlatDetailsDto(
         "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/25/2a/e2/26/cafe-bristol-is-a-legendary.jpg?w=700&h=-1&s=1"
     ),
     val rating: Float = 4.7f,
-    @SerialName("number_of_reviews") val numberOfReviews: Int = 123,
-    @SerialName("top_reviews") val topReviews: List<ReviewDto> = listOf(ReviewDto(), ReviewDto(), ReviewDto()),
+    val numberOfReviews: Int = 123,
+    val topReviews: List<ReviewDto> = listOf(ReviewDto(), ReviewDto(), ReviewDto()),
     val area: Int = 25,
     val beds: Int = 1,
     val bedrooms: Int = 1,
@@ -23,6 +22,6 @@ data class FlatDetailsDto(
     val description: String = "Hotel bristol is a luxury 5-star hotel",
     val facilities: List<String> = listOf("Free wi-fi", "Paid breakfast", "Laundry service"),
     val address: AddressDto = AddressDto(),
-    @SerialName("owner") val owner: OwnerDetailsDto = OwnerDetailsDto(),
+    val owner: OwnerDetailsDto = OwnerDetailsDto(),
     val price: Double = 999.95,
 )

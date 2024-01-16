@@ -9,9 +9,8 @@ data class Flat(
     val bedrooms: Int,
     val bathrooms: Int,
     val capacity: Int,
+    val type: String,
     val id: String? = null,
 )
 
-fun Flat.toEntity() = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, id)
-
-fun FlatEntity.toDomain() = Flat(title, description, area, bedrooms, bathrooms, capacity, id)
+fun FlatEntity.toDomain() = Flat(title, description, area, bedrooms, bathrooms, capacity, type, id)
