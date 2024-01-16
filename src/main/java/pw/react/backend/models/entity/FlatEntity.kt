@@ -20,6 +20,7 @@ class FlatEntity(
     var bedrooms: Int,
     var bathrooms: Int,
     var capacity: Int,
+    var type: String,
     @OneToOne
     @JoinColumn(name = "address_entity_id", nullable = false)
     var address: AddressEntity,
