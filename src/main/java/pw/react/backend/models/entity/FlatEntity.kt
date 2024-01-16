@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToMany
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
@@ -22,6 +23,9 @@ class FlatEntity(
     @OneToOne
     @JoinColumn(name = "address_entity_id", nullable = false)
     var address: AddressEntity,
+    @ManyToOne
+    @JoinColumn(name = "flat_owner_entity_id")
+    var owner: FlatOwnerEntity,
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: String? = null
 ) {
     @OneToMany(mappedBy = "flat")
