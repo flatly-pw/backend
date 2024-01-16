@@ -11,8 +11,6 @@ import jakarta.persistence.Table
 @Table(name = "price_entity")
 class PriceEntity(
     var priceDollars: Double,
-    var priceEuros: Double,
-    var pricePln: Double,
     @Id @GeneratedValue var id: Long? = null
 ) {
 
