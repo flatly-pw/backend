@@ -28,6 +28,9 @@ value class Currency private constructor(private val cents: Int) {
         val Double.usd get() = toCurrency(this, Unit.USD)
         val Double.euro get() = toCurrency(this, Unit.EUR)
         val Double.pln get() = toCurrency(this, Unit.PLN)
+        val Int.usd get() = toCurrency(this, Unit.USD)
+        val Int.euro get() = toCurrency(this, Unit.EUR)
+        val Int.pln get() = toCurrency(this, Unit.PLN)
     }
 
 }
