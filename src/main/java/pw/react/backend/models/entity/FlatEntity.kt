@@ -26,6 +26,8 @@ class FlatEntity(
     @ManyToOne
     @JoinColumn(name = "flat_owner_entity_id")
     var owner: FlatOwnerEntity,
+    @OneToOne(mappedBy = "flat")
+    var price: PriceEntity,
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: String? = null
 ) {
     @OneToMany(mappedBy = "flat")
