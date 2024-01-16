@@ -5,14 +5,19 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
 import jakarta.persistence.Lob
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
 
 @Entity
 @Table(name = "flat_image_entity")
 class FlatImageEntity(
+    @ManyToOne
+    @JoinColumn(name = "flat_entity_id", nullable = false)
+    var flat: FlatEntity,
     var fileName: String,
     var fileType: String,
     @Lob @Column(columnDefinition = "MEDIUMBLOB") var bytes: ByteArray,
-    @Id @GeneratedValue(generator = "uuid", strategy = GenerationType.UUID) var id: String,
+    @Id @GeneratedValue(generator = "uuid", strategy = GenerationType.UUID) var id: String
 )
