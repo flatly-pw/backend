@@ -4,6 +4,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
@@ -17,6 +18,9 @@ class UserEntity(
     private var password: String,
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 ) : UserDetails {
+
+    @OneToMany(mappedBy = "user")
+    var reviews: Set<FlatReviewEntity> = emptySet()
 
     override fun getUsername() = email
 

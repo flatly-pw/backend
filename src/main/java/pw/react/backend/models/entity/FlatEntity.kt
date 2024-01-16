@@ -35,6 +35,9 @@ class FlatEntity(
 
     @ManyToMany(mappedBy = "flats")
     var facilities: Set<FlatFacilityEntity> = emptySet()
+
+    @OneToMany(mappedBy = "flat")
+    var reviews: Set<FlatReviewEntity> = emptySet()
 }
 
 
