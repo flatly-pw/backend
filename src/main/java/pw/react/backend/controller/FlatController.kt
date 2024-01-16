@@ -35,6 +35,14 @@ class FlatController(private val flatService: FlatService) {
         ResponseEntity.badRequest().body(e.message)
     }
 
+    @Operation(summary = "Get flat offer details")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got flat details.",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [FlatDetailsDto::class]))
+        ]
+    )
     @GetMapping("/flats/{flatId}")
     fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = ResponseEntity.ok(FlatDetailsDto())
 }
