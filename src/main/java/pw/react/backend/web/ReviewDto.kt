@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ReviewDto(
-    val rating: Int,
-    val review: String,
-    @SerialName("reviewer_name") val reviewerName: String,
-    val date: String,
+    val rating: Int = 5,
+    val review: String = "Great place to stay.",
+    @SerialName("reviewer_name") val reviewerName: String = "Janusz",
+    val date: String = "2023-12-12",
 )
