@@ -39,8 +39,7 @@ fun stubFlatEntity(
     type: String = "Hotel",
     owner: FlatOwnerEntity = stubFlatOwnerEntity(),
     address: AddressEntity = stubAddressEntity(),
-    price: PriceEntity = stubPriceEntity(),
-) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, type, address, owner, price, id)
+) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, type, address, owner, id)
 
 fun stubUserDto(
     id: Long? = null,
