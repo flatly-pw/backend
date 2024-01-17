@@ -3,6 +3,8 @@ package pw.react.backend.models.domain
 import kotlinx.datetime.LocalDate
 
 data class FlatQuery(
+    val page: Int,
+    val pageSize: Int,
     val city: String?,
     val country: String?,
     val startDate: LocalDate?,
