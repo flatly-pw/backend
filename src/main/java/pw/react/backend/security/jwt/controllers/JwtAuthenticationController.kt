@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -50,6 +51,9 @@ class JwtAuthenticationController(
         val token = jwtTokenService.generateToken(userDetails, request)
         return ResponseEntity.ok(JwtResponse(token))
     }
+
+    @GetMapping("/ok")
+    fun validateToken(): ResponseEntity<Void> = ResponseEntity.ok().build()
 
     @PostMapping("/logout")
     fun invalidateToken(request: HttpServletRequest): ResponseEntity<Void> {
