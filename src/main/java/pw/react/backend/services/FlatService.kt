@@ -4,6 +4,7 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
@@ -18,13 +19,12 @@ class FlatService(
     private val timeProvider: TimeProvider,
 ) {
 
-    fun findAll(pageable: Pageable) = flatEntityRepository.findAll(pageable).map(FlatEntity::toDomain)
-
-    fun findAll(flatQuery: FlatQuery, pageable: Pageable): Page<Flat> {
+    fun findAll(flatQuery: FlatQuery): Page<Flat> {
         requireValidPageParams(flatQuery.page, flatQuery.pageSize)
         requireValidDates(flatQuery)
         requireValidGuestNumbers(flatQuery)
         requireValidRoomParameters(flatQuery)
+        val pageable = PageRequest.of(flatQuery.page, flatQuery.pageSize)
         return flatEntityRepository
             .findAll(flatSpecification(flatQuery), pageable)
             .map(FlatEntity::toDomain)

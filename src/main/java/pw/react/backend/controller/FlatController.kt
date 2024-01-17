@@ -68,8 +68,7 @@ class FlatController(private val flatService: FlatService) {
             children = children,
             pets = pets
         )
-        val pageRequest = PageRequest.of(page, pageSize)
-        val flatPage = flatService.findAll(pageRequest)
+        val flatPage = flatService.findAll(flatQuery)
         ResponseEntity.ok(flatPage.toDto { FlatDto(id = it.id!!, title = it.title) })
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
