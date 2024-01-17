@@ -5,7 +5,6 @@ import kotlinx.datetime.LocalDate
 data class FlatQuery(
     val city: String?,
     val country: String?,
-    val destinationQuery: DestinationQuery?,
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val beds: Int?,
