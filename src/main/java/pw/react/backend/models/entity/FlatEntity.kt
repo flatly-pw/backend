@@ -1,5 +1,6 @@
 package pw.react.backend.models.entity
 
+import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -9,6 +10,7 @@ import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
+import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
 
 @Entity
@@ -27,8 +29,6 @@ class FlatEntity(
     @ManyToOne
     @JoinColumn(name = "flat_owner_entity_id")
     var owner: FlatOwnerEntity,
-    @OneToOne(mappedBy = "flat")
-    var price: PriceEntity,
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: String? = null
 ) {
     @OneToMany(mappedBy = "flat")
@@ -39,6 +39,10 @@ class FlatEntity(
 
     @OneToMany(mappedBy = "flat")
     var reviews: Set<FlatReviewEntity> = emptySet()
+
+    @OneToOne(mappedBy = "flat", cascade = [CascadeType.ALL])
+    @PrimaryKeyJoinColumn
+    lateinit var price: PriceEntity
 }
 
 
