@@ -21,6 +21,7 @@ class FlatService(
     fun findAll(pageable: Pageable) = flatEntityRepository.findAll(pageable).map(FlatEntity::toDomain)
 
     fun findAll(flatQuery: FlatQuery, pageable: Pageable): Page<Flat> {
+        requireValidPageParams(flatQuery.page, flatQuery.pageSize)
         requireValidDates(flatQuery)
         requireValidGuestNumbers(flatQuery)
         requireValidRoomParameters(flatQuery)
@@ -43,6 +44,11 @@ class FlatService(
             builder.equal(root.get<Int>("capacity"), flatQuery.adults + flatQuery.children)
         ).mapNotNull { it }.toTypedArray()
         builder.and(*predicates)
+    }
+
+    private fun requireValidPageParams(page: Int, pageSize: Int) {
+        require(page >= 0) { "page must not be less that 0" }
+        require(pageSize > 0) { "page size must be greater than 0" }
     }
 
     private fun requireValidDates(query: FlatQuery) {
