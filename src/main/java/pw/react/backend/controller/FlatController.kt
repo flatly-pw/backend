@@ -4,12 +4,15 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatService
 import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.FlatDto
@@ -17,7 +20,11 @@ import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
 
 @RestController
-class FlatController(private val flatService: FlatService, private val flatQueryFactory: FlatQueryFactory) {
+class FlatController(
+    private val flatService: FlatService,
+    private val flatDetailsService: FlatDetailsService,
+    private val flatQueryFactory: FlatQueryFactory
+) {
 
     @Operation(
         summary = "Get flat offers",
@@ -79,5 +86,9 @@ class FlatController(private val flatService: FlatService, private val flatQuery
         ]
     )
     @GetMapping("/flats/{flatId}")
-    fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = ResponseEntity.ok(FlatDetailsDto())
+    fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = try {
+        ResponseEntity.ok(flatDetailsService.getFlatDetailsById(flatId).toDto())
+    } catch (e: FlatNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    }
 }
