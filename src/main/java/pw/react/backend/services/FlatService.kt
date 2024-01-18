@@ -29,7 +29,9 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
             flatQuery.bathrooms?.let {
                 builder.equal(root.get<Int>("bathrooms"), it)
             },
-            builder.equal(root.get<Int>("capacity"), flatQuery.people)
+            flatQuery.people?.let {
+                builder.equal(root.get<Int>("capacity"), it)
+            },
         ).mapNotNull { it }.toTypedArray()
         builder.and(*predicates)
     }
