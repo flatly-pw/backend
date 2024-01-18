@@ -1,7 +1,7 @@
 package pw.react.backend.dao
 
+import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
-import org.springframework.data.repository.PagingAndSortingRepository
 import pw.react.backend.models.entity.FlatEntity
 
-interface FlatEntityRepository : PagingAndSortingRepository<FlatEntity, String>, JpaSpecificationExecutor<FlatEntity>
+interface FlatEntityRepository : JpaRepository<FlatEntity, String>, JpaSpecificationExecutor<FlatEntity>
