@@ -28,13 +28,14 @@ fun stubFlatEntity(
     title: String = "Flat $id",
     description: String = "description ${id.orEmpty()}",
     area: Int = 10,
+    beds: Int = 1,
     bedrooms: Int = 1,
     bathrooms: Int = 2,
     capacity: Int = 3,
     type: String = "Hotel",
     owner: FlatOwnerEntity = stubFlatOwnerEntity(),
     address: AddressEntity = stubAddressEntity(),
-) = FlatEntity(title, description, area, bedrooms, bathrooms, capacity, type, address, owner, id)
+) = FlatEntity(title, description, area, beds, bedrooms, bathrooms, capacity, type, address, owner, id)
 
 fun stubUserDto(
     id: Long? = null,
