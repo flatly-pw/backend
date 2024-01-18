@@ -12,7 +12,6 @@ data class FlatQuery(
     val beds: Int?,
     val bedrooms: Int?,
     val bathrooms: Int?,
-    val adults: Int?,
-    val children: Int?,
+    val people: Int?,
     val pets: Int?
 )
