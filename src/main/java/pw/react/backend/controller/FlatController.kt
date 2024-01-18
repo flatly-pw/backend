@@ -5,13 +5,12 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import kotlinx.datetime.LocalDate
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import pw.react.backend.models.domain.FlatQuery
+import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.services.FlatService
 import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.FlatDto
@@ -19,7 +18,7 @@ import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
 
 @RestController
-class FlatController(private val flatService: FlatService) {
+class FlatController(private val flatService: FlatService, private val flatQueryFactory: FlatQueryFactory) {
 
     @Operation(
         summary = "Get flat offers",
@@ -54,13 +53,13 @@ class FlatController(private val flatService: FlatService) {
         @RequestParam children: Int?,
         @RequestParam pets: Int?,
     ): ResponseEntity<*> = try {
-        val flatQuery = FlatQuery(
+        val flatQuery = flatQueryFactory.create(
             page = page,
             pageSize = pageSize,
-            city = city?.lowercase()?.trim(),
-            country = country?.lowercase()?.trim(),
-            startDate = startDate?.let(LocalDate::parse),
-            endDate = endDate?.let(LocalDate::parse),
+            city = city,
+            country = country,
+            startDateIso = startDate,
+            endDateIso = endDate,
             beds = beds,
             bedrooms = bedrooms,
             bathrooms = bathrooms,
