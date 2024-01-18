@@ -59,16 +59,3 @@ fun stubUserEntity(
     password: String = "password123",
     email: String = "john.smith@mail.com"
 ) = UserEntity(name, lastName, email, password, id)
-
-fun stubFlatQuery(
-    city: String? = "Warsaw",
-    country: String? = "Poland",
-    startDate: LocalDate? = LocalDate(2030, 10, 1),
-    endDate: LocalDate? = LocalDate(2030, 10, 11),
-    beds: Int? = 3,
-    bedrooms: Int? = 2,
-    bathrooms: Int? = 1,
-    adults: Int = 3,
-    children: Int = 1,
-    pets: Int = 0
-) = FlatQuery(city, country, startDate, endDate, beds, bedrooms, bathrooms, adults, children, pets)
