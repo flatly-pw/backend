@@ -11,16 +11,16 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
     fun create(
         page: Int,
         pageSize: Int,
-        city: String?,
-        country: String?,
-        startDateIso: String?,
-        endDateIso: String?,
-        beds: Int?,
-        bedrooms: Int?,
-        bathrooms: Int?,
-        adults: Int?,
-        children: Int?,
-        pets: Int?
+        city: String? = null,
+        country: String? = null,
+        startDateIso: String? = null,
+        endDateIso: String? = null,
+        beds: Int? = null,
+        bedrooms: Int? = null,
+        bathrooms: Int? = null,
+        adults: Int? = null,
+        children: Int? = null,
+        pets: Int? = null
     ): FlatQuery {
         val startDate = startDateIso?.let(LocalDate::parse)
         val endDate = endDateIso?.let(LocalDate::parse)
