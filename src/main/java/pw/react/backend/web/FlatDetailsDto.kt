@@ -1,6 +1,7 @@
 package pw.react.backend.web
 
 import kotlinx.serialization.Serializable
+import pw.react.backend.models.entity.FlatDetails
 
 @Serializable
 data class FlatDetailsDto(
@@ -19,9 +20,20 @@ data class FlatDetailsDto(
     val beds: Int = 1,
     val bedrooms: Int = 1,
     val bathrooms: Int = 1,
+    val capacity: Int = 2,
     val description: String = "Hotel bristol is a luxury 5-star hotel",
     val facilities: List<String> = listOf("Free wi-fi", "Paid breakfast", "Laundry service"),
     val address: AddressDto = AddressDto(),
     val owner: OwnerDetailsDto = OwnerDetailsDto(),
     val price: Double = 999.95,
+)
+
+fun FlatDetails.toDto() = FlatDetailsDto(
+    title = title,
+    area = area,
+    beds = beds,
+    bedrooms = bedrooms,
+    bathrooms = bathrooms,
+    capacity = capacity,
+    description = description
 )
