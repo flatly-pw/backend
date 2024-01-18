@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import kotlinx.datetime.LocalDate
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -22,10 +21,8 @@ class FlatController(private val flatService: FlatService, private val flatQuery
 
     @Operation(
         summary = "Get flat offers",
-        description = "FlatQueryDto is optional and has to have correct data. " +
-                "\n1. start_date and end_date are in yyyy-mm-dd format." +
-                "\n2. start_date, end_date, adults, children and pets are mandatory fields. " +
-                "\n3. Every field in destination is optional."
+        description = "startDate and endDate are in yyyy-mm-dd format. Either both startDate and endDate needs to be provided or none. " +
+                "IMPORTANT: city, country, startDate, endDate, pets parameters are validated but ignored for now."
     )
     @ApiResponse(
         responseCode = "200",
