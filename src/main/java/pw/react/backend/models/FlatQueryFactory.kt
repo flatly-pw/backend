@@ -32,17 +32,17 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
             else -> (adults ?: 0) + (children ?: 0)
         }
         return FlatQuery(
-            page,
-            pageSize,
-            city,
-            country,
-            startDate,
-            endDate,
-            beds,
-            bedrooms,
-            bathrooms,
-            people,
-            pets
+            page = page,
+            pageSize = pageSize,
+            city = city?.lowercase()?.trim(),
+            country = country?.lowercase()?.trim(),
+            startDate = startDate,
+            endDate = endDate,
+            beds = beds,
+            bedrooms = bedrooms,
+            bathrooms = bathrooms,
+            people = people,
+            pets = pets
         )
     }
 
