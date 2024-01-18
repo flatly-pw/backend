@@ -92,6 +92,11 @@ public class MainConfig {
     }
 
     @Bean
+    public FlatDetailsService flatDetailsService(FlatEntityRepository flatEntityRepository) {
+        return new FlatDetailsService(flatEntityRepository);
+    }
+
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
