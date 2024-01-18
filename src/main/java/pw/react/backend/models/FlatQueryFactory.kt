@@ -13,8 +13,8 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
         pageSize: Int,
         city: String?,
         country: String?,
-        startDate: LocalDate?,
-        endDate: LocalDate?,
+        startDateIso: String?,
+        endDateIso: String?,
         beds: Int?,
         bedrooms: Int?,
         bathrooms: Int?,
@@ -22,6 +22,8 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
         children: Int?,
         pets: Int?
     ): FlatQuery {
+        val startDate = startDateIso?.let(LocalDate::parse)
+        val endDate = endDateIso?.let(LocalDate::parse)
         requireValidPagingParams(page, pageSize)
         requireValidDestinationParams(city, country)
         requireValidDates(startDate, endDate)
