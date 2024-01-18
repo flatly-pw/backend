@@ -49,7 +49,7 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
     }
 
     private fun requireValidPagingParams(page: Int, pageSize: Int) {
-        require(page >= 0) { "page must not be less that 0" }
+        require(page >= 0) { "page must not be less than 0" }
         require(pageSize > 0) { "page size must be greater than 0" }
     }
 
@@ -72,7 +72,7 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
         if (startDate != null && endDate != null) {
             require(startDate < endDate) { "startDate must be earlier than endDate." }
             val now = timeProvider().toLocalDateTime(TimeZone.currentSystemDefault())
-            require(startDate >= LocalDate(now.year, now.month, now.dayOfMonth)) { "endDate must be in the future." }
+            require(startDate >= LocalDate(now.year, now.month, now.dayOfMonth)) { "startDate must be in the future." }
         }
     }
 
