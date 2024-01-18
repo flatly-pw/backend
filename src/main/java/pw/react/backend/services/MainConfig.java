@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -16,7 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
 import pw.react.backend.dao.CompanyLogoRepository;
 import pw.react.backend.dao.FlatEntityRepository;
-import pw.react.backend.models.domain.Flat;
+import pw.react.backend.models.FlatQueryFactory;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
 import pw.react.backend.security.jwt.services.JwtConfig;
@@ -80,8 +82,13 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatService flatService(FlatEntityRepository flatEntityRepository, TimeProvider timeProvider) {
-        return new FlatService(flatEntityRepository, timeProvider);
+    public FlatQueryFactory flatQueryFactory(TimeProvider timeProvider) {
+        return new FlatQueryFactory(timeProvider);
+    }
+
+    @Bean
+    public FlatService flatService(FlatEntityRepository flatEntityRepository) {
+        return new FlatService(flatEntityRepository);
     }
 
     @Bean
