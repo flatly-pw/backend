@@ -27,7 +27,10 @@ class FlatQueryFactory(private val timeProvider: TimeProvider) {
         requireValidDates(startDate, endDate)
         requireValidRoomParameters(beds, bedrooms, bathrooms)
         requireValidGuestNumbers(adults, children, pets)
-        val people = (adults ?: 0) + (children ?: 0)
+        val people = when {
+            adults == null && children == null -> null
+            else -> (adults ?: 0) + (children ?: 0)
+        }
         return FlatQuery(
             page,
             pageSize,
