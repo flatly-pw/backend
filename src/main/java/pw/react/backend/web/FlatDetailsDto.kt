@@ -22,9 +22,9 @@ data class FlatDetailsDto(
     val bathrooms: Int,
     val capacity: Int,
     val description: String,
-    val facilities: List<String> = listOf("Free wi-fi", "Paid breakfast", "Laundry service"),
+    val facilities: List<String>,
     val address: AddressDto,
-    val owner: OwnerDetailsDto = OwnerDetailsDto(),
+    val owner: OwnerDetailsDto,
     val price: Double = 999.95,
 )
 
@@ -38,5 +38,7 @@ fun FlatDetails.toDto() = FlatDetailsDto(
     description = description,
     address = with(address) {
         AddressDto(street, postalCode, city, country, latitude, longitude)
-    }
+    },
+    owner = owner.toDto(),
+    facilities = facilities,
 )
