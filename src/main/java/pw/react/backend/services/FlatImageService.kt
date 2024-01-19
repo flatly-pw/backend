@@ -13,4 +13,13 @@ class FlatImageService(private val flatImageRepository: FlatImageRepository) {
             .path("/flats/$flatId/image/${thumbnail.id.imageId}")
             .toUriString()
     }
+
+    fun getImageUrisByFlatId(flatId: String): List<String> {
+        val images = flatImageRepository.findFlatImageEntitiesByFlatId(flatId)
+        return images.map { image ->
+            ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/flats/$flatId/image/${image.id.imageId}")
+                .toUriString()
+        }
+    }
 }
