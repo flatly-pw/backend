@@ -9,6 +9,8 @@ import pw.react.backend.web.toDto
 
 fun stubFlatDetails(
     title: String = "Flat 1",
+    thumbnail: String = "image://flat/1",
+    gallery: List<String> = listOf("image://flat/1", "image://flat/2"),
     rating: Float = 4.5f,
     numberOfReviews: Int = 2,
     topReviews: List<FlatReview> = listOf(
@@ -27,6 +29,8 @@ fun stubFlatDetails(
     price: Double = 20.0
 ) = FlatDetails(
     title = title,
+    thumbnail = thumbnail,
+    gallery = gallery,
     rating = rating,
     numberOfReviews = numberOfReviews,
     topReviews = topReviews,
@@ -44,6 +48,8 @@ fun stubFlatDetails(
 
 fun stubFlatDetailsDto(
     title: String = "Flat 1",
+    thumbnail: String = "image://flat/1",
+    gallery: List<String> = listOf("image://flat/1", "image://flat/2"),
     rating: Float = 4.5f,
     numberOfReviews: Int = 2,
     topReviews: List<FlatReview> = listOf(
@@ -62,6 +68,8 @@ fun stubFlatDetailsDto(
     price: Double = 20.0
 ) = FlatDetailsDto(
     title = title,
+    thumbnail = thumbnail,
+    gallery = gallery,
     description = description,
     rating = rating,
     numberOfReviews = numberOfReviews,
