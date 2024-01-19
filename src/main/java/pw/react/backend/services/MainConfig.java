@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
 import pw.react.backend.dao.CompanyLogoRepository;
 import pw.react.backend.dao.FlatEntityRepository;
+import pw.react.backend.dao.FlatPriceRepository;
 import pw.react.backend.dao.FlatReviewRepository;
 import pw.react.backend.models.FlatQueryFactory;
 import pw.react.backend.openapi.OpenApiConfig;
@@ -95,6 +96,11 @@ public class MainConfig {
     @Bean
     public FlatReviewService flatReviewService(FlatReviewRepository flatReviewRepository) {
         return new FlatReviewService(flatReviewRepository);
+    }
+
+    @Bean
+    public FlatPriceService flatPriceService(FlatPriceRepository flatPriceRepository) {
+        return new FlatPriceService(flatPriceRepository);
     }
 
     @Bean
