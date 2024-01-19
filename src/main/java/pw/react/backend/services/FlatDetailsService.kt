@@ -4,6 +4,7 @@ import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.entity.FlatDetails
+import pw.react.backend.models.entity.FlatFacilityEntity
 import kotlin.jvm.optionals.getOrNull
 
 class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository) {
@@ -13,6 +14,7 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
             ?: throw FlatNotFoundException("Flat with id: $id was not found")
         val address = flatEntity.address.toDomain()
         val owner = flatEntity.owner.toDomain()
+        val facilities = flatEntity.facilities.map(FlatFacilityEntity::name)
         return with(flatEntity) {
             FlatDetails(
                 title = title,
@@ -23,7 +25,8 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
                 capacity = capacity,
                 description = description,
                 address = address,
-                owner = owner
+                owner = owner,
+                facilities = facilities
             )
         }
     }

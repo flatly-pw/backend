@@ -12,5 +12,6 @@ data class FlatDetails(
     val capacity: Int,
     val description: String,
     val address: Address,
-    val owner: FlatOwner
+    val owner: FlatOwner,
+    val facilities: List<String>,
 )
