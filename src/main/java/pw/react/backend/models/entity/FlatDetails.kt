@@ -1,5 +1,7 @@
 package pw.react.backend.models.entity
 
+import pw.react.backend.models.domain.Address
+
 data class FlatDetails(
     val title: String,
     val area: Int,
@@ -9,14 +11,4 @@ data class FlatDetails(
     val capacity: Int,
     val description: String,
     val address: Address,
-) {
-
-    data class Address(
-        val street: String,
-        val postalCode: String,
-        val city: String,
-        val country: String,
-        val longitude: Double,
-        val latitude: Double
-    )
-}
+)
