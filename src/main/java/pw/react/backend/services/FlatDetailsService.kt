@@ -7,7 +7,10 @@ import pw.react.backend.models.entity.FlatDetails
 import pw.react.backend.models.entity.FlatFacilityEntity
 import kotlin.jvm.optionals.getOrNull
 
-class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository) {
+class FlatDetailsService(
+    private val flatEntityRepository: FlatEntityRepository,
+    private val flatReviewService: FlatReviewService
+) {
 
     fun getFlatDetailsById(id: String): FlatDetails {
         val flatEntity = flatEntityRepository.findById(id).getOrNull()
@@ -15,9 +18,15 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
         val address = flatEntity.address.toDomain()
         val owner = flatEntity.owner.toDomain()
         val facilities = flatEntity.facilities.map(FlatFacilityEntity::name)
+        val reviewsNumber = flatReviewService.getNumberOfReviewByFlatId(id)
+        val avgRating = flatReviewService.getRatingByFlatId(id)
+        val topReviews = flatReviewService.getTopReviewsByFlatId(id)
         return with(flatEntity) {
             FlatDetails(
                 title = title,
+                rating = avgRating,
+                numberOfReviews = reviewsNumber,
+                topReviews = topReviews,
                 area = area,
                 beds = beds,
                 bedrooms = bedrooms,
