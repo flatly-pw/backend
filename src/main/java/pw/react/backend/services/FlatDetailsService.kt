@@ -13,6 +13,7 @@ class FlatDetailsService(
     private val flatPriceService: FlatPriceService,
 ) {
 
+    // in the future there will be user preferences with e.g. currency
     fun getFlatDetailsById(id: String): FlatDetails {
         val flatEntity = flatEntityRepository.findById(id).getOrNull()
             ?: throw FlatNotFoundException("Flat with id: $id was not found")
