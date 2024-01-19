@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
 import pw.react.backend.dao.FlatEntityRepository
+import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.stubFlatEntity
 import pw.react.backend.stubs.stubFlatDetails
@@ -29,13 +30,23 @@ class FlatDetailsServiceTest {
     private val flatPriceService = mockk<FlatPriceService>().also {
         every { it.getPriceByFlatId("1") } returns 20.0
     }
-    private val service = FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService)
+    private val flatImageService = mockk<FlatImageService>().also {
+        every { it.getThumbnailUriByFlatId("1") } returns "image://flat/1"
+        every { it.getImageUrisByFlatId("1") } returns listOf("image://flat/1", "image://flat/2")
+    }
+    private val service = FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService, flatImageService)
 
     @Test
     fun `Throws FlatNotFoundException if flat with given id was not fount`() {
         shouldThrow<FlatNotFoundException> {
             service.getFlatDetailsById(id = "non-existing-id")
         }.message shouldBe "Flat with id: non-existing-id was not found"
+    }
+
+    @Test
+    fun `Throws ThumbnailNotFoundException if thumbnail for flat was not found`() {
+        every { flatImageService.getThumbnailUriByFlatId("1") } throws FlatImageException.ThumbnailNotFound("")
+        shouldThrow<FlatImageException.ThumbnailNotFound> { service.getFlatDetailsById("1") }
     }
 
     @Test
