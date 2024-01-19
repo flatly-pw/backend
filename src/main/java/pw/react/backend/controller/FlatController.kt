@@ -86,6 +86,10 @@ class FlatController(
             Content(mediaType = "application/json", schema = Schema(oneOf = [FlatDetailsDto::class]))
         ]
     )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Flat with given id was not found or thumbnail for this flat was not present",
+    )
     @GetMapping("/flats/{flatId}")
     fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = try {
         ResponseEntity.ok(flatDetailsService.getFlatDetailsById(flatId).toDto())
