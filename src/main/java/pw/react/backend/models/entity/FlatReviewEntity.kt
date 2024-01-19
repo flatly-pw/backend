@@ -9,6 +9,7 @@ import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
 import jakarta.persistence.Table
 import java.io.Serializable
+import java.time.LocalDate
 
 @Entity
 @Table(name = "flat_review_entity")
@@ -24,6 +25,7 @@ class FlatReviewEntity(
     var user: UserEntity,
     var review: String,
     var rating: Int,
+    var date: LocalDate
 )
 
 @Embeddable

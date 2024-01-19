@@ -43,7 +43,7 @@ class FlatEntity(
 
     @OneToOne(mappedBy = "flat", cascade = [CascadeType.ALL])
     @PrimaryKeyJoinColumn
-    lateinit var price: PriceEntity
+    private lateinit var price: PriceEntity
 }
 
 

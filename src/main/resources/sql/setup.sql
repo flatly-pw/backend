@@ -10,14 +10,30 @@ use backend;
 # drop table if exists flat_owner_entity;
 # drop table if exists address_entity;
 
-delete from flat_facility_entity_flats where true;
-delete from flat_facility_entity where true;
-delete from flat_image_entity where true;
-delete from price_entity where true;
-delete from flat_review_entity where true;
-delete from flat_entity where true;
-delete from flat_owner_entity where true;
-delete from address_entity where true;
+delete
+from flat_facility_entity_flats
+where true;
+delete
+from flat_facility_entity
+where true;
+delete
+from flat_image_entity
+where true;
+delete
+from price_entity
+where true;
+delete
+from flat_review_entity
+where true;
+delete
+from flat_entity
+where true;
+delete
+from flat_owner_entity
+where true;
+delete
+from address_entity
+where true;
 
 replace into address_entity (id, city, country, latitude, longitude, postal_code, street)
 values (1, 'Warsaw', 'Poland', 52.242196, 21.015816, '00-325', 'Krakowskie Przedmieście 42/44'),
@@ -52,11 +68,15 @@ values (900.0, '1'),
        (700.0, '2');
 
 replace into user_entity (id, email, last_name, name, password)
-values (1000, 'janusz@mail.com', 'Nowak', 'Janusz', 'janusznowak123');
+values (1000, 'janusz@mail.com', 'Nowak', 'Janusz', 'janusznowak123'),
+       (1001, 'marcin@mail.com', 'Nowak', 'Marcin', 'marcin123'),
+       (1002, 'lambert@mail.com', 'Wilk', 'Lambert', 'lambert123');
 
-replace into flat_review_entity (flat_entity_id, user_entity_id, rating, review)
-values ('1', 1000, 5, 'Very nice place to stay. I had a great time there.'),
-       ('2', 1000, 4, 'It was a pleasure to stay there although the service was not so good.');
+replace into flat_review_entity (flat_entity_id, user_entity_id, rating, review, date)
+values ('1', 1000, 5, 'Very nice place to stay. I had a great time there.', '2020-06-03'),
+       ('2', 1000, 4, 'It was a pleasure to stay there although the service was not so good.', '2020-05-15'),
+       ('2', 1001, 2, 'I did not like it there.', '2023-01-01'),
+       ('2', 1002, 1, 'Awful.', '2023-01-08');
 
 
 
