@@ -26,7 +26,8 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
                 description = description,
                 address = address,
                 owner = owner,
-                facilities = facilities
+                facilities = facilities,
+                price = price.priceDollars
             )
         }
     }

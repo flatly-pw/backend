@@ -14,4 +14,5 @@ data class FlatDetails(
     val address: Address,
     val owner: FlatOwner,
     val facilities: List<String>,
+    val price: Double,
 )

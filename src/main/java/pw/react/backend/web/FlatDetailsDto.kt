@@ -25,7 +25,7 @@ data class FlatDetailsDto(
     val facilities: List<String>,
     val address: AddressDto,
     val owner: OwnerDetailsDto,
-    val price: Double = 999.95,
+    val price: Double,
 )
 
 fun FlatDetails.toDto() = FlatDetailsDto(
@@ -41,4 +41,5 @@ fun FlatDetails.toDto() = FlatDetailsDto(
     },
     owner = owner.toDto(),
     facilities = facilities,
+    price = price
 )
