@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatService
 import pw.react.backend.stubFlat
 import pw.react.backend.stubs.stubFlatQuery
@@ -32,6 +33,9 @@ class FlatControllerTest {
 
     @MockkBean
     private lateinit var flatService: FlatService
+
+    @MockkBean
+    private lateinit var flatDetailsService: FlatDetailsService
 
     @MockkBean
     private lateinit var flatQueryFactory: FlatQueryFactory
