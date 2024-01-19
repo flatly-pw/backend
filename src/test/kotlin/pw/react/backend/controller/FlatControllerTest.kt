@@ -18,9 +18,13 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatService
 import pw.react.backend.stubFlat
+import pw.react.backend.stubs.stubFlatDetails
+import pw.react.backend.stubs.stubFlatDetailsDto
 import pw.react.backend.stubs.stubFlatQuery
 import pw.react.backend.web.FlatDto
 import pw.react.backend.web.toDto
@@ -32,6 +36,9 @@ class FlatControllerTest {
 
     @MockkBean
     private lateinit var flatService: FlatService
+
+    @MockkBean
+    private lateinit var flatDetailsService: FlatDetailsService
 
     @MockkBean
     private lateinit var flatQueryFactory: FlatQueryFactory
@@ -140,6 +147,25 @@ class FlatControllerTest {
             param("pageSize", "5")
         }.andExpect {
             status { isBadRequest() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Responds with NotFound if Flat with given id was not found`() {
+        every { flatDetailsService.getFlatDetailsById("1") } throws FlatNotFoundException("")
+        webMvc.get("/flats/1").andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Responds with FlatDetails for flat with matching id`() {
+        every { flatDetailsService.getFlatDetailsById("1") } returns stubFlatDetails()
+        val expectedDto = stubFlatDetailsDto()
+        webMvc.get("/flats/1").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
         }
     }
 }
