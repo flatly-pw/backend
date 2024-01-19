@@ -2,6 +2,7 @@ package pw.react.backend.web
 
 import kotlinx.serialization.Serializable
 import pw.react.backend.models.entity.FlatDetails
+import pw.react.backend.models.entity.FlatReview
 
 @Serializable
 data class FlatDetailsDto(
@@ -13,9 +14,9 @@ data class FlatDetailsDto(
         "https://www.hotelbristolwarsaw.pl/resourcefiles/home-dining-images/belle-epoque.jpg?version=12082023161733",
         "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/25/2a/e2/26/cafe-bristol-is-a-legendary.jpg?w=700&h=-1&s=1"
     ),
-    val rating: Float = 4.7f,
-    val numberOfReviews: Int = 123,
-    val topReviews: List<ReviewDto> = listOf(ReviewDto(), ReviewDto(), ReviewDto()),
+    val rating: Float,
+    val numberOfReviews: Int,
+    val topReviews: List<ReviewDto>,
     val area: Int,
     val beds: Int,
     val bedrooms: Int,
@@ -30,6 +31,9 @@ data class FlatDetailsDto(
 
 fun FlatDetails.toDto() = FlatDetailsDto(
     title = title,
+    rating = rating,
+    numberOfReviews = numberOfReviews,
+    topReviews = topReviews.map(FlatReview::toDto),
     area = area,
     beds = beds,
     bedrooms = bedrooms,
