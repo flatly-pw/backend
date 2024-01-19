@@ -20,3 +20,16 @@ data class FlatDetails(
         val latitude: Double
     )
 }
+
+fun FlatEntity.toFlatDetails() = FlatDetails(
+    title = title,
+    area = area,
+    beds = beds,
+    bedrooms = bedrooms,
+    bathrooms = bathrooms,
+    capacity = capacity,
+    description = description,
+    address = with(address) {
+        FlatDetails.Address(street, postalCode, city, country, longitude, latitude)
+    }
+)
