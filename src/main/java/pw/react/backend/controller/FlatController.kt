@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.services.FlatDetailsService
@@ -89,6 +90,8 @@ class FlatController(
     fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = try {
         ResponseEntity.ok(flatDetailsService.getFlatDetailsById(flatId).toDto())
     } catch (e: FlatNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: FlatImageException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 }
