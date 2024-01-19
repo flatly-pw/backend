@@ -3,13 +3,15 @@ package pw.react.backend.models.domain
 import kotlinx.datetime.LocalDate
 
 data class FlatQuery(
-    val destinationQuery: DestinationQuery?,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val beds: Int?,
-    val bedrooms: Int?,
-    val bathrooms: Int?,
-    val adults: Int,
-    val children: Int,
-    val pets: Int
+    val page: Int,
+    val pageSize: Int,
+    val city: String? = null,
+    val country: String? = null,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+    val beds: Int? = null,
+    val bedrooms: Int? = null,
+    val bathrooms: Int? = null,
+    val people: Int? = null,
+    val pets: Int? = null
 )

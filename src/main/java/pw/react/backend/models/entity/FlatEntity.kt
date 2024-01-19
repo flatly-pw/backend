@@ -19,6 +19,7 @@ class FlatEntity(
     var title: String,
     var description: String,
     var area: Int,
+    var beds: Int,
     var bedrooms: Int,
     var bathrooms: Int,
     var capacity: Int,

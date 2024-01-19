@@ -27,10 +27,10 @@ replace into flat_owner_entity (id, email, last_name, name, phone_number, regist
 values (1, 'jan.kowalski@mail.com', 'Kowalski', 'Jan', '+48 123 456 789', '2020-01-01'),
        (2, 'jan.nowak@mail.com', 'Nowak', 'Jan', '+48 987 654 321', '2018-01-01');
 
-replace into flat_entity (id, area, bathrooms, bedrooms, capacity, description, title, type, address_entity_id,
+replace into flat_entity (id, area, beds, bathrooms, bedrooms, capacity, description, title, type, address_entity_id,
                           flat_owner_entity_id)
-values ('1', 30, 1, 1, 2, 'Luxury Marriott hotel in center of Warsaw', 'Marriott', 'hotel', 2, 2),
-       ('2', 38, 2, 2, 3, 'Luxury Bristol hotel next to presidential palace', 'Bristol', 'hotel', 1, 1);
+values ('1', 30, 1, 1, 1, 2, 'Luxury Marriott hotel in center of Warsaw', 'Marriott', 'hotel', 2, 2),
+       ('2', 38, 2, 2, 2, 3, 'Luxury Bristol hotel next to presidential palace', 'Bristol', 'hotel', 1, 1);
 
 replace into flat_image_entity (id, file_name, file_type, flat_entity_id)
 values ('1', 'bristol', 'png', '2'),
