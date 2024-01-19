@@ -12,6 +12,7 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
         val flatEntity = flatEntityRepository.findById(id).getOrNull()
             ?: throw FlatNotFoundException("Flat with id: $id was not found")
         val address = flatEntity.address.toDomain()
+        val owner = flatEntity.owner.toDomain()
         return with(flatEntity) {
             FlatDetails(
                 title = title,
@@ -21,7 +22,8 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
                 bathrooms = bathrooms,
                 capacity = capacity,
                 description = description,
-                address = address
+                address = address,
+                owner = owner
             )
         }
     }
