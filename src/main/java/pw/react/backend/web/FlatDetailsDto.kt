@@ -40,9 +40,7 @@ fun FlatDetails.toDto() = FlatDetailsDto(
     bathrooms = bathrooms,
     capacity = capacity,
     description = description,
-    address = with(address) {
-        AddressDto(street, postalCode, city, country, latitude, longitude)
-    },
+    address = address.toDto(),
     owner = owner.toDto(),
     facilities = facilities,
     price = price

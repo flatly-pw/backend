@@ -1,6 +1,7 @@
 package pw.react.backend.web
 
 import kotlinx.serialization.Serializable
+import pw.react.backend.models.domain.Address
 
 @Serializable
 data class AddressDto(
@@ -11,3 +12,5 @@ data class AddressDto(
     val latitude: Double,
     val longitude: Double,
 )
+
+fun Address.toDto() = AddressDto(street, postalCode, city, country, latitude, longitude)
