@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.services.FlatDetailsService
@@ -166,6 +167,15 @@ class FlatControllerTest {
         val expectedDto = stubFlatDetailsDto()
         webMvc.get("/flats/1").andExpect {
             content { json(Json.encodeToString(expectedDto)) }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Responds with NotFound if Flat thumbnail was not found`() {
+        every { flatDetailsService.getFlatDetailsById("1") } throws FlatImageException.ThumbnailNotFound("")
+        webMvc.get("/flats/1").andExpect {
+            status { isNotFound() }
         }
     }
 }
