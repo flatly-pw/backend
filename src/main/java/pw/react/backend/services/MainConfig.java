@@ -16,10 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
-import pw.react.backend.dao.CompanyLogoRepository;
-import pw.react.backend.dao.FlatEntityRepository;
-import pw.react.backend.dao.FlatPriceRepository;
-import pw.react.backend.dao.FlatReviewRepository;
+import pw.react.backend.dao.*;
 import pw.react.backend.models.FlatQueryFactory;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
@@ -104,8 +101,14 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatDetailsService flatDetailsService(FlatEntityRepository flatEntityRepository, FlatReviewService flatReviewService, FlatPriceService flatPriceService) {
-        return new FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService);
+    public FlatImageService flatImageService(FlatImageRepository flatImageRepository) {
+        return new FlatImageService(flatImageRepository);
+    }
+
+    @Bean
+    public FlatDetailsService flatDetailsService(FlatEntityRepository flatEntityRepository, FlatReviewService flatReviewService,
+                                                 FlatPriceService flatPriceService, FlatImageService flatImageService) {
+        return new FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService, flatImageService);
     }
 
     @Bean
