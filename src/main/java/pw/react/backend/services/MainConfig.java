@@ -104,8 +104,8 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatDetailsService flatDetailsService(FlatEntityRepository flatEntityRepository, FlatReviewService flatReviewService) {
-        return new FlatDetailsService(flatEntityRepository, flatReviewService);
+    public FlatDetailsService flatDetailsService(FlatEntityRepository flatEntityRepository, FlatReviewService flatReviewService, FlatPriceService flatPriceService) {
+        return new FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService);
     }
 
     @Bean

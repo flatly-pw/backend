@@ -9,7 +9,8 @@ import kotlin.jvm.optionals.getOrNull
 
 class FlatDetailsService(
     private val flatEntityRepository: FlatEntityRepository,
-    private val flatReviewService: FlatReviewService
+    private val flatReviewService: FlatReviewService,
+    private val flatPriceService: FlatPriceService,
 ) {
 
     fun getFlatDetailsById(id: String): FlatDetails {
@@ -21,6 +22,7 @@ class FlatDetailsService(
         val reviewsNumber = flatReviewService.getNumberOfReviewByFlatId(id)
         val avgRating = flatReviewService.getRatingByFlatId(id)
         val topReviews = flatReviewService.getTopReviewsByFlatId(id)
+        val price = flatPriceService.getPriceByFlatId(id)
         return with(flatEntity) {
             FlatDetails(
                 title = title,
@@ -36,7 +38,7 @@ class FlatDetailsService(
                 address = address,
                 owner = owner,
                 facilities = facilities,
-                price = price.priceDollars
+                price = price
             )
         }
     }
