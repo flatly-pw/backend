@@ -10,7 +10,7 @@ class FlatImageService(private val flatImageRepository: FlatImageRepository) {
         val thumbnail = flatImageRepository.findThumbnailByFlatId(flatId)
             ?: throw FlatImageException.ThumbnailNotFound("There was not thumbnail for flatId: $flatId")
         return ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/flats/$flatId/image/${thumbnail.id.imageId}")
+            .path("/flats/$flatId/image/${thumbnail.id}")
             .toUriString()
     }
 
@@ -18,7 +18,7 @@ class FlatImageService(private val flatImageRepository: FlatImageRepository) {
         val images = flatImageRepository.findFlatImageEntitiesByFlatId(flatId)
         return images.map { image ->
             ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/flats/$flatId/image/${image.id.imageId}")
+                .path("/flats/$flatId/image/${image.id}")
                 .toUriString()
         }
     }

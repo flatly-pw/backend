@@ -48,10 +48,10 @@ replace into flat_entity (id, area, beds, bathrooms, bedrooms, capacity, descrip
 values ('1', 30, 1, 1, 1, 2, 'Luxury Marriott hotel in center of Warsaw', 'Marriott', 'hotel', 2, 2),
        ('2', 38, 2, 2, 2, 3, 'Luxury Bristol hotel next to presidential palace', 'Bristol', 'hotel', 1, 1);
 
-replace into flat_image_entity (image_id, ordinal, file_name, file_type, flat_entity_id)
+replace into flat_image_entity (id, ordinal, file_name, file_type, flat_entity_id)
 values ('1', 0, 'bristol', 'png', '2'),
-       ('1', 1, 'bristol_interior', 'png', 2),
-       ('2', 0, 'marriott', 'png', '1');
+       ('2', 1, 'bristol_interior', 'png', '2'),
+       ('3', 0, 'marriott', 'png', '1');
 
 replace into flat_facility_entity (name)
 values ('wi-fi'),
