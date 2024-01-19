@@ -5,7 +5,7 @@ import pw.react.backend.models.entity.FlatDetails
 
 @Serializable
 data class FlatDetailsDto(
-    val title: String = "Hotel Bristol",
+    val title: String,
     val thumbnail: String = "https://lh5.googleusercontent.com/p/AF1QipMv04BhvKSoihsfByh96Pi_-ME7mGQ_RWPMXoyA=w408-h281-k-no",
     val gallery: List<String> = listOf(
         "https://lh5.googleusercontent.com/p/AF1QipMv04BhvKSoihsfByh96Pi_-ME7mGQ_RWPMXoyA=w408-h281-k-no",
@@ -16,14 +16,14 @@ data class FlatDetailsDto(
     val rating: Float = 4.7f,
     val numberOfReviews: Int = 123,
     val topReviews: List<ReviewDto> = listOf(ReviewDto(), ReviewDto(), ReviewDto()),
-    val area: Int = 25,
-    val beds: Int = 1,
-    val bedrooms: Int = 1,
-    val bathrooms: Int = 1,
-    val capacity: Int = 2,
-    val description: String = "Hotel bristol is a luxury 5-star hotel",
+    val area: Int,
+    val beds: Int,
+    val bedrooms: Int,
+    val bathrooms: Int,
+    val capacity: Int,
+    val description: String,
     val facilities: List<String> = listOf("Free wi-fi", "Paid breakfast", "Laundry service"),
-    val address: AddressDto = AddressDto(),
+    val address: AddressDto,
     val owner: OwnerDetailsDto = OwnerDetailsDto(),
     val price: Double = 999.95,
 )
