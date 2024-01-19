@@ -3,7 +3,6 @@ package pw.react.backend.services
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.entity.FlatDetails
-import pw.react.backend.models.entity.toFlatDetails
 import kotlin.jvm.optionals.getOrNull
 
 class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository) {
@@ -11,6 +10,20 @@ class FlatDetailsService(private val flatEntityRepository: FlatEntityRepository)
     fun getFlatDetailsById(id: String): FlatDetails {
         val flatEntity = flatEntityRepository.findById(id).getOrNull()
             ?: throw FlatNotFoundException("Flat with id: $id was not found")
-        return flatEntity.toFlatDetails()
+        val address = with(flatEntity.address) {
+            FlatDetails.Address(street, postalCode, city, country, longitude, latitude)
+        }
+        return with(flatEntity) {
+            FlatDetails(
+                title = title,
+                area = area,
+                beds = beds,
+                bedrooms = bedrooms,
+                bathrooms = bathrooms,
+                capacity = capacity,
+                description = description,
+                address = address
+            )
+        }
     }
 }
