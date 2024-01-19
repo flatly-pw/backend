@@ -11,7 +11,7 @@ class FlatReviewService(private val flatReviewRepository: FlatReviewRepository) 
         return flatReviewRepository.countFlatReviewEntitiesByFlatId(flatId)
     }
 
-    fun getRatingByFlatId(flatId: String): Double {
+    fun getRatingByFlatId(flatId: String): Float {
         return flatReviewRepository.getAverageRatingByFlatId(flatId)
     }
 
