@@ -104,6 +104,18 @@ class FlatController(
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 
+    @Operation(summary = "Get flat image")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got flat image",
+        content = [
+            Content(mediaType = "image/*", schema = Schema(oneOf = [ByteArrayResource::class], format = "binary"))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Image with given id for given flat id was not found."
+    )
     @GetMapping("/flats/{flatId}/image/{imageId}")
     fun getFlatImage(@PathVariable flatId: String, @PathVariable imageId: String): ResponseEntity<*> = try {
         val image = flatImageService.getImage(imageId, flatId)
