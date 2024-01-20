@@ -12,4 +12,7 @@ interface FlatImageRepository : JpaRepository<FlatImageEntity, String> {
 
     @Query("select image from FlatImageEntity image where image.flat.id = ?1 order by image.ordinal asc")
     fun findFlatImageEntitiesByFlatId(flatId: String): List<FlatImageEntity>
+
+    @Query("select image from FlatImageEntity image where image.id = ?1 and image.flat.id = ?2")
+    fun findFlatImageBy(imageId: String, flatId: String): FlatImageEntity?
 }
