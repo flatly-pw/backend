@@ -4,7 +4,10 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import org.springframework.core.io.ByteArrayResource
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -14,6 +17,7 @@ import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.services.FlatDetailsService
+import pw.react.backend.services.FlatImageService
 import pw.react.backend.services.FlatService
 import pw.react.backend.web.FlatDetailsDto
 import pw.react.backend.web.FlatDto
@@ -24,7 +28,8 @@ import pw.react.backend.web.toDto
 class FlatController(
     private val flatService: FlatService,
     private val flatDetailsService: FlatDetailsService,
-    private val flatQueryFactory: FlatQueryFactory
+    private val flatImageService: FlatImageService,
+    private val flatQueryFactory: FlatQueryFactory,
 ) {
 
     @Operation(
@@ -96,6 +101,17 @@ class FlatController(
     } catch (e: FlatNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: FlatImageException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    }
+
+    @GetMapping("/flats/{flatId}/image/{imageId}")
+    fun getFlatImage(@PathVariable flatId: String, @PathVariable imageId: String): ResponseEntity<*> = try {
+        val image = flatImageService.getImage(imageId, flatId)
+        ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(image.type)) //image.type should be in format: image/<type>, where type is png, jpg etc
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"${image.name}\"")
+            .body(ByteArrayResource(image.bytes))
+    } catch (e: FlatImageException.ImageNotFound) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 }
