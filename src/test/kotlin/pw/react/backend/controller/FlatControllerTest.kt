@@ -21,11 +21,15 @@ import org.springframework.web.context.WebApplicationContext
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.models.domain.FlatImage
 import pw.react.backend.services.FlatDetailsService
+import pw.react.backend.services.FlatImageService
 import pw.react.backend.services.FlatService
 import pw.react.backend.stubFlat
 import pw.react.backend.stubs.stubFlatDetails
 import pw.react.backend.stubs.stubFlatDetailsDto
+import pw.react.backend.stubs.stubFlatImage
+import pw.react.backend.stubs.stubFlatImageEntity
 import pw.react.backend.stubs.stubFlatQuery
 import pw.react.backend.web.FlatDto
 import pw.react.backend.web.toDto
@@ -40,6 +44,9 @@ class FlatControllerTest {
 
     @MockkBean
     private lateinit var flatDetailsService: FlatDetailsService
+
+    @MockkBean
+    private lateinit var flatImageService: FlatImageService
 
     @MockkBean
     private lateinit var flatQueryFactory: FlatQueryFactory
@@ -176,6 +183,27 @@ class FlatControllerTest {
         every { flatDetailsService.getFlatDetailsById("1") } throws FlatImageException.ThumbnailNotFound("")
         webMvc.get("/flats/1").andExpect {
             status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Responds with NotFound if image was not found`() {
+        every { flatImageService.getImage(any(), any()) } throws FlatImageException.ImageNotFound("")
+        webMvc.get("/flats/1/image/1").andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Responds with image bytes`() {
+        every { flatImageService.getImage("1", "1") } returns stubFlatImage()
+        webMvc.get("/flats/1/image/1").andExpect {
+            content {
+                bytes(stubFlatImage().bytes)
+            }
+            status { isOk() }
         }
     }
 }
