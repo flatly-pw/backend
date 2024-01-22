@@ -118,6 +118,11 @@ public class MainConfig {
     }
 
     @Bean
+    public ReservationService reservationService(ReservationRepository reservationRepository, FlatEntityRepository flatRepository, UserRepository userRepository) {
+        return new ReservationService(reservationRepository, userRepository, flatRepository);
+    }
+
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
