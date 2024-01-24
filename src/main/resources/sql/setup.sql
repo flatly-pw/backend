@@ -26,6 +26,9 @@ delete
 from flat_review_entity
 where true;
 delete
+from reservation_entity
+where true;
+delete
 from flat_entity
 where true;
 delete
@@ -78,6 +81,11 @@ values ('1', 1000, 5, 'Very nice place to stay. I had a great time there.', '202
        ('2', 1000, 4, 'It was a pleasure to stay there although the service was not so good.', '2020-05-15'),
        ('2', 1001, 2, 'I did not like it there.', '2023-01-01'),
        ('2', 1002, 1, 'Awful.', '2023-01-08');
+
+replace into reservation_entity (id, start_date, end_date, adults, children, pets, special_requests, flat_entity_id,
+                                 user_entity_id)
+values (1, '2024-01-01', '2024-01-07', 1, 0, 0, 'Comfy pillow', '2', 1002),
+       (2, '2024-01-01', '2024-01-03', 2, 0, 1, 'Water for my cat pls', '2', 1000)
 
 
 
