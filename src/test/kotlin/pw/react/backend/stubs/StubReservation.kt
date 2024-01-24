@@ -6,6 +6,7 @@ import pw.react.backend.models.domain.Reservation
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.models.entity.UserEntity
+import pw.react.backend.web.ReservationDto
 
 fun stubReservationEntity(
     user: UserEntity,
@@ -40,3 +41,13 @@ fun stubReservation(
     specialRequests: String? = "Pink pillow",
     id: Long? = null
 ) = Reservation(userId, flatId, startDate, endDate, adults, children, pets, specialRequests, id)
+
+fun stubReservationDto(
+    flatId: String,
+    startDate: LocalDate = LocalDate(2023, 1, 1),
+    endDate: LocalDate = LocalDate(2023, 1, 10),
+    adults: Int = 2,
+    children: Int = 1,
+    pets: Int = 0,
+    specialRequests: String? = "Pink pillow",
+) = ReservationDto(flatId, startDate.toString(), endDate.toString(), adults, children, pets, specialRequests)
