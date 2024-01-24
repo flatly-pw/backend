@@ -1,5 +1,9 @@
 package pw.react.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
@@ -21,7 +25,30 @@ class ReservationController(
     private val jwtTokenService: JwtTokenService,
     private val userService: UserService,
 ) {
-
+    @Operation(
+        summary = "Post new reservation",
+        description = "Tries to place new reservation. If the given term is invalid " +
+                "or already taken then appropriate status code is going to be returned."
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully placed new reservation",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [ReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Dates was invalid: start date was the same or later than end date or start date was in the past."
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "User from jwt token was not found."
+    )
+    @ApiResponse(
+        responseCode = "422",
+        description = "Reservation overlaps with other reservation at requested term"
+    )
     @PostMapping("/reservation")
     fun makeReservation(
         @RequestBody reservationDto: ReservationDto,
