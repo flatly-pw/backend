@@ -60,10 +60,10 @@ class ReservationControllerTest {
 
     @Test
     @WithMockUser
-    fun `Responds with BadRequest if user was not found`() {
+    fun `Responds with NotFound if user was not found`() {
         every { userService.findUserByEmail("john.smith@mail.com") } returns null
         webMvc.postReservation(stubReservationDto("1")).andExpect {
-            status { isBadRequest() }
+            status { isNotFound() }
         }
     }
 

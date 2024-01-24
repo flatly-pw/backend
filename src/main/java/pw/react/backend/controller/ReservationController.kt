@@ -35,7 +35,7 @@ class ReservationController(
         val savedReservation = reservationService.saveReservation(reservation)
         ResponseEntity.ok(savedReservation.toDto())
     } catch (e: UsernameNotFoundException) {
-        ResponseEntity.badRequest().body(e.message)
+        ResponseEntity.notFound().build<Void>()
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: ReservationException) {
