@@ -15,6 +15,10 @@ open class UserMainService(
     protected val passwordEncoder: PasswordEncoder
 ) : UserService {
 
+    override fun findUserByEmail(email: String): User? {
+        return userRepository.findByEmail(email).getOrNull()?.toDomain()
+    }
+
     override fun validateAndSave(user: User): User {
         requireValidUser(user)
         log.info("User is valid")
