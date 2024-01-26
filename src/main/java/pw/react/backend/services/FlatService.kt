@@ -45,16 +45,18 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
 
             val startDate = flatQuery.startDate.toJavaLocalDate()
             val endDate = flatQuery.endDate.toJavaLocalDate()
-            val doDatesOverlap = builder.or(
-                builder.and(
-                    builder.lessThanOrEqualTo(reservation["startDate"], startDate),
-                    builder.greaterThan(reservation["endDate"], startDate)
-                ),
-                builder.and(
-                    builder.lessThan(reservation["startDate"], endDate),
-                    builder.greaterThanOrEqualTo(reservation["endDate"], endDate)
+            val doDatesOverlap = with(builder) {
+                or(
+                    and(
+                        lessThanOrEqualTo(reservation["startDate"], startDate),
+                        greaterThan(reservation["endDate"], startDate)
+                    ),
+                    and(
+                        lessThan(reservation["startDate"], endDate),
+                        greaterThanOrEqualTo(reservation["endDate"], endDate)
+                    )
                 )
-            )
+            }
 
             val datesOverlapWithReservationForThisFlat = builder.and(equalFlatIds, doDatesOverlap)
             subQuery.select(builder.count(reservation)).where(datesOverlapWithReservationForThisFlat)
