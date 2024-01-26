@@ -36,22 +36,28 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
             // Creating sub-query with the type that is returned from this sub-query. In this case its count as Long
             val subQuery = query.subquery(Long::class.java)
             // define table on which sub-query will be performed
-            val subRoot = subQuery.from(ReservationEntity::class.java)
+            val reservation = subQuery.from(ReservationEntity::class.java)
 
-            val predicate = builder.and(
-                builder.equal(subRoot.get<FlatEntity>("flat").get<String>("id"), root.get<String>("id")),
-                builder.or(
-                    builder.and(
-                        builder.lessThanOrEqualTo(subRoot["startDate"], flatQuery.startDate.toJavaLocalDate()),
-                        builder.greaterThan(subRoot["endDate"], flatQuery.startDate.toJavaLocalDate())
-                    ),
-                    builder.and(
-                        builder.lessThan(subRoot["startDate"], flatQuery.endDate.toJavaLocalDate()),
-                        builder.greaterThanOrEqualTo(subRoot["endDate"], flatQuery.endDate.toJavaLocalDate())
-                    )
+            val equalFlatIds = builder.equal(
+                reservation.get<FlatEntity>("flat").get<String>("id"),
+                root.get<String>("id")
+            )
+
+            val startDate = flatQuery.startDate.toJavaLocalDate()
+            val endDate = flatQuery.endDate.toJavaLocalDate()
+            val doDatesOverlap = builder.or(
+                builder.and(
+                    builder.lessThanOrEqualTo(reservation["startDate"], startDate),
+                    builder.greaterThan(reservation["endDate"], startDate)
+                ),
+                builder.and(
+                    builder.lessThan(reservation["startDate"], endDate),
+                    builder.greaterThanOrEqualTo(reservation["endDate"], endDate)
                 )
             )
-            subQuery.select(builder.count(subRoot)).where(predicate)
+
+            val datesOverlapWithReservationForThisFlat = builder.and(equalFlatIds, doDatesOverlap)
+            subQuery.select(builder.count(reservation)).where(datesOverlapWithReservationForThisFlat)
             builder.equal(subQuery, 0L)
         } else {
             null
