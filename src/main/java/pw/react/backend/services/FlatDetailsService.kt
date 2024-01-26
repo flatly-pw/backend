@@ -11,6 +11,7 @@ class FlatDetailsService(
     private val flatEntityRepository: FlatEntityRepository,
     private val flatReviewService: FlatReviewService,
     private val flatPriceService: FlatPriceService,
+    private val flatImageService: FlatImageService,
 ) {
 
     // in the future there will be user preferences with e.g. currency
@@ -24,9 +25,13 @@ class FlatDetailsService(
         val avgRating = flatReviewService.getRatingByFlatId(id)
         val topReviews = flatReviewService.getTopReviewsByFlatId(id)
         val price = flatPriceService.getPriceByFlatId(id)
+        val thumbnail = flatImageService.getThumbnailUriByFlatId(id)
+        val gallery = flatImageService.getImageUrisByFlatId(id)
         return with(flatEntity) {
             FlatDetails(
                 title = title,
+                thumbnail = thumbnail,
+                gallery = gallery,
                 rating = avgRating,
                 numberOfReviews = reviewsNumber,
                 topReviews = topReviews,
