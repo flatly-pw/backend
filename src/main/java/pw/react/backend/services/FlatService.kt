@@ -58,7 +58,7 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
     private fun notOverlappingDateSpecification(flatQuery: FlatQuery): Specification<FlatEntity>? {
         if (flatQuery.startDate == null || flatQuery.endDate == null) return null
         return Specification<FlatEntity> { root, query, builder ->
-            // Creating sub-query with the type that is returned from this sub-query. In this case its count as Long
+            // define sub-query and type that will be returned - in this case it's Long, because we return count from sub-query
             val subQuery = query.subquery(Long::class.java)
             // define table on which sub-query will be performed
             val reservation = subQuery.from(ReservationEntity::class.java)
@@ -72,11 +72,11 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
             val endDate = flatQuery.endDate.toJavaLocalDate()
             val doDatesOverlap = with(builder) {
                 or(
-                    and(
+                    and( // reservation.startDate <= startDate && startDate < reservation.endDate
                         lessThanOrEqualTo(reservation["startDate"], startDate),
                         greaterThan(reservation["endDate"], startDate)
                     ),
-                    and(
+                    and( // reservation.startDate < endDate && endDate <= reservation.endDate
                         lessThan(reservation["startDate"], endDate),
                         greaterThanOrEqualTo(reservation["endDate"], endDate)
                     )
@@ -84,7 +84,9 @@ class FlatService(private val flatEntityRepository: FlatEntityRepository) {
             }
 
             val datesOverlapWithReservationForThisFlat = builder.and(equalFlatIds, doDatesOverlap)
+            // count all the reservations that overlaps for each flat
             subQuery.select(builder.count(reservation)).where(datesOverlapWithReservationForThisFlat)
+            // return all flats that do not have any overlapping dates, i.e count of these reservations is 0
             builder.equal(subQuery, 0L)
         }
     }
