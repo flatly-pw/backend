@@ -1,13 +1,13 @@
 package pw.react.backend
 
-import kotlinx.datetime.LocalDate
+import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
-import pw.react.backend.models.domain.FlatQuery
 import pw.react.backend.models.domain.User
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.FlatOwnerEntity
 import pw.react.backend.models.entity.UserEntity
+import pw.react.backend.stubs.stubAddress
 import pw.react.backend.stubs.stubAddressEntity
 import pw.react.backend.stubs.stubFlatOwnerEntity
 import pw.react.backend.web.UserDto
@@ -20,8 +20,25 @@ fun stubFlat(
     bedrooms: Int = 1,
     bathrooms: Int = 2,
     capacity: Int = 3,
-    type: String = "Hotel"
-) = Flat(title, description, area, bedrooms, bathrooms, capacity, type, id)
+    thumbnailUrl: String = "image://flat/$id",
+    address: Address = stubAddress(),
+    pricePerNight: Double = 100.0,
+    rating: Float = 4.7f,
+    type: String = "Hotel",
+) = Flat(
+    title,
+    description,
+    thumbnailUrl,
+    area,
+    bedrooms,
+    bathrooms,
+    capacity,
+    type,
+    address,
+    rating,
+    pricePerNight,
+    id
+)
 
 fun stubFlatEntity(
     id: String? = "1",
