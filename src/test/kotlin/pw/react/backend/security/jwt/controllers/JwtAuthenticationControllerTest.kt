@@ -23,8 +23,8 @@ import pw.react.backend.security.common.AuthenticationService
 import pw.react.backend.security.common.CommonUserDetailsService
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.UserService
-import pw.react.backend.stubUserDto
-import pw.react.backend.stubUserEntity
+import pw.react.backend.stubs.stubUserDto
+import pw.react.backend.stubs.stubUserEntity
 
 @WebMvcTest(controllers = [JwtAuthenticationController::class])
 @ContextConfiguration

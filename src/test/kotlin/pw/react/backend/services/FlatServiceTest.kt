@@ -8,8 +8,8 @@ import org.junit.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import pw.react.backend.dao.FlatEntityRepository
-import pw.react.backend.stubFlat
-import pw.react.backend.stubFlatEntity
+import pw.react.backend.stubs.stubFlat
+import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubFlatQuery
 
 
@@ -35,7 +35,7 @@ class FlatServiceTest {
         every { it.getPriceByFlatId("1") } returns 100.0
         every { it.getPriceByFlatId("2") } returns 250.0
     }
-    private val service = FlatService(repository,imageService, reviewService, priceService)
+    private val service = FlatService(repository, imageService, reviewService, priceService)
 
     @Test
     fun `findAll returns correct pages`() {

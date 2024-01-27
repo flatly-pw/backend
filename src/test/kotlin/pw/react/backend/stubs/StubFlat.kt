@@ -1,16 +1,10 @@
-package pw.react.backend
+package pw.react.backend.stubs
 
 import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
-import pw.react.backend.models.domain.User
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.FlatOwnerEntity
-import pw.react.backend.models.entity.UserEntity
-import pw.react.backend.stubs.stubAddress
-import pw.react.backend.stubs.stubAddressEntity
-import pw.react.backend.stubs.stubFlatOwnerEntity
-import pw.react.backend.web.UserDto
 
 fun stubFlat(
     id: String? = "1",
@@ -53,27 +47,3 @@ fun stubFlatEntity(
     owner: FlatOwnerEntity = stubFlatOwnerEntity(),
     address: AddressEntity = stubAddressEntity(),
 ) = FlatEntity(title, description, area, beds, bedrooms, bathrooms, capacity, type, address, owner, id)
-
-fun stubUserDto(
-    id: Long? = null,
-    name: String = "John",
-    lastName: String = "Smith",
-    password: String = "password123",
-    email: String = "john.smith@mail.com"
-) = UserDto(id, name, lastName, password, email)
-
-fun stubUser(
-    id: Long? = null,
-    name: String = "John",
-    lastName: String = "Smith",
-    password: String = "password123",
-    email: String = "john.smith@mail.com"
-) = User(name, lastName, email, password, id)
-
-fun stubUserEntity(
-    id: Long? = 1L,
-    name: String = "John",
-    lastName: String = "Smith",
-    password: String = "password123",
-    email: String = "john.smith@mail.com"
-) = UserEntity(name, lastName, email, password, id)

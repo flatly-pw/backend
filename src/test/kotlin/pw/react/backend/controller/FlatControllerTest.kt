@@ -25,7 +25,7 @@ import pw.react.backend.models.domain.FlatImage
 import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatImageService
 import pw.react.backend.services.FlatService
-import pw.react.backend.stubFlat
+import pw.react.backend.stubs.stubFlat
 import pw.react.backend.stubs.stubFlatDetails
 import pw.react.backend.stubs.stubFlatDetailsDto
 import pw.react.backend.stubs.stubFlatImage

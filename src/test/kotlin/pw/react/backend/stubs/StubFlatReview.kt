@@ -7,8 +7,6 @@ import pw.react.backend.models.entity.FlatReview
 import pw.react.backend.models.entity.FlatReviewEntity
 import pw.react.backend.models.entity.FlatReviewId
 import pw.react.backend.models.entity.UserEntity
-import pw.react.backend.stubFlatEntity
-import pw.react.backend.stubUserEntity
 
 fun stubFlatReview(
     review: String = "This is a fun place to stay at.",

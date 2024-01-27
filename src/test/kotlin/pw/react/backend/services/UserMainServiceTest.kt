@@ -9,8 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import pw.react.backend.dao.UserRepository
 import pw.react.backend.exceptions.UserValidationException
 import pw.react.backend.models.entity.UserEntity
-import pw.react.backend.stubUser
-import pw.react.backend.stubUserEntity
+import pw.react.backend.stubs.stubUser
+import pw.react.backend.stubs.stubUserEntity
 import java.util.*
 
 class UserMainServiceTest {

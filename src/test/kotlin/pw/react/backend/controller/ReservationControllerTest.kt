@@ -23,9 +23,9 @@ import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
-import pw.react.backend.stubUser
 import pw.react.backend.stubs.stubReservation
 import pw.react.backend.stubs.stubReservationDto
+import pw.react.backend.stubs.stubUser
 import pw.react.backend.web.ReservationDto
 
 @WebMvcTest(controllers = [ReservationController::class])

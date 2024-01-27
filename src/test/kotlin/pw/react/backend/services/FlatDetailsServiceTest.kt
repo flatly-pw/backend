@@ -8,8 +8,8 @@ import org.junit.Test
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
-import pw.react.backend.stubFlatEntity
 import pw.react.backend.stubs.stubFlatDetails
+import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubFlatReview
 import java.util.*
 
@@ -34,7 +34,8 @@ class FlatDetailsServiceTest {
         every { it.getThumbnailUriByFlatId("1") } returns "image://flat/1"
         every { it.getImageUrisByFlatId("1") } returns listOf("image://flat/1", "image://flat/2")
     }
-    private val service = FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService, flatImageService)
+    private val service =
+        FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService, flatImageService)
 
     @Test
     fun `Throws FlatNotFoundException if flat with given id was not fount`() {
