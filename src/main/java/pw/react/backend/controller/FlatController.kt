@@ -34,8 +34,7 @@ class FlatController(
 
     @Operation(
         summary = "Get flat offers",
-        description = "startDate and endDate are in yyyy-mm-dd format. Either both startDate and endDate needs to be provided or none. " +
-                "IMPORTANT: city, country, startDate, endDate, pets parameters are validated but ignored for now."
+        description = "startDate and endDate are in yyyy-mm-dd format. Either both startDate and endDate needs to be provided or none."
     )
     @ApiResponse(
         responseCode = "200",
