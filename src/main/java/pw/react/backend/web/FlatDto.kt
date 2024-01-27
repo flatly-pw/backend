@@ -1,6 +1,7 @@
 package pw.react.backend.web
 
 import kotlinx.serialization.Serializable
+import pw.react.backend.models.domain.Flat
 
 @Serializable
 data class FlatDto(
@@ -11,4 +12,13 @@ data class FlatDto(
     val rating: Float = 4.7f,
     val distanceFromCenter: Float = 470f,
     val pricePerNight: Float = 999.95f,
+)
+
+fun Flat.toDto() = FlatDto(
+    id = id!!,
+    title = title,
+    thumbnail = thumbnailUrl,
+    city = address.city,
+    rating = rating,
+    pricePerNight = pricePerNight.toFloat()
 )

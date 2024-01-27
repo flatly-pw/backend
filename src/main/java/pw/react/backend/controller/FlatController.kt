@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatImageService
 import pw.react.backend.services.FlatService
 import pw.react.backend.web.FlatDetailsDto
-import pw.react.backend.web.FlatDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.toDto
 
@@ -77,7 +77,7 @@ class FlatController(
             pets = pets
         )
         val flatPage = flatService.findAll(flatQuery)
-        ResponseEntity.ok(flatPage.toDto { FlatDto(id = it.id!!, title = it.title) })
+        ResponseEntity.ok(flatPage.toDto(Flat::toDto))
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }

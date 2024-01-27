@@ -16,10 +16,10 @@ import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.models.entity.ReservationEntity
-import pw.react.backend.stubFlatEntity
-import pw.react.backend.stubUserEntity
+import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubReservation
 import pw.react.backend.stubs.stubReservationEntity
+import pw.react.backend.stubs.stubUserEntity
 import pw.react.backend.utils.TimeProvider
 import java.util.*
 

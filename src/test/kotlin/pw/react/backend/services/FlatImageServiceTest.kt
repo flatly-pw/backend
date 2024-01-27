@@ -7,7 +7,7 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import pw.react.backend.dao.FlatImageRepository
 import pw.react.backend.exceptions.FlatImageException
-import pw.react.backend.stubFlatEntity
+import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubFlatImageEntity
 
 class FlatImageServiceTest {
