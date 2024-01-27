@@ -12,13 +12,34 @@ import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
 
-class FlatService(private val flatEntityRepository: FlatEntityRepository) {
+class FlatService(
+    private val flatEntityRepository: FlatEntityRepository,
+    private val imageService: FlatImageService,
+    private val reviewService: FlatReviewService,
+    private val priceService: FlatPriceService,
+) {
 
     fun findAll(flatQuery: FlatQuery): Page<Flat> {
         val pageable = PageRequest.of(flatQuery.page, flatQuery.pageSize)
         return flatEntityRepository
             .findAll(flatSpecification(flatQuery), pageable)
-            .map(FlatEntity::toDomain)
+            .map {
+                val flatId = it.id!!
+                Flat(
+                    id = flatId,
+                    title = it.title,
+                    description = it.description,
+                    thumbnailUrl = imageService.getThumbnailUriByFlatId(flatId),
+                    area = it.area,
+                    bedrooms = it.bedrooms,
+                    bathrooms = it.bathrooms,
+                    capacity = it.capacity,
+                    type = it.type,
+                    address = it.address.toDomain(),
+                    rating = reviewService.getRatingByFlatId(flatId),
+                    pricePerNight = priceService.getPriceByFlatId(flatId)
+                )
+            }
     }
 
     private fun flatSpecification(flatQuery: FlatQuery) = roomsSpecification(flatQuery)
