@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
-import pw.react.backend.models.domain.FlatImage
+import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatImageService
 import pw.react.backend.services.FlatService
@@ -29,9 +29,7 @@ import pw.react.backend.stubs.stubFlat
 import pw.react.backend.stubs.stubFlatDetails
 import pw.react.backend.stubs.stubFlatDetailsDto
 import pw.react.backend.stubs.stubFlatImage
-import pw.react.backend.stubs.stubFlatImageEntity
 import pw.react.backend.stubs.stubFlatQuery
-import pw.react.backend.web.FlatDto
 import pw.react.backend.web.toDto
 
 @WebMvcTest(controllers = [FlatController::class])
@@ -123,7 +121,7 @@ class FlatControllerTest {
                 0
             )
         } returns stubFlatQuery(page = 0, pageSize = 5)
-        val expectedDto = page.toDto { FlatDto(id = it.id!!, title = it.title) }
+        val expectedDto = page.toDto(Flat::toDto)
         webMvc.get("/flats") {
             param("page", "0")
             param("pageSize", "5")
