@@ -1,7 +1,5 @@
 package pw.react.backend.models.domain
 
-import pw.react.backend.models.entity.FlatEntity
-
 data class Flat(
     val title: String,
     val description: String,
@@ -16,5 +14,3 @@ data class Flat(
     val pricePerNight: Double,
     val id: String? = null,
 )
-
-fun FlatEntity.toDomain() = Flat(title, description, area, bedrooms, bathrooms, capacity, type, id)
