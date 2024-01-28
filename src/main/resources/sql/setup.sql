@@ -82,13 +82,13 @@ values ('1', 1000, 5, 'Very nice place to stay. I had a great time there.', '202
        ('2', 1001, 2, 'I did not like it there.', '2023-01-01'),
        ('2', 1002, 1, 'Awful.', '2023-01-08');
 
-replace into reservation_entity (id, start_date, end_date, adults, children, pets, special_requests, flat_entity_id,
+replace into reservation_entity (id, start_date, end_date, adults, children, pets, special_requests, cancelled, flat_entity_id,
                                  user_entity_id)
-values (1, '2024-01-01', '2024-01-07', 1, 0, 0, 'Comfy pillow', '2', 1002),
-       (2, '2025-01-01', '2025-01-03', 2, 0, 1, 'Water for my cat pls', '2', 1000),
-       (3, '2025-01-10', '2025-01-13', 2, 0, 1, 'Moar water!', '2', 1000),
-       (4, '2025-01-14', '2025-01-18', 2, 0, 0, null, '1', 1000),
-       (5, '2025-01-21', '2025-01-27', 2, 0, 0, 'Roses', '1', 1000)
+values (1, '2024-01-01', '2024-01-07', 1, 0, 0, 'Comfy pillow', false, '2', 1002),
+       (2, '2025-01-01', '2025-01-03', 2, 0, 1, 'Water for my cat pls', false, '2', 1000),
+       (3, '2025-01-10', '2025-01-13', 2, 0, 1, 'Moar water!', true, '2', 1000),
+       (4, '2025-01-14', '2025-01-18', 2, 0, 0, null, false, '1', 1000),
+       (5, '2025-01-21', '2025-01-27', 2, 0, 0, 'Roses', false, '1', 1000)
 
 
 
