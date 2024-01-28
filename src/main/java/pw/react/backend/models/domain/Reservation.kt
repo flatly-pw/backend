@@ -42,3 +42,10 @@ fun ReservationEntity.toDomain() = Reservation(
     specialRequests = specialRequests,
     id = id
 )
+
+sealed interface ReservationFilter {
+    data object All : ReservationFilter
+    data object Active : ReservationFilter
+    data object Passed : ReservationFilter
+    data object Cancelled : ReservationFilter
+}
