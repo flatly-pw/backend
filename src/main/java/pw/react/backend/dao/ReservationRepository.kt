@@ -1,5 +1,7 @@
 package pw.react.backend.dao
 
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import pw.react.backend.models.entity.ReservationEntity
@@ -16,4 +18,6 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
             reservation.startDate < ?3 and ?3 <= reservation.endDate)"""
     )
     fun countAllWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
+
+    fun findAllByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
 }
