@@ -4,6 +4,8 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
@@ -11,6 +13,7 @@ import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.models.domain.Reservation
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.domain.toEntity
+import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.utils.TimeProvider
 
 class ReservationService(
@@ -28,6 +31,13 @@ class ReservationService(
             flatEntity = flatRepository.findById(reservation.flatId).get()
         )
         return reservationRepository.save(reservationEntity).toDomain()
+    }
+
+    fun getReservations(userId: Long, page: Int, pageSize: Int): Page<Reservation> {
+        require(page >= 0) { "page must not be negative" }
+        require(pageSize > 0) { "page must be positive" }
+        return reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize))
+            .map(ReservationEntity::toDomain)
     }
 
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {
