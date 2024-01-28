@@ -11,6 +11,7 @@ import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.models.domain.Reservation
+import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.domain.toEntity
 import pw.react.backend.models.entity.ReservationEntity
@@ -33,11 +34,18 @@ class ReservationService(
         return reservationRepository.save(reservationEntity).toDomain()
     }
 
-    fun getReservations(userId: Long, page: Int, pageSize: Int): Page<Reservation> {
+    fun getReservations(
+        userId: Long,
+        page: Int,
+        pageSize: Int,
+        filter: ReservationFilter = ReservationFilter.All
+    ): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
         require(pageSize > 0) { "page must be positive" }
-        return reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize))
-            .map(ReservationEntity::toDomain)
+        return when (filter) {
+            is ReservationFilter.All -> reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize))
+            else -> Page.empty()
+        }.map(ReservationEntity::toDomain)
     }
 
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {

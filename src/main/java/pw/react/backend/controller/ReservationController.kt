@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
@@ -82,13 +83,22 @@ class ReservationController(
     fun getReservations(
         @RequestParam page: Int,
         @RequestParam pageSize: Int,
+        @RequestParam reservationStatus: String?,
         request: HttpServletRequest
     ): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
         val email = jwtTokenService.getUsernameFromToken(token)
         val userId = userService.findUserByEmail(email)?.id
             ?: throw UsernameNotFoundException("user with email: $email not found")
-        val reservationPage = reservationService.getReservations(userId, page, pageSize)
+        val filter = when (reservationStatus?.lowercase()) {
+            null -> ReservationFilter.All
+            "all" -> ReservationFilter.All
+            "active" -> ReservationFilter.Active
+            "passed" -> ReservationFilter.Passed
+            "cancelled" -> ReservationFilter.Cancelled
+            else -> throw IllegalArgumentException("Invalid reservationStatus. Possible values are: all, active, passed or cancelled")
+        }
+        val reservationPage = reservationService.getReservations(userId, page, pageSize, filter)
         val reservationsPageDto: PageDto<List<UserReservationDto>> = reservationPage.toDto { reservation ->
             with(reservation) {
                 val flat = flatService.findById(flatId)
