@@ -182,6 +182,44 @@ class ReservationControllerTest {
             }
     }
 
+    @Test
+    @WithMockUser
+    fun `Returns correct reservations no matter the case of filter`() {
+        every { reservationService.getReservations(1, 0, 10, ReservationFilter.All) } returns PageImpl(
+            listOf(stubReservation(1, flatId = "1", id = 123))
+        )
+        every { flatService.findById("1") } returns stubFlat(id = "1")
+        every { flatPriceService.getPriceByFlatId("1", LocalDate(2023, 1, 1), LocalDate(2023, 1, 10)) } returns 800.0
+        val expectedDto = PageDto(
+            data = listOf(
+                UserReservationDto(
+                    flatId = "1",
+                    reservationId = 123,
+                    title = "Flat 1",
+                    thumbnailUrl = "image://flat/1",
+                    city = "Warsaw",
+                    country = "Poland",
+                    startDate = "2023-01-01",
+                    endDate = "2023-01-10",
+                    totalPrice = 800.0
+                )
+            ),
+            last = true
+        )
+        webMvc.getReservations(page = 0, pageSize = 10, "all").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+        webMvc.getReservations(page = 0, pageSize = 10, "All").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+        webMvc.getReservations(page = 0, pageSize = 10, "ALL").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+        webMvc.getReservations(page = 0, pageSize = 10, "aLl").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+    }
+
     private fun MockMvc.postReservation(dto: ReservationDto? = null) = post("/reservation") {
         with(csrf())
         header("Authorization", "Bearer jwt")
