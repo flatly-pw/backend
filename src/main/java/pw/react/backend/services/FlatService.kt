@@ -11,6 +11,7 @@ import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
+import kotlin.jvm.optionals.getOrNull
 
 class FlatService(
     private val flatEntityRepository: FlatEntityRepository,
@@ -23,23 +24,27 @@ class FlatService(
         val pageable = PageRequest.of(flatQuery.page, flatQuery.pageSize)
         return flatEntityRepository
             .findAll(flatSpecification(flatQuery), pageable)
-            .map {
-                val flatId = it.id!!
-                Flat(
-                    id = flatId,
-                    title = it.title,
-                    description = it.description,
-                    thumbnailUrl = imageService.getThumbnailUriByFlatId(flatId),
-                    area = it.area,
-                    bedrooms = it.bedrooms,
-                    bathrooms = it.bathrooms,
-                    capacity = it.capacity,
-                    type = it.type,
-                    address = it.address.toDomain(),
-                    rating = reviewService.getRatingByFlatId(flatId),
-                    pricePerNight = priceService.getPriceByFlatId(flatId)
-                )
-            }
+            .map { it.toDomain() }
+    }
+
+    fun findById(flatId: String): Flat? = flatEntityRepository.findById(flatId).getOrNull()?.toDomain()
+
+    private fun FlatEntity.toDomain(): Flat {
+        val flatId = id!!
+        return Flat(
+            id = flatId,
+            title = title,
+            description = description,
+            thumbnailUrl = imageService.getThumbnailUriByFlatId(flatId),
+            area = area,
+            bedrooms = bedrooms,
+            bathrooms = bathrooms,
+            capacity = capacity,
+            type = type,
+            address = address.toDomain(),
+            rating = reviewService.getRatingByFlatId(flatId),
+            pricePerNight = priceService.getPriceByFlatId(flatId)
+        )
     }
 
     private fun flatSpecification(flatQuery: FlatQuery) = roomsSpecification(flatQuery)
