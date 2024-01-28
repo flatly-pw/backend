@@ -2,6 +2,7 @@ package pw.react.backend.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -79,6 +80,31 @@ class ReservationController(
         ResponseEntity.unprocessableEntity().body(e.message)
     }
 
+    @Operation(
+        summary = "Get reservations",
+        description = "`filter` is optional. Possible values are: all, active, passed, cancelled. " +
+                "If the `filter` is not provided then endpoint returns all user's reservations. "
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got reservation list. Note that `UserReservationDto` is encapsulated in `PageDto` " +
+                "which has `data` - list of UserReservationDto and `last` field indicating whether the page was last or not",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "page or pageSize number was illegal or provided filter was not correct"
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "User from jwt token was not found."
+    )
+    @ApiResponse(
+        responseCode = "422",
+        description = "Reserved flat was not found"
+    )
     @GetMapping("/reservations")
     fun getReservations(
         @RequestParam page: Int,
