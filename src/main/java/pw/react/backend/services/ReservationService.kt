@@ -58,7 +58,7 @@ class ReservationService(
                 pageable = pageRequest
             )
 
-            is ReservationFilter.Cancelled -> Page.empty()
+            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(userId, pageRequest)
         }.map(ReservationEntity::toDomain)
     }
 

@@ -24,7 +24,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.endDate >= ?2
+            where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
         """
     )
     fun findAllActiveByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
@@ -32,8 +32,16 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and reservation.endDate < ?2
+            where reservation.user.id = ?1 and reservation.endDate < ?2 and reservation.cancelled = false
         """
     )
     fun findAllPassedByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation 
+            where reservation.user.id = ?1 and reservation.cancelled = true
+        """
+    )
+    fun findAllCancelledByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
 }
