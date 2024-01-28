@@ -83,14 +83,14 @@ class ReservationController(
     fun getReservations(
         @RequestParam page: Int,
         @RequestParam pageSize: Int,
-        @RequestParam reservationStatus: String?,
+        @RequestParam filter: String?,
         request: HttpServletRequest
     ): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
         val email = jwtTokenService.getUsernameFromToken(token)
         val userId = userService.findUserByEmail(email)?.id
             ?: throw UsernameNotFoundException("user with email: $email not found")
-        val filter = when (reservationStatus?.lowercase()) {
+        val reservationFilter = when (filter?.lowercase()) {
             null -> ReservationFilter.All
             "all" -> ReservationFilter.All
             "active" -> ReservationFilter.Active
@@ -98,7 +98,7 @@ class ReservationController(
             "cancelled" -> ReservationFilter.Cancelled
             else -> throw IllegalArgumentException("Invalid reservationStatus. Possible values are: all, active, passed or cancelled")
         }
-        val reservationPage = reservationService.getReservations(userId, page, pageSize, filter)
+        val reservationPage = reservationService.getReservations(userId, page, pageSize, reservationFilter)
         val reservationsPageDto: PageDto<List<UserReservationDto>> = reservationPage.toDto { reservation ->
             with(reservation) {
                 val flat = flatService.findById(flatId)
