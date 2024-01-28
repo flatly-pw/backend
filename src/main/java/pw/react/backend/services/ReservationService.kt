@@ -58,7 +58,7 @@ class ReservationService(
                 pageable = pageRequest
             )
 
-            else -> Page.empty()
+            is ReservationFilter.Cancelled -> Page.empty()
         }.map(ReservationEntity::toDomain)
     }
 
