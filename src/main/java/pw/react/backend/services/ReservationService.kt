@@ -45,7 +45,7 @@ class ReservationService(
         require(pageSize > 0) { "page must be positive" }
         val pageRequest = PageRequest.of(page, pageSize)
         return when (filter) {
-            is ReservationFilter.All -> reservationRepository.findAllByUserId(userId, pageRequest)
+            is ReservationFilter.All -> reservationRepository.findAllByUserIdOrderByStartDateAsc(userId, pageRequest)
             is ReservationFilter.Active -> reservationRepository.findAllActiveByUserId(
                 userId = userId,
                 today = timeProvider().toJavaLocalDate(),

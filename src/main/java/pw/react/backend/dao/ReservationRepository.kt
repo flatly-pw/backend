@@ -19,12 +19,13 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
     )
     fun countAllWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
 
-    fun findAllByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
+    fun findAllByUserIdOrderByStartDateAsc(userId: Long, pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
             where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
+            order by reservation.startDate asc
         """
     )
     fun findAllActiveByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
@@ -33,6 +34,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
         value = """
             select reservation from ReservationEntity reservation
             where reservation.user.id = ?1 and reservation.endDate < ?2 and reservation.cancelled = false
+            order by reservation.startDate asc
         """
     )
     fun findAllPassedByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
@@ -41,6 +43,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
         value = """
             select reservation from ReservationEntity reservation 
             where reservation.user.id = ?1 and reservation.cancelled = true
+            order by reservation.startDate asc
         """
     )
     fun findAllCancelledByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
