@@ -148,6 +148,8 @@ class ReservationController(
         ResponseEntity.badRequest().body(e.message)
     } catch (e: FlatNotFoundException) {
         ResponseEntity.unprocessableEntity().body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.notFound().build<Void>()
     }
 
     companion object {
