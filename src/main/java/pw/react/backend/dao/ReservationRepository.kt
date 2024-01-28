@@ -20,4 +20,20 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
     fun countAllWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
 
     fun findAllByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation 
+            where reservation.user.id = ?1 and reservation.endDate >= ?2
+        """
+    )
+    fun findAllActiveByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation
+            where reservation.user.id = ?1 and reservation.endDate < ?2
+        """
+    )
+    fun findAllPassedByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
 }
