@@ -11,10 +11,12 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubReservation
@@ -42,6 +44,22 @@ class ReservationServiceTest {
         every { userRepository.findById(1) } returns Optional.of(stubUserEntity())
         every { flatRepository.findById("1") } returns Optional.of(stubFlatEntity())
         every { timeProvider.invoke() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findAllByUserIdOrderByStartDateAsc(1, any()) } returns PageImpl(
+            listOf(
+                stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")),
+                stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")),
+                stubReservationEntity(stubUserEntity(1), stubFlatEntity("3"))
+            )
+        )
+        every { reservationRepository.findAllActiveByUserId(1, any(), any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")))
+        )
+        every { reservationRepository.findAllPassedByUserId(1, any(), any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")))
+        )
+        every { reservationRepository.findAllCancelledByUserId(1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("3")))
+        )
     }
 
     @Test
@@ -89,5 +107,48 @@ class ReservationServiceTest {
     @Test
     fun `Returns saved reservation`() {
         service.saveReservation(stubReservation(1, "1", id = null)) shouldBe stubReservation(1, "1", id = 1L)
+    }
+
+    @Test
+    fun `Throws IllegalArgumentException when page or pageSize are incorrect`() {
+        shouldThrow<IllegalArgumentException> { service.getReservations(1, -1, 10) }
+        shouldThrow<IllegalArgumentException> { service.getReservations(1, 0, 0) }
+        shouldThrow<IllegalArgumentException> { service.getReservations(1, 0, -1) }
+    }
+
+    @Test
+    fun `Returns all reservations if filter is All`() {
+        val expected = PageImpl(
+            listOf(
+                stubReservation(1, "1"),
+                stubReservation(1, "2"),
+                stubReservation(1, "3")
+            )
+        )
+        service.getReservations(1, 0, 10, ReservationFilter.All) shouldBe expected
+    }
+
+    @Test
+    fun `Returns active reservations if filter is Active`() {
+        val expected = PageImpl(
+            listOf(stubReservation(1, "1"))
+        )
+        service.getReservations(1, 0, 10, ReservationFilter.Active) shouldBe expected
+    }
+
+    @Test
+    fun `Returns passed reservations if filter is Passed`() {
+        val expected = PageImpl(
+            listOf(stubReservation(1, "2"))
+        )
+        service.getReservations(1, 0, 10, ReservationFilter.Passed) shouldBe expected
+    }
+
+    @Test
+    fun `Returns cancelled reservations if filter is Cancelled`() {
+        val expected = PageImpl(
+            listOf(stubReservation(1, "3"))
+        )
+        service.getReservations(1, 0, 10, ReservationFilter.Cancelled) shouldBe expected
     }
 }
