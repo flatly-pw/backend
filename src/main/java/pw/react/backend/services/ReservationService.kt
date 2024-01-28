@@ -1,5 +1,6 @@
 package pw.react.backend.services
 
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
@@ -42,8 +43,21 @@ class ReservationService(
     ): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
         require(pageSize > 0) { "page must be positive" }
+        val pageRequest = PageRequest.of(page, pageSize)
         return when (filter) {
-            is ReservationFilter.All -> reservationRepository.findAllByUserId(userId, PageRequest.of(page, pageSize))
+            is ReservationFilter.All -> reservationRepository.findAllByUserId(userId, pageRequest)
+            is ReservationFilter.Active -> reservationRepository.findAllActiveByUserId(
+                userId = userId,
+                today = timeProvider().toJavaLocalDate(),
+                pageable = pageRequest
+            )
+
+            is ReservationFilter.Passed -> reservationRepository.findAllPassedByUserId(
+                userId = userId,
+                today = timeProvider().toJavaLocalDate(),
+                pageable = pageRequest
+            )
+
             else -> Page.empty()
         }.map(ReservationEntity::toDomain)
     }
@@ -58,4 +72,6 @@ class ReservationService(
         )
         return overlappingReservationsCount == 0
     }
+
+    private fun Instant.toJavaLocalDate() = toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate()
 }
