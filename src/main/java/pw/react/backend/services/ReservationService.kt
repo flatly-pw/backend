@@ -16,7 +16,11 @@ import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.domain.toEntity
 import pw.react.backend.models.entity.ReservationEntity
+import pw.react.backend.utils.LocalDateRange
+import pw.react.backend.utils.LocalDateRange.Companion.intersect
+import pw.react.backend.utils.LocalDateRange.Companion.rangeTo
 import pw.react.backend.utils.TimeProvider
+import pw.react.backend.utils.joinOverlappingRanges
 
 class ReservationService(
     private val reservationRepository: ReservationRepository,
@@ -60,6 +64,17 @@ class ReservationService(
 
             is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(userId, pageRequest)
         }.map(ReservationEntity::toDomain)
+    }
+
+    fun getUnavailableDates(flatId: String, month: Int, year: Int): List<LocalDateRange> {
+        val reservations = reservationRepository.getReservationsByFlatIdAndMonthYear(flatId, month, year)
+            .map(ReservationEntity::toDomain)
+        val monthRange = LocalDateRange.ofMonth(month, year)
+        val unavailableDates = reservations.map { reservation ->
+            val reservationRange = reservation.startDate..reservation.endDate
+            reservationRange intersect monthRange
+        }.joinOverlappingRanges()
+        return unavailableDates
     }
 
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {
