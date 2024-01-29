@@ -4,6 +4,11 @@ import kotlinx.serialization.Serializable
 import pw.react.backend.utils.LocalDateRange
 
 @Serializable
+data class DatePeriodsDto(
+    val data: List<DatePeriodDto>
+)
+
+@Serializable
 data class DatePeriodDto(
     val startDate: String,
     val endDate: String
