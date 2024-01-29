@@ -153,6 +153,22 @@ class ReservationController(
         ResponseEntity.notFound().build<Void>()
     }
 
+    @Operation(
+        summary = "Get unavailable periods for reservations.",
+        description = "Gets list of periods in which reservations for the flat, year and month are already present. " +
+                "Note that dates are in `yyyy-mm-dd` format."
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got unavailable periods.",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [DatePeriodsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Request params were wrong",
+    )
     @GetMapping("/reservation/{flatId}/unavailable")
     fun getUnavailableDates(
         @PathVariable flatId: String,
