@@ -24,6 +24,7 @@ import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
 import pw.react.backend.web.PageDto
 import pw.react.backend.utils.LocalDateRange
+import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.ReservationDto
 import pw.react.backend.web.UserReservationDto
 import pw.react.backend.web.toDomain
@@ -178,7 +179,8 @@ class ReservationController(
         require(month in 1..12) { "month number must be in [1; 12]" }
         require(year >= 1970) { "year must be greater or equal than 1970" }
         val reservedDates = reservationService.getUnavailableDates(flatId, month, year)
-        ResponseEntity.ok(reservedDates.map(LocalDateRange::toDto))
+        val dto = DatePeriodsDto(reservedDates.map(LocalDateRange::toDto))
+        ResponseEntity.ok(dto)
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }
