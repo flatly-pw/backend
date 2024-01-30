@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,13 +19,16 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
+import pw.react.backend.utils.TimeProvider
 import pw.react.backend.web.PageDto
+import pw.react.backend.web.ReservationDetailsDto
 import pw.react.backend.utils.LocalDateRange
 import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.ReservationDto
@@ -37,6 +43,7 @@ class ReservationController(
     private val flatPriceService: FlatPriceService,
     private val jwtTokenService: JwtTokenService,
     private val userService: UserService,
+    private val timeProvider: TimeProvider,
 ) {
     @Operation(
         summary = "Post new reservation",
@@ -183,6 +190,48 @@ class ReservationController(
         ResponseEntity.ok(dto)
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
+    }
+
+    @GetMapping("/reservation/{reservationId}")
+    fun getReservationDetails(@PathVariable reservationId: Long): ResponseEntity<*> = try {
+        val reservation = reservationService.getReservation(reservationId)
+            ?: throw ReservationNotFoundException("Reservation with id $reservationId was not found.")
+        val flat = flatService.findById(reservation.flatId) ?: throw FlatNotFoundException("Flat not found")
+        val user = userService.findById(reservation.userId)
+            ?: throw UsernameNotFoundException("User from reservation not found")
+        val today = timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date
+        val reservationStatus = when {
+            reservation.cancelled -> "cancelled"
+            reservation.endDate < today -> "passed"
+            else -> "active"
+        }
+        val detailsDto = ReservationDetailsDto(
+            reservationId = reservation.id!!,
+            flatId = reservation.flatId,
+            addressDto = flat.address.toDto(),
+            startDate = reservation.startDate.toString(),
+            endDate = reservation.endDate.toString(),
+            phoneNumber = flat.owner.phoneNumber,
+            email = flat.owner.email,
+            clientName = user.name,
+            clientLastName = user.lastName,
+            bedrooms = flat.bedrooms,
+            bathrooms = flat.bathrooms,
+            beds = flat.beds,
+            facilities = flat.facilities,
+            adults = reservation.adults,
+            children = reservation.children,
+            pets = reservation.pets,
+            price = flatPriceService.getPriceByFlatId(flat.id!!, reservation.startDate, reservation.endDate).toFloat(),
+            status = reservationStatus
+        )
+        ResponseEntity.ok(detailsDto)
+    } catch (e: ReservationNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: FlatNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 
     companion object {
