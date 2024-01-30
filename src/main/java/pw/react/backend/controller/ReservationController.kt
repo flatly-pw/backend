@@ -262,7 +262,7 @@ class ReservationController(
     } catch (e: ReservationNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: IllegalArgumentException) {
-        ResponseEntity.badRequest().body(e.message)
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }

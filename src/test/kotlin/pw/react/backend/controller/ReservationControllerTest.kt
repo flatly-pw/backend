@@ -21,10 +21,12 @@ import org.springframework.test.context.web.WebAppConfiguration
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.post
+import org.springframework.test.web.servlet.put
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.FlatPriceService
@@ -294,6 +296,49 @@ class ReservationControllerTest {
         }
     }
 
+    @Test
+    @WithMockUser
+    fun `Return NotFound when user was not found`() {
+        every { userService.findUserByEmail("john.smith@mail.com") } returns null
+        webMvc.cancelReservation(1).andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Return BadRequest if reservation was not found`() {
+        every { reservationService.cancelReservation(1, 1) } throws ReservationNotFoundException()
+        webMvc.cancelReservation(1).andExpect {
+            status { isBadRequest() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Return BadRequest if reservation was not placed by calling user`() {
+        every { reservationService.cancelReservation(1, 1) } throws IllegalArgumentException()
+        webMvc.cancelReservation(1).andExpect {
+            status { isUnauthorized() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Return cancelled reservation`() {
+        every { reservationService.cancelReservation(1, 1) } returns stubReservation(
+            id = 1,
+            userId = 1,
+            flatId = "1",
+            cancelled = true
+        )
+        val expectedDto = stubReservationDto(flatId = "1")
+        webMvc.cancelReservation(1).andExpect {
+            status { isOk() }
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+    }
+
     private fun MockMvc.postReservation(dto: ReservationDto? = null) = post("/reservation") {
         with(csrf())
         header("Authorization", "Bearer jwt")
@@ -310,4 +355,9 @@ class ReservationControllerTest {
             param("pageSize", pageSize.toString())
             filter?.let { param("filter", it) }
         }
+
+    private fun MockMvc.cancelReservation(reservationId: Long) = put("/reservation/cancel/$reservationId") {
+        with(csrf())
+        header("Authorization", "Bearer jwt")
+    }
 }
