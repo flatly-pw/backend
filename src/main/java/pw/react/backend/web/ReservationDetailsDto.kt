@@ -1,5 +1,8 @@
 package pw.react.backend.web
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ReservationDetailsDto(
     val reservationId: Long,
     val flatId: String,
