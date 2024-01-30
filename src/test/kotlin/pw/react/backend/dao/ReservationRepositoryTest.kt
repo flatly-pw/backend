@@ -65,4 +65,11 @@ class ReservationRepositoryTest {
         }
     }
 
+    @Test
+    fun `Should not return cancelled reservations`() {
+        val expectedNonCancelledReservations = listOf<Long>(10)
+        val actual = reservationRepository.getReservationsByFlatIdAndMonthYear("2", 3, 2026)
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expectedNonCancelledReservations
+    }
 }
