@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.FlatNotFoundException
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
@@ -205,6 +206,10 @@ class ReservationController(
         ]
     )
     @ApiResponse(
+        responseCode = "400",
+        description = "Could not cancel reservation.",
+    )
+    @ApiResponse(
         responseCode = "404",
         description = "Reservation was not found."
     )
@@ -264,6 +269,10 @@ class ReservationController(
         ]
     )
     @ApiResponse(
+        responseCode = "400",
+        description = "Reservation could not be cancelled"
+    )
+    @ApiResponse(
         responseCode = "401",
         description = "Reservation was cancelled by user that does not own the reservation."
     )
@@ -279,11 +288,13 @@ class ReservationController(
             ?: throw UsernameNotFoundException("user with email: $email not found")
         ResponseEntity.ok(reservationService.cancelReservation(reservationId, userId).toDto())
     } catch (e: ReservationNotFoundException) {
-        ResponseEntity.badRequest().body(e.message)
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: IllegalArgumentException) {
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: ReservationCancellationException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 
     companion object {

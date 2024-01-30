@@ -88,9 +88,12 @@ class ReservationService(
             ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
         require(reservation.user.id == userId) { "Only person that made reservation can cancel it" }
         val currentDate = timeProvider().toJavaLocalDate()
-        if(reservation.endDate < currentDate) throw ReservationCancellationException("Cannot cancel passed reservation")
-        if(reservation.startDate < currentDate) throw ReservationCancellationException("Reservation can only be cancelled before startDate.")
-        val canceledReservation = reservation.apply { cancelled = true}
+        when {
+            reservation.endDate < currentDate -> throw ReservationCancellationException("Cannot cancel passed reservation")
+            reservation.startDate < currentDate -> throw ReservationCancellationException("Reservation can only be cancelled before startDate.")
+            reservation.cancelled -> throw ReservationCancellationException("Reservation is already cancelled")
+        }
+        val canceledReservation = reservation.apply { cancelled = true }
         return reservationRepository.save(canceledReservation).toDomain()
     }
 

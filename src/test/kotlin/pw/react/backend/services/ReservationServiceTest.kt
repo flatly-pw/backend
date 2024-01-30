@@ -277,6 +277,21 @@ class ReservationServiceTest {
     }
 
     @Test
+    fun `Throws ReservationCancellationException if trying to cancel already cancelled reservation`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(
+                user = stubUserEntity(id = 2),
+                flat = stubFlatEntity(),
+                cancelled = true
+            )
+        )
+        shouldThrow<ReservationCancellationException> {
+            service.cancelReservation(1, userId = 2)
+        }
+    }
+
+    @Test
     fun `Returns cancelled reservation`() {
         every { timeProvider() } returns Instant.DISTANT_PAST
         every { reservationRepository.findById(1) } returns Optional.of(
