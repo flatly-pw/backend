@@ -248,6 +248,8 @@ class ReservationController(
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: NullPointerException) {
+        ResponseEntity.internalServerError().build<Void>()
     }
 
     companion object {
