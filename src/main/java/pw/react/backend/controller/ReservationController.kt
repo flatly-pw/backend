@@ -252,6 +252,25 @@ class ReservationController(
         ResponseEntity.internalServerError().build<Void>()
     }
 
+    @Operation(
+        summary = "Cancel reservation",
+        description = "Note that only user that posted reservation can cancel it."
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully cancelled reservation",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [ReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Reservation was cancelled by user that does not own the reservation."
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Reservation was not found."
+    )
     @PutMapping("/reservation/cancel/{reservationId}")
     fun cancelReservation(@PathVariable reservationId: Long, request: HttpServletRequest): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
