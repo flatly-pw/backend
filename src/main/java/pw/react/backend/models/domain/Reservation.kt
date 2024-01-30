@@ -16,6 +16,7 @@ data class Reservation(
     val children: Int,
     val pets: Int,
     val specialRequests: String? = null,
+    val cancelled: Boolean = false,
     val id: Long? = null,
 )
 
@@ -40,5 +41,13 @@ fun ReservationEntity.toDomain() = Reservation(
     children = children,
     pets = pets,
     specialRequests = specialRequests,
+    cancelled = cancelled,
     id = id
 )
+
+sealed interface ReservationFilter {
+    data object All : ReservationFilter
+    data object Active : ReservationFilter
+    data object Passed : ReservationFilter
+    data object Cancelled : ReservationFilter
+}
