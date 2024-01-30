@@ -16,6 +16,7 @@ import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.stubs.stubFlatEntity
@@ -176,8 +177,8 @@ class ReservationServiceTest {
             )
         )
         val expectedPeriods = listOf(
-            date(12, 2)..date(15,2),
-            date(24,2)..date(29,2)
+            date(12, 2)..date(15, 2),
+            date(24, 2)..date(29, 2)
         )
         service.getUnavailableDates(flatId = "1", month = 2, year = 2024) shouldBe expectedPeriods
     }
@@ -201,7 +202,7 @@ class ReservationServiceTest {
         // 1.02.2024 to 29.02.2024 are the correct dates for february
         val expectedPeriods = listOf(
             date(1, 2)..date(4, 2),
-            date(26, 2)..date(29,2)
+            date(26, 2)..date(29, 2)
         )
         service.getUnavailableDates("1", 2, 2024) shouldBe expectedPeriods
     }
@@ -221,6 +222,46 @@ class ReservationServiceTest {
             date(1, 2)..date(29, 2)
         )
         service.getUnavailableDates("1", 2, 2024) shouldBe expectedPeriods
+    }
+
+    @Test
+    fun `Throws ReservationNotFound exception if reservation was not found`() {
+        every { reservationRepository.findById(1) } returns Optional.empty()
+        shouldThrow<ReservationNotFoundException> {
+            service.cancelReservation(1, 1)
+        }
+    }
+
+    @Test
+    fun `Throws IllegalArgumentException if userId is different tha userId from reservation`() {
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(
+                user = stubUserEntity(id = 2),
+                flat = stubFlatEntity()
+            )
+        )
+        shouldThrow<IllegalArgumentException> {
+            service.cancelReservation(1, userId = 1)
+        }
+    }
+
+    @Test
+    fun `Returns cancelled reservation`() {
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(
+                id = 1,
+                user = stubUserEntity(id = 2),
+                flat = stubFlatEntity()
+            )
+        )
+        every { reservationRepository.save(match<ReservationEntity> { it.id == 1L && it.cancelled }) } returns stubReservationEntity(
+            id = 1,
+            user = stubUserEntity(id = 2),
+            flat = stubFlatEntity(),
+            cancelled = true
+        )
+        val expected = stubReservation(id = 1, userId = 2, flatId = "1", cancelled = true)
+        service.cancelReservation(1, 2) shouldBe expected
     }
 
     private fun date(d: Int, m: Int, y: Int = 2024) = LocalDate(y, m, d)
