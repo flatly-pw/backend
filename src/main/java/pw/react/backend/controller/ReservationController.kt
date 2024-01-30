@@ -192,6 +192,21 @@ class ReservationController(
         ResponseEntity.badRequest().body(e.message)
     }
 
+    @Operation(
+        summary = "Get reservation details",
+        description = "dates are in `yyyy-mm-dd` format. Possible values of status are: `active`, `cancelled`, `passed`"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got reservation details.",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [ReservationDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Reservation was not found."
+    )
     @GetMapping("/reservation/{reservationId}")
     fun getReservationDetails(@PathVariable reservationId: Long): ResponseEntity<*> = try {
         val reservation = reservationService.getReservation(reservationId)
