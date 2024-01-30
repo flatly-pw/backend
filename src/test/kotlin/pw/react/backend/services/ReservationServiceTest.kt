@@ -15,6 +15,7 @@ import org.springframework.data.domain.PageImpl
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
@@ -226,6 +227,7 @@ class ReservationServiceTest {
 
     @Test
     fun `Throws ReservationNotFound exception if reservation was not found`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
         every { reservationRepository.findById(1) } returns Optional.empty()
         shouldThrow<ReservationNotFoundException> {
             service.cancelReservation(1, 1)
@@ -234,6 +236,7 @@ class ReservationServiceTest {
 
     @Test
     fun `Throws IllegalArgumentException if userId is different tha userId from reservation`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
         every { reservationRepository.findById(1) } returns Optional.of(
             stubReservationEntity(
                 user = stubUserEntity(id = 2),
@@ -246,7 +249,36 @@ class ReservationServiceTest {
     }
 
     @Test
+    fun `Throws ReservationCancellationException if trying to cancel after reservation endDate`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(
+                user = stubUserEntity(id = 2),
+                flat = stubFlatEntity()
+            )
+        )
+        shouldThrow<ReservationCancellationException> {
+            service.cancelReservation(1, userId = 2)
+        }
+    }
+
+    @Test
+    fun `Throws ReservationCancellationException if trying to cancel after is started`() {
+        every { timeProvider() } returns LocalDate(2023, 1, 5).atStartOfDayIn(TimeZone.currentSystemDefault())
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(
+                user = stubUserEntity(id = 2),
+                flat = stubFlatEntity()
+            )
+        )
+        shouldThrow<ReservationCancellationException> {
+            service.cancelReservation(1, userId = 2)
+        }
+    }
+
+    @Test
     fun `Returns cancelled reservation`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
         every { reservationRepository.findById(1) } returns Optional.of(
             stubReservationEntity(
                 id = 1,

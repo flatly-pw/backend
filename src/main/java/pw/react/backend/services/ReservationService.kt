@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.Reservation
@@ -86,6 +87,9 @@ class ReservationService(
         val reservation = reservationRepository.findById(reservationId).getOrNull()
             ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
         require(reservation.user.id == userId) { "Only person that made reservation can cancel it" }
+        val currentDate = timeProvider().toJavaLocalDate()
+        if(reservation.endDate < currentDate) throw ReservationCancellationException("Cannot cancel passed reservation")
+        if(reservation.startDate < currentDate) throw ReservationCancellationException("Reservation can only be cancelled before startDate.")
         val canceledReservation = reservation.apply { cancelled = true}
         return reservationRepository.save(canceledReservation).toDomain()
     }
