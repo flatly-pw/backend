@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -26,11 +27,11 @@ import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
+import pw.react.backend.utils.LocalDateRange
 import pw.react.backend.utils.TimeProvider
+import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.ReservationDetailsDto
-import pw.react.backend.utils.LocalDateRange
-import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.ReservationDto
 import pw.react.backend.web.UserReservationDto
 import pw.react.backend.web.toDomain
@@ -249,6 +250,21 @@ class ReservationController(
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: NullPointerException) {
         ResponseEntity.internalServerError().build<Void>()
+    }
+
+    @PutMapping("/reservation/cancel/{reservationId}")
+    fun cancelReservation(@PathVariable reservationId: Long, request: HttpServletRequest): ResponseEntity<*> = try {
+        val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
+        val email = jwtTokenService.getUsernameFromToken(token)
+        val userId = userService.findUserByEmail(email)?.id
+            ?: throw UsernameNotFoundException("user with email: $email not found")
+        ResponseEntity.ok(reservationService.cancelReservation(reservationId, userId).toDto())
+    } catch (e: ReservationNotFoundException) {
+        ResponseEntity.badRequest().body(e.message)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 
     companion object {
