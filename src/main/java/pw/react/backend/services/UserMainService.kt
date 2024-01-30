@@ -15,6 +15,10 @@ open class UserMainService(
     protected val passwordEncoder: PasswordEncoder
 ) : UserService {
 
+    override fun findById(id: Long): User? {
+        return userRepository.findById(id).getOrNull()?.toDomain()
+    }
+
     override fun findUserByEmail(email: String): User? {
         return userRepository.findByEmail(email).getOrNull()?.toDomain()
     }
