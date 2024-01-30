@@ -2,7 +2,6 @@ package pw.react.backend.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.ExampleObject
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
@@ -10,6 +9,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
@@ -23,6 +23,8 @@ import pw.react.backend.services.FlatService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
 import pw.react.backend.web.PageDto
+import pw.react.backend.utils.LocalDateRange
+import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.ReservationDto
 import pw.react.backend.web.UserReservationDto
 import pw.react.backend.web.toDomain
@@ -150,6 +152,37 @@ class ReservationController(
         ResponseEntity.unprocessableEntity().body(e.message)
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.notFound().build<Void>()
+    }
+
+    @Operation(
+        summary = "Get unavailable periods for reservations.",
+        description = "Gets list of periods in which reservations for the flat, year and month are already present. " +
+                "Note that dates are in `yyyy-mm-dd` format."
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got unavailable periods.",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [DatePeriodsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Request params were wrong",
+    )
+    @GetMapping("/reservation/{flatId}/unavailable")
+    fun getUnavailableDates(
+        @PathVariable flatId: String,
+        @RequestParam month: Int,
+        @RequestParam year: Int,
+    ): ResponseEntity<*> = try {
+        require(month in 1..12) { "month number must be in [1; 12]" }
+        require(year >= 1970) { "year must be greater or equal than 1970" }
+        val reservedDates = reservationService.getUnavailableDates(flatId, month, year)
+        val dto = DatePeriodsDto(reservedDates.map(LocalDateRange::toDto))
+        ResponseEntity.ok(dto)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 
     companion object {

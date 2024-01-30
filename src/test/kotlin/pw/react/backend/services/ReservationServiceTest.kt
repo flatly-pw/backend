@@ -22,6 +22,7 @@ import pw.react.backend.stubs.stubFlatEntity
 import pw.react.backend.stubs.stubReservation
 import pw.react.backend.stubs.stubReservationEntity
 import pw.react.backend.stubs.stubUserEntity
+import pw.react.backend.utils.LocalDateRange.Companion.rangeTo
 import pw.react.backend.utils.TimeProvider
 import java.util.*
 
@@ -151,4 +152,76 @@ class ReservationServiceTest {
         )
         service.getReservations(1, 0, 10, ReservationFilter.Cancelled) shouldBe expected
     }
+
+    @Test
+    fun `Returns reservations periods for reservations that start and end in specified month and year`() {
+        every { reservationRepository.getReservationsByFlatIdAndMonthYear("1", 2, 2024) } returns listOf(
+            stubReservationEntity(
+                stubUserEntity(id = 1),
+                stubFlatEntity("1"),
+                startDate = date(12, 2),
+                endDate = date(15, 2)
+            ),
+            stubReservationEntity(
+                stubUserEntity(id = 2),
+                stubFlatEntity("1"),
+                startDate = date(24, 2),
+                endDate = date(26, 2)
+            ),
+            stubReservationEntity(
+                stubUserEntity(id = 3),
+                stubFlatEntity("1"),
+                startDate = date(26, 2),
+                endDate = date(29, 2)
+            )
+        )
+        val expectedPeriods = listOf(
+            date(12, 2)..date(15,2),
+            date(24,2)..date(29,2)
+        )
+        service.getUnavailableDates(flatId = "1", month = 2, year = 2024) shouldBe expectedPeriods
+    }
+
+    @Test
+    fun `Returns reservation periods trimmed to requested month for reservations that start or end in different months than specified`() {
+        every { reservationRepository.getReservationsByFlatIdAndMonthYear("1", 2, 2024) } returns listOf(
+            stubReservationEntity(
+                stubUserEntity(id = 1),
+                stubFlatEntity("1"),
+                startDate = date(28, 1),
+                endDate = date(4, 2)
+            ),
+            stubReservationEntity(
+                stubUserEntity(id = 2),
+                stubFlatEntity("1"),
+                startDate = date(26, 2),
+                endDate = date(3, 3)
+            ),
+        )
+        // 1.02.2024 to 29.02.2024 are the correct dates for february
+        val expectedPeriods = listOf(
+            date(1, 2)..date(4, 2),
+            date(26, 2)..date(29,2)
+        )
+        service.getUnavailableDates("1", 2, 2024) shouldBe expectedPeriods
+    }
+
+    @Test
+    fun `Returns whole month if reservation period starts and ends in different month than specified`() {
+        every { reservationRepository.getReservationsByFlatIdAndMonthYear("1", 2, 2024) } returns listOf(
+            stubReservationEntity(
+                stubUserEntity(id = 1),
+                stubFlatEntity("1"),
+                startDate = date(20, 1),
+                endDate = date(4, 3)
+            ),
+        )
+        // reservation starts in January and ends in March. Specified month is February so the whole February is unavailable
+        val expectedPeriods = listOf(
+            date(1, 2)..date(29, 2)
+        )
+        service.getUnavailableDates("1", 2, 2024) shouldBe expectedPeriods
+    }
+
+    private fun date(d: Int, m: Int, y: Int = 2024) = LocalDate(y, m, d)
 }
