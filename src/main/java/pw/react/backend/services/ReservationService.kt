@@ -65,7 +65,7 @@ class ReservationService(
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {
         require(startDate < endDate) { "startDate must be earlier than endDate." }
         require(timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date <= startDate) { "startDate must not be in the past" }
-        val overlappingReservationsCount = reservationRepository.countAllWithOverlappingDates(
+        val overlappingReservationsCount = reservationRepository.countAllActiveWithOverlappingDates(
             flatId,
             startDate.toJavaLocalDate(),
             endDate.toJavaLocalDate()

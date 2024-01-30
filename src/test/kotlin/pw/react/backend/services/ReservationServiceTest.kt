@@ -35,7 +35,7 @@ class ReservationServiceTest {
 
     @BeforeEach
     fun setup() {
-        every { reservationRepository.countAllWithOverlappingDates("1", any(), any()) } returns 0
+        every { reservationRepository.countAllActiveWithOverlappingDates("1", any(), any()) } returns 0
         every { reservationRepository.save(match<ReservationEntity> { it.flat.id == "1" }) } returns stubReservationEntity(
             user = stubUserEntity(),
             flat = stubFlatEntity(),
@@ -91,7 +91,7 @@ class ReservationServiceTest {
 
     @Test
     fun `Throws ReservationException if provided reservation dates overlaps with other reservation for this flat`() {
-        every { reservationRepository.countAllWithOverlappingDates("1", any(), any()) } returns 1
+        every { reservationRepository.countAllActiveWithOverlappingDates("1", any(), any()) } returns 1
         val reservation = stubReservation(1, "1")
         shouldThrow<ReservationException> {
             service.saveReservation(reservation)

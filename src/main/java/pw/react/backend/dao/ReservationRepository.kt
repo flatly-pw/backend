@@ -12,12 +12,12 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
     @Query(
         """
         select count(reservation) from ReservationEntity reservation 
-        where reservation.flat.id = ?1 and (
+        where reservation.flat.id = ?1 and reservation.cancelled = false and (
             reservation.startDate <= ?2 and ?2 < reservation.endDate 
             or
             reservation.startDate < ?3 and ?3 <= reservation.endDate)"""
     )
-    fun countAllWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
+    fun countAllActiveWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
 
     fun findAllByUserIdOrderByStartDateAsc(userId: Long, pageable: Pageable): Page<ReservationEntity>
 
