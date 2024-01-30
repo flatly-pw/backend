@@ -33,6 +33,7 @@ import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
 import pw.react.backend.stubs.stubAddress
 import pw.react.backend.stubs.stubFlat
+import pw.react.backend.stubs.stubFlatOwner
 import pw.react.backend.stubs.stubReservation
 import pw.react.backend.stubs.stubReservationDto
 import pw.react.backend.stubs.stubUser
@@ -273,8 +274,7 @@ class ReservationControllerTest {
             addressDto = stubAddress().toDto(),
             startDate = "2023-01-01",
             endDate = "2023-01-10",
-            phoneNumber = "+48 123 456 789",
-            email = "jan.kowalski@mail.com",
+            owner = stubFlatOwner().toDto(),
             clientName = "John",
             clientLastName = "Smith",
             bedrooms = 1,
