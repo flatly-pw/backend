@@ -37,13 +37,16 @@ class FlatService(
             description = description,
             thumbnailUrl = imageService.getThumbnailUriByFlatId(flatId),
             area = area,
+            beds = beds,
             bedrooms = bedrooms,
             bathrooms = bathrooms,
             capacity = capacity,
             type = type,
             address = address.toDomain(),
+            owner = owner.toDomain(),
             rating = reviewService.getRatingByFlatId(flatId),
-            pricePerNight = priceService.getPriceByFlatId(flatId)
+            pricePerNight = priceService.getPriceByFlatId(flatId),
+            facilities = facilities.map { it.name }
         )
     }
 

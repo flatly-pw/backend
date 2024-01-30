@@ -21,6 +21,7 @@ import pw.react.backend.utils.LocalDateRange.Companion.intersect
 import pw.react.backend.utils.LocalDateRange.Companion.rangeTo
 import pw.react.backend.utils.TimeProvider
 import pw.react.backend.utils.joinOverlappingRanges
+import kotlin.jvm.optionals.getOrNull
 
 class ReservationService(
     private val reservationRepository: ReservationRepository,
@@ -76,6 +77,9 @@ class ReservationService(
         }.joinOverlappingRanges()
         return unavailableDates
     }
+
+    fun getReservation(reservationId: Long): Reservation? =
+        reservationRepository.findById(reservationId).getOrNull()?.toDomain()
 
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {
         require(startDate < endDate) { "startDate must be earlier than endDate." }

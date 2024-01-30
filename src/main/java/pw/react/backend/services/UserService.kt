@@ -4,6 +4,7 @@ import pw.react.backend.models.domain.User
 
 
 interface UserService {
+    fun findById(id: Long): User?
     fun findUserByEmail(email: String): User?
     fun validateAndSave(user: User): User
     fun updatePassword(user: User, password: String): User

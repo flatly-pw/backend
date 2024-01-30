@@ -52,7 +52,7 @@ class FlatDetailsServiceTest {
 
     @Test
     fun `Returns correct details`() {
-        val expectedDetails = stubFlatDetails(facilities = emptyList())
+        val expectedDetails = stubFlatDetails()
         service.getFlatDetailsById("1") shouldBe expectedDetails
     }
 }

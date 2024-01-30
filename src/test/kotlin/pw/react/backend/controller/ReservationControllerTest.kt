@@ -3,6 +3,8 @@ package pw.react.backend.controller
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.BeforeEach
@@ -29,13 +31,18 @@ import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
+import pw.react.backend.stubs.stubAddress
 import pw.react.backend.stubs.stubFlat
+import pw.react.backend.stubs.stubFlatOwner
 import pw.react.backend.stubs.stubReservation
 import pw.react.backend.stubs.stubReservationDto
 import pw.react.backend.stubs.stubUser
+import pw.react.backend.utils.TimeProvider
 import pw.react.backend.web.PageDto
+import pw.react.backend.web.ReservationDetailsDto
 import pw.react.backend.web.ReservationDto
 import pw.react.backend.web.UserReservationDto
+import pw.react.backend.web.toDto
 
 @WebMvcTest(controllers = [ReservationController::class])
 @ContextConfiguration
@@ -43,7 +50,13 @@ import pw.react.backend.web.UserReservationDto
 class ReservationControllerTest {
 
     @MockkBean
+    private lateinit var flatService: FlatService
+
+    @MockkBean
     private lateinit var reservationService: ReservationService
+
+    @MockkBean
+    private lateinit var flatPriceService: FlatPriceService
 
     @MockkBean
     private lateinit var jwtTokenService: JwtTokenService
@@ -52,10 +65,7 @@ class ReservationControllerTest {
     private lateinit var userService: UserService
 
     @MockkBean
-    private lateinit var flatPriceService: FlatPriceService
-
-    @MockkBean
-    private lateinit var flatService: FlatService
+    private lateinit var timeProvider: TimeProvider
 
     @Autowired
     private lateinit var context: WebApplicationContext
@@ -216,6 +226,70 @@ class ReservationControllerTest {
             content { json(Json.encodeToString(expectedDto)) }
         }
         webMvc.getReservations(page = 0, pageSize = 10, "aLl").andExpect {
+            content { json(Json.encodeToString(expectedDto)) }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Returns NotFound when reservation was not found`() {
+        every { reservationService.getReservation(1) } returns null
+        webMvc.get("/reservation/1").andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Returns NotFound when flat from reservation was not found`() {
+        every { reservationService.getReservation(1) } returns stubReservation(userId = 1, flatId = "1")
+        every { flatService.findById("1") } returns null
+        webMvc.get("/reservation/1").andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Returns NotFound when user from reservation was not found`() {
+        every { reservationService.getReservation(1) } returns stubReservation(userId = 1, flatId = "1")
+        every { flatService.findById("1") } returns stubFlat(id = "1")
+        every { userService.findById(1) } returns null
+        webMvc.get("/reservation/1").andExpect {
+            status { isNotFound() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Returns correct ReservationDetailsDto`() {
+        every { reservationService.getReservation(1) } returns stubReservation(id = 1, userId = 1, flatId = "1")
+        every { flatService.findById("1") } returns stubFlat(id = "1")
+        every { userService.findById(1) } returns stubUser(id = 1)
+        every { timeProvider() } returns LocalDate(2022, 12, 12).atStartOfDayIn(TimeZone.currentSystemDefault())
+        every { flatPriceService.getPriceByFlatId("1", LocalDate(2023, 1, 1), LocalDate(2023, 1, 10)) } returns 800.0
+        val expectedDto = ReservationDetailsDto(
+            reservationId = 1,
+            flatId = "1",
+            addressDto = stubAddress().toDto(),
+            startDate = "2023-01-01",
+            endDate = "2023-01-10",
+            owner = stubFlatOwner().toDto(),
+            clientName = "John",
+            clientLastName = "Smith",
+            bedrooms = 1,
+            bathrooms = 2,
+            beds = 1,
+            facilities = listOf("wi-fi"),
+            adults = 2,
+            children = 1,
+            pets = 0,
+            price = 800f,
+            specialRequests = "Pink pillow",
+            status = "active"
+        )
+        webMvc.get("/reservation/1").andExpect {
+            status { isOk() }
             content { json(Json.encodeToString(expectedDto)) }
         }
     }
