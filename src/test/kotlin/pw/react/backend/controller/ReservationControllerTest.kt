@@ -25,6 +25,7 @@ import org.springframework.test.web.servlet.put
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
@@ -307,19 +308,28 @@ class ReservationControllerTest {
 
     @Test
     @WithMockUser
-    fun `Return BadRequest if reservation was not found`() {
+    fun `Return NotFound if reservation was not found`() {
         every { reservationService.cancelReservation(1, 1) } throws ReservationNotFoundException()
         webMvc.cancelReservation(1).andExpect {
-            status { isBadRequest() }
+            status { isNotFound() }
         }
     }
 
     @Test
     @WithMockUser
-    fun `Return BadRequest if reservation was not placed by calling user`() {
+    fun `Return Unauthorized if reservation was not placed by calling user`() {
         every { reservationService.cancelReservation(1, 1) } throws IllegalArgumentException()
         webMvc.cancelReservation(1).andExpect {
             status { isUnauthorized() }
+        }
+    }
+
+    @Test
+    @WithMockUser
+    fun `Return BadRequest if reservation could not be cancelled`() {
+        every { reservationService.cancelReservation(1, 1) } throws ReservationCancellationException()
+        webMvc.cancelReservation(1).andExpect {
+            status { isBadRequest() }
         }
     }
 
