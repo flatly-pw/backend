@@ -18,6 +18,7 @@ data class ReservationDetailsDto(
     val children: Int,
     val pets: Int,
     val price: Float,
+    val specialRequests: String?,
     // active, passed, cancelled
     val status: String,
 )

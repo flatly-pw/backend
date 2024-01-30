@@ -238,7 +238,8 @@ class ReservationController(
             children = reservation.children,
             pets = reservation.pets,
             price = flatPriceService.getPriceByFlatId(flat.id!!, reservation.startDate, reservation.endDate).toFloat(),
-            status = reservationStatus
+            status = reservationStatus,
+            specialRequests = reservation.specialRequests
         )
         ResponseEntity.ok(detailsDto)
     } catch (e: ReservationNotFoundException) {
