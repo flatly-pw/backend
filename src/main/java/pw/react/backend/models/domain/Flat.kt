@@ -3,7 +3,7 @@ package pw.react.backend.models.domain
 data class Flat(
     val title: String,
     val description: String,
-    val thumbnailUrl: String,
+    val thumbnailUrl: String?,
     val area: Int,
     val beds: Int,
     val bedrooms: Int,

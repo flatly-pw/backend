@@ -5,7 +5,7 @@ import pw.react.backend.models.domain.FlatOwner
 
 data class FlatDetails(
     val title: String,
-    val thumbnail: String,
+    val thumbnail: String?,
     val gallery: List<String>,
     val rating: Float,
     val numberOfReviews: Int,
