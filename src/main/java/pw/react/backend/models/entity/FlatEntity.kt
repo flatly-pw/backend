@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
+import org.hibernate.annotations.Cascade
 
 @Entity
 @Table(name = "flat_entity")
@@ -24,10 +25,10 @@ class FlatEntity(
     var bathrooms: Int,
     var capacity: Int,
     var type: String,
-    @OneToOne
+    @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "address_entity_id", nullable = false)
     var address: AddressEntity,
-    @ManyToOne
+    @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "flat_owner_entity_id")
     var owner: FlatOwnerEntity,
     @Id @GeneratedValue(strategy = GenerationType.UUID) var id: String? = null
