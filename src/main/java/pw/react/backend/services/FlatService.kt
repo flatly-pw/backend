@@ -8,6 +8,7 @@ import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatQuery
 import pw.react.backend.models.domain.toDomain
+import pw.react.backend.models.domain.toEntity
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
@@ -118,6 +119,15 @@ class FlatService(
             // return all flats that do not have any overlapping dates, i.e count of these reservations is 0
             builder.equal(subQuery, 0L)
         }
+    }
+
+    fun saveNewFlat(flat: Flat):
+            FlatEntity //potem zmienić na flat
+    {
+        //sprawdzenie czy nie to samo? bo żeby dwa razy nie dać tego samego, tylko po czym, tytule?
+        val newFlatEntity = flat.toEntity()
+        return flatEntityRepository.save(newFlatEntity)
+            //.toDomain()
     }
 }
 
