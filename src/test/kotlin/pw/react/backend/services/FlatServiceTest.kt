@@ -35,7 +35,10 @@ class FlatServiceTest {
         every { it.getPriceByFlatId("1") } returns 100.0
         every { it.getPriceByFlatId("2") } returns 250.0
     }
-    private val service = FlatService(repository, imageService, reviewService, priceService)
+
+    private val facilityService = mockk<FlatFacilityService>()
+
+    private val service = FlatService(repository, imageService, reviewService, priceService, facilityService)
 
     @Test
     fun `findAll returns correct pages`() {
