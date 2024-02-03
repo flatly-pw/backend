@@ -88,8 +88,8 @@ public class MainConfig {
 
     @Bean
     public FlatService flatService(FlatEntityRepository flatEntityRepository, FlatImageService flatImageService,
-                                   FlatReviewService flatReviewService, FlatPriceService flatPriceService) {
-        return new FlatService(flatEntityRepository, flatImageService, flatReviewService, flatPriceService);
+                                   FlatReviewService flatReviewService, FlatPriceService flatPriceService, FlatFacilityService flatFacilityService) {
+        return new FlatService(flatEntityRepository, flatImageService, flatReviewService, flatPriceService, flatFacilityService);
     }
 
     @Bean
@@ -113,6 +113,10 @@ public class MainConfig {
         return new FlatDetailsService(flatEntityRepository, flatReviewService, flatPriceService, flatImageService);
     }
 
+    @Bean
+    public FlatFacilityService flatFacilityService(FlatFacilityRepository flatFacilityRepository){
+        return new FlatFacilityService(flatFacilityRepository);
+    }
     @Bean
     public ReservationService reservationService(ReservationRepository reservationRepository, FlatEntityRepository flatRepository,
                                                  UserRepository userRepository, TimeProvider timeProvider) {

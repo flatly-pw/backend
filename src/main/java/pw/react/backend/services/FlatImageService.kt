@@ -70,4 +70,15 @@ class FlatImageService(
             throw InvalidFileException("Could not store file $fileName. Please try again!", ex)
         }
     }
+
+    fun getImageIdsbyFlatId(flatId: String): List<String> {
+        val images = flatImageRepository.findFlatImageEntitiesByFlatId(flatId)
+        return images.map {it -> it.id!! }
+    }
+
+    fun deletebyIds(ids: List<String>) {
+        ids.forEach {
+            flatImageRepository.deleteById(it)
+        }
+    }
 }

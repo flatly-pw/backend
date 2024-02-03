@@ -13,4 +13,8 @@ class FlatPriceService(private val flatPriceRepository: FlatPriceRepository) {
         val nights = (end - start).days - 1
         return pricePerNight * nights
     }
+
+    fun delpricebyFlatId(flatId: String){
+        flatPriceRepository.delete(flatPriceRepository.getPriceEntityByFlatId(flatId))
+    }
 }
