@@ -19,6 +19,7 @@ class FlatService(
     private val imageService: FlatImageService,
     private val reviewService: FlatReviewService,
     private val priceService: FlatPriceService,
+    private val flatFacilityService: FlatFacilityService,
 ) {
 
     fun findAll(flatQuery: FlatQuery): Page<Flat> {
@@ -128,6 +129,27 @@ class FlatService(
         val newFlatEntity = flat.toEntity()
         return flatEntityRepository.save(newFlatEntity)
             //.toDomain()
+    }
+
+    fun deleteFlatOnId(flatId: String): Boolean {
+
+        val flattodel = flatEntityRepository.findById(flatId).getOrNull()?: return false
+        //images
+        val images = imageService.getImageIdsbyFlatId(flatId)
+        imageService.deletebyIds(images)
+
+        //facilities
+        flatFacilityService.deleteFlatbyFlatId(flatId, flattodel.facilities)
+
+        //price
+        priceService.delpricebyFlatId(flatId)
+
+        var result = false
+        if (flatEntityRepository.existsById(flatId)) {
+            flatEntityRepository.deleteById(flatId)
+            result = true
+        }
+        return result
     }
 }
 
