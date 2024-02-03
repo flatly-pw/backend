@@ -21,5 +21,5 @@ class FlatImageEntity(
     var fileType: String,
     @Lob @Column(columnDefinition = "MEDIUMBLOB") var bytes: ByteArray,
     var ordinal: Int,
-    @Id @GeneratedValue(generator = "uuid", strategy = GenerationType.UUID) var id: String
+    @Id @GeneratedValue(generator = "uuid", strategy = GenerationType.UUID) var id: String? = null
 )
