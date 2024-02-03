@@ -12,10 +12,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import pw.react.backend.dao.FlatOwnerRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.exceptions.FlatValidationException
+import pw.react.backend.exceptions.InvalidFileException
 import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
@@ -146,7 +149,43 @@ class FlatController(
     throw FlatValidationException(ex.message, UserController.USERS_PATH)
     }
 
+    @Operation(summary = "Add an image")
+    @ApiResponse(
+        responseCode = "201",
+        description = "Succesfully added an image",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [FlatDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Something went wrong"
+    )
+    @PostMapping("/admin/flats/{flatId}/image")
+    fun postImage(@PathVariable flatId: String,
+                  @RequestParam("file") file: MultipartFile
+    ): ResponseEntity<*> = try {
 
+        val image = flatImageService.saveImage(flatId, file)
+
+        val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/flats/$flatId/image/")
+            .path(image.id)
+            .toUriString()
+        val response = UploadFileResponse(
+            image.name,
+            fileDownloadUri,
+            file.contentType,
+            file.size
+        )
+        ResponseEntity.ok(response)
+    }
+    catch (e: InvalidFileException) {
+        ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
+    }
+    catch (e: Exception){
+        throw FlatValidationException(e.message, UserController.USERS_PATH)
+    }
 
     @Operation(summary = "Get flat offer details")
     @ApiResponse(
