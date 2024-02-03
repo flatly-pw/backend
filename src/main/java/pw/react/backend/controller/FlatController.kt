@@ -142,7 +142,7 @@ class FlatController(
 
         ResponseEntity.ok(
             //savedFlat.toDto() // nie ma thambnail wiec sie wywala
-            newFlatDto // del potem
+            savedFlat.id // del potem
         )
 
     } catch (ex: Exception) {
@@ -186,6 +186,28 @@ class FlatController(
     catch (e: Exception){
         throw FlatValidationException(e.message, UserController.USERS_PATH)
     }
+
+    @Operation(summary = "Delete the flat")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Succesfully deleted a flat",
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Something went wrong"
+    )
+    @DeleteMapping("/admin/flats/{flatId}")
+    fun delflat(@PathVariable flatId: String): ResponseEntity<*> = try {
+        val del = flatService.deleteFlatOnId(flatId)
+        if(!del) ResponseEntity.badRequest()
+            .body<String>(String.format("Flat with id %s does not exists.", flatId))
+        else ResponseEntity.ok(String.format("Flat with id %s deleted.", flatId))
+    }
+    catch (e: Exception){
+        throw FlatValidationException(e.message, UserController.USERS_PATH)
+    }
+
+
 
     @Operation(summary = "Get flat offer details")
     @ApiResponse(
