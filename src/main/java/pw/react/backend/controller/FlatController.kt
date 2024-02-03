@@ -99,8 +99,6 @@ class FlatController(
         ResponseEntity.ok(flatDetailsService.getFlatDetailsById(flatId).toDto())
     } catch (e: FlatNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
-    } catch (e: FlatImageException) {
-        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 
     @Operation(summary = "Get flat image")
