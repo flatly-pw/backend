@@ -12,7 +12,6 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
-import org.hibernate.annotations.Cascade
 
 @Entity
 @Table(name = "flat_entity")

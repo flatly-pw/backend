@@ -4,9 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import jakarta.servlet.http.HttpServletRequest
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
@@ -14,9 +12,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.multipart.MultipartRequest
-import pw.react.backend.dao.AddressRepository
 import pw.react.backend.dao.FlatOwnerRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
@@ -26,11 +21,9 @@ import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatOwner
 import pw.react.backend.models.domain.toDomain
-import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.*
 import pw.react.backend.utils.TimeProvider
 import pw.react.backend.web.*
-import javax.print.attribute.standard.Media
 
 
 @RestController

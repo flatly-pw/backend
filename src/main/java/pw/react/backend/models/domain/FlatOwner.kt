@@ -3,7 +3,6 @@ package pw.react.backend.models.domain
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
-import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.FlatOwnerEntity
 
 data class FlatOwner(

@@ -1,7 +1,6 @@
 package pw.react.backend.web
 
 import kotlinx.serialization.Serializable
-import org.springframework.web.multipart.MultipartFile
 import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatOwner

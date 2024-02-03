@@ -1,4 +1,4 @@
-package pw.react.backend.services;
+package pw.react.backend.services
 
 import pw.react.backend.dao.FlatOwnerRepository
 import pw.react.backend.models.domain.FlatOwner
