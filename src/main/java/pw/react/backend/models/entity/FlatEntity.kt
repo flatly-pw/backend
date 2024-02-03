@@ -1,17 +1,6 @@
 package pw.react.backend.models.entity
 
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToMany
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.OneToOne
-import jakarta.persistence.PrimaryKeyJoinColumn
-import jakarta.persistence.Table
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "flat_entity")
@@ -35,7 +24,7 @@ class FlatEntity(
     @OneToMany(mappedBy = "flat")
     var images: Set<FlatImageEntity> = emptySet()
 
-    @ManyToMany(mappedBy = "flats")
+    @ManyToMany
     var facilities: Set<FlatFacilityEntity> = emptySet()
 
     @OneToMany(mappedBy = "flat")
