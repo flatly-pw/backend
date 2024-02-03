@@ -119,6 +119,16 @@ public class MainConfig {
     }
 
     @Bean
+    public AddressService addressService(AddressRepository addressRepository){
+        return new AddressService(addressRepository);
+    }
+
+    @Bean
+    public FlatOwnerService flatOwnerService(FlatOwnerRepository flatOwnerRepository){
+        return new FlatOwnerService(flatOwnerRepository);
+    }
+
+    @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
