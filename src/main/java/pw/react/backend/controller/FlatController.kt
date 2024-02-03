@@ -4,25 +4,34 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.servlet.http.HttpServletRequest
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.multipart.MultipartRequest
+import pw.react.backend.dao.AddressRepository
+import pw.react.backend.dao.FlatOwnerRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
+import pw.react.backend.exceptions.FlatValidationException
 import pw.react.backend.models.FlatQueryFactory
+import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
-import pw.react.backend.services.FlatDetailsService
-import pw.react.backend.services.FlatImageService
-import pw.react.backend.services.FlatService
-import pw.react.backend.web.FlatDetailsDto
-import pw.react.backend.web.PageDto
-import pw.react.backend.web.toDto
+import pw.react.backend.models.domain.FlatOwner
+import pw.react.backend.models.domain.toDomain
+import pw.react.backend.security.jwt.services.JwtTokenService
+import pw.react.backend.services.*
+import pw.react.backend.utils.TimeProvider
+import pw.react.backend.web.*
+import javax.print.attribute.standard.Media
+
 
 @RestController
 class FlatController(
@@ -30,6 +39,10 @@ class FlatController(
     private val flatDetailsService: FlatDetailsService,
     private val flatImageService: FlatImageService,
     private val flatQueryFactory: FlatQueryFactory,
+    private val flatOwnerService: FlatOwnerService,
+    private val timeProvider: TimeProvider,
+    private val flatOwnerRepository: FlatOwnerRepository,
+    private val addressService: AddressService,
 ) {
 
     @Operation(
@@ -81,6 +94,66 @@ class FlatController(
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
     }
+
+
+    @Operation(summary = "Create new flat")
+    @ApiResponse(
+    responseCode = "201",
+    description = "Succesfully created a flat",
+    content = [
+    Content(mediaType = "application/json", schema = Schema(oneOf = [FlatDetailsDto::class]))
+    ]
+    )
+    @ApiResponse(
+    responseCode = "401",
+    description = "Something went wrong"
+    )
+    @PostMapping("/admin/flats")
+    fun postFlat(@RequestBody newFlatDto: NewFlatDto): ResponseEntity<*> =
+    try {
+        val email = newFlatDto.flatowneremail
+        var flatOwner = flatOwnerRepository.findByEmail(email)?.toDomain()
+        if (flatOwner == null) {
+            flatOwner = FlatOwner(
+                name = newFlatDto.flatownername,
+                lastName = newFlatDto.flatownerlastName,
+                email = email,
+                phoneNumber = newFlatDto.flatownerphoneNumber,
+                registeredAt = timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date,
+            )
+            val newFlatOwner =  flatOwnerService.save(flatOwner)
+            flatOwner = newFlatOwner
+        }
+
+
+        val address = Address(
+            street = newFlatDto.street,
+            postalCode = newFlatDto.postalCode,
+            city = newFlatDto.city,
+            country = newFlatDto.country,
+            latitude = newFlatDto.latitude,
+            longitude = newFlatDto.longitude
+        )
+        val newAddress = addressService.save(address)
+
+        val newFlat = newFlatDto.toDomain(newAddress,flatOwner)
+        val savedFlat = flatService.saveNewFlat(newFlat)
+
+        //val image = flatImageService.saveImage(savedFlat.id, newFlatDto.imagefile)
+        //albo dto image albo zrobic cos na zwrot albo logi, idk
+
+
+
+        ResponseEntity.ok(
+            //savedFlat.toDto() // nie ma thambnail wiec sie wywala
+            newFlatDto // del potem
+        )
+
+    } catch (ex: Exception) {
+    throw FlatValidationException(ex.message, UserController.USERS_PATH)
+    }
+
+
 
     @Operation(summary = "Get flat offer details")
     @ApiResponse(
