@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
 import pw.react.backend.dao.*;
 import pw.react.backend.models.FlatQueryFactory;
+import pw.react.backend.models.domain.FlatOwner;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
 import pw.react.backend.security.jwt.services.JwtConfig;
@@ -102,8 +103,8 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatImageService flatImageService(FlatImageRepository flatImageRepository) {
-        return new FlatImageService(flatImageRepository);
+    public FlatImageService flatImageService(FlatImageRepository flatImageRepository, FlatEntityRepository flatEntityRepository) {
+        return new FlatImageService(flatImageRepository, flatEntityRepository);
     }
 
     @Bean

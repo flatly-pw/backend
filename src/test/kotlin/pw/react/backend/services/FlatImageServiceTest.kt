@@ -5,6 +5,7 @@ import io.kotest.matchers.equals.shouldBeEqual
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.FlatImageRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.stubs.stubFlatEntity
@@ -17,7 +18,8 @@ class FlatImageServiceTest {
         every { it.findFlatImageBy("1", "2") } returns imageEntity
         every { it.findFlatImageBy("2", "2") } returns null
     }
-    private val service = FlatImageService(repository)
+    private val flatrpo = mockk<FlatEntityRepository>()
+    private val service = FlatImageService(repository, flatrpo)
 
     @Test
     fun `Throws ImageNotFound exception if repository returned null`() {
