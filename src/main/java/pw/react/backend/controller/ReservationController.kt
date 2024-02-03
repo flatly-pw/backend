@@ -14,10 +14,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.FlatNotFoundException
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
 import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.ReservationFilter
@@ -26,11 +28,11 @@ import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
 import pw.react.backend.services.ReservationService
 import pw.react.backend.services.UserService
+import pw.react.backend.utils.LocalDateRange
 import pw.react.backend.utils.TimeProvider
+import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.PageDto
 import pw.react.backend.web.ReservationDetailsDto
-import pw.react.backend.utils.LocalDateRange
-import pw.react.backend.web.DatePeriodsDto
 import pw.react.backend.web.ReservationDto
 import pw.react.backend.web.UserReservationDto
 import pw.react.backend.web.toDomain
@@ -204,6 +206,10 @@ class ReservationController(
         ]
     )
     @ApiResponse(
+        responseCode = "400",
+        description = "Could not cancel reservation.",
+    )
+    @ApiResponse(
         responseCode = "404",
         description = "Reservation was not found."
     )
@@ -249,6 +255,46 @@ class ReservationController(
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: NullPointerException) {
         ResponseEntity.internalServerError().build<Void>()
+    }
+
+    @Operation(
+        summary = "Cancel reservation",
+        description = "Note that only user that posted reservation can cancel it."
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully cancelled reservation",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [ReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Reservation could not be cancelled"
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Reservation was cancelled by user that does not own the reservation."
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Reservation was not found."
+    )
+    @PutMapping("/reservation/cancel/{reservationId}")
+    fun cancelReservation(@PathVariable reservationId: Long, request: HttpServletRequest): ResponseEntity<*> = try {
+        val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
+        val email = jwtTokenService.getUsernameFromToken(token)
+        val userId = userService.findUserByEmail(email)?.id
+            ?: throw UsernameNotFoundException("user with email: $email not found")
+        ResponseEntity.ok(reservationService.cancelReservation(reservationId, userId).toDto())
+    } catch (e: ReservationNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: ReservationCancellationException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 
     companion object {
