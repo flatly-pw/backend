@@ -7,7 +7,7 @@ import pw.react.backend.models.entity.FlatReview
 @Serializable
 data class FlatDetailsDto(
     val title: String,
-    val thumbnail: String,
+    val thumbnail: String?,
     val gallery: List<String>,
     val rating: Float,
     val numberOfReviews: Int,

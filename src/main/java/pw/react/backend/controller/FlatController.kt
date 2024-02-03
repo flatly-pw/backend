@@ -92,14 +92,12 @@ class FlatController(
     )
     @ApiResponse(
         responseCode = "404",
-        description = "Flat with given id was not found or thumbnail for this flat was not present",
+        description = "Flat with given id was not found.",
     )
     @GetMapping("/flats/{flatId}")
     fun getFlatDetails(@PathVariable flatId: String): ResponseEntity<*> = try {
         ResponseEntity.ok(flatDetailsService.getFlatDetailsById(flatId).toDto())
     } catch (e: FlatNotFoundException) {
-        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
-    } catch (e: FlatImageException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 

@@ -9,7 +9,7 @@ interface FlatReviewRepository : JpaRepository<FlatReviewEntity, FlatReviewId> {
 
     fun countFlatReviewEntitiesByFlatId(id: String): Int
 
-    @Query("select avg(rating) from FlatReviewEntity where flat.id = ?1")
+    @Query("select coalesce(avg(rating), 0) from FlatReviewEntity where flat.id = ?1")
     fun getAverageRatingByFlatId(id: String): Float
 
     // limit 3 is temporary and can be changed later. Same thing with ordering
