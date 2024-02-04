@@ -1,7 +1,6 @@
 package pw.react.backend.web
 
 import jakarta.validation.constraints.Email
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import pw.react.backend.models.domain.User
 
@@ -15,11 +14,4 @@ data class UserDto(
 ) {
 
     fun toDomain() = User(name, lastName, email, password!!, id)
-
-    companion object {
-
-        @JvmStatic
-        fun User.toDto() = UserDto(id!!, name, lastName, null, email)
-    }
 }
-

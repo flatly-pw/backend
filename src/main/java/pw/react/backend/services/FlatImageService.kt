@@ -69,4 +69,11 @@ class FlatImageService(
             throw InvalidFileException("Could not store file $fileName. Please try again!", ex)
         }
     }
+
+    fun getdownlandUri(flatId: String, id: String): String {
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+            .path("/flats/$flatId/image/")
+            .path(id)
+            .toUriString()
+    }
 }

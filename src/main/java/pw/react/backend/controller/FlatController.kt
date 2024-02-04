@@ -170,10 +170,8 @@ class FlatController(
 
         val image = flatImageService.saveImage(flatId, file)
 
-        val fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/flats/$flatId/image/")
-            .path(image.id)
-            .toUriString()
+        val fileDownloadUri = flatImageService.getdownlandUri(flatId, image.id)
+
         val response = UploadFileResponse(
             image.name,
             fileDownloadUri,
