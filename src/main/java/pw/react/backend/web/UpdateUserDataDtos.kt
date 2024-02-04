@@ -10,8 +10,12 @@ data class ChangePasswordDto(
 
 @Serializable
 data class ChangeNameDto(
-    val newName: String? = null,
-    val newLastName: String? = null
+    val newName: String,
+)
+
+@Serializable
+data class ChangeLastNameDto(
+    val newLastName: String
 )
 
 @Serializable

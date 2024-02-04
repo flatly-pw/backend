@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.exceptions.UserValidationException
-import pw.react.backend.models.domain.User
 import pw.react.backend.security.common.AuthenticationService
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.UserService
+import pw.react.backend.web.ChangeLastNameDto
 import pw.react.backend.web.ChangeMailDto
 import pw.react.backend.web.ChangeNameDto
 import pw.react.backend.web.ChangePasswordDto
@@ -53,20 +53,26 @@ class UserController(
         val email = jwtTokenService.getUsernameFromToken(token)
         val user = userService.findUserByEmail(email)
             ?: throw UsernameNotFoundException("User with email: $email was not found")
-        require(changeNameDto.newName != null || changeNameDto.newLastName != null) {
-            "At least one of newName or lastName has to be not null"
-        }
-        var updatedUser: User? = null
-        changeNameDto.newName?.let { newName ->
-            updatedUser = userService.updateName(user, newName)
-        }
-        changeNameDto.newLastName?.let { newLastName ->
-            updatedUser = userService.updateLastName(user, newLastName)
-        }
-        ResponseEntity.ok(updatedUser!!.toDetailsDto())
+        val updatedUser = userService.updateName(user, changeNameDto.newName)
+        ResponseEntity.ok(updatedUser.toDetailsDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
-    } catch (e: IllegalArgumentException) {
+    } catch (e: UserValidationException) {
+        ResponseEntity.badRequest().body(e.message)
+    }
+
+    @PutMapping("/lastName")
+    fun changeNameAndLastName(
+        @RequestBody changeLastNameDto: ChangeLastNameDto,
+        request: HttpServletRequest
+    ): ResponseEntity<*> = try {
+        val token = request.getHeader(AUTHORIZATION).substringAfter(BEARER)
+        val email = jwtTokenService.getUsernameFromToken(token)
+        val user = userService.findUserByEmail(email)
+            ?: throw UsernameNotFoundException("User with email: $email was not found")
+        val updatedUser = userService.updateLastName(user, changeLastNameDto.newLastName)
+        ResponseEntity.ok(updatedUser.toDetailsDto())
+    } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: UserValidationException) {
         ResponseEntity.badRequest().body(e.message)
