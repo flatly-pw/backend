@@ -34,6 +34,18 @@ open class UserMainService(
         return userRepository.save(userToSave.toEntity()).toDomain().also { log.info("User was saved") }
     }
 
+    override fun updateName(user: User, name: String): User {
+        if (!isNonEmptyAndBlank(name)) throw UserValidationException("Name cannot be blank or empty")
+        if (user.id == null) throw UserValidationException("User id was null")
+        return userRepository.save(user.copy(name = name).toEntity()).toDomain()
+    }
+
+    override fun updateLastName(user: User, lastName: String): User {
+        if (!isNonEmptyAndBlank(lastName)) throw UserValidationException("Last name cannot be blank or empty")
+        if (user.id == null) throw UserValidationException("User id was null")
+        return userRepository.save(user.copy(lastName = lastName).toEntity()).toDomain()
+    }
+
     override fun updatePassword(user: User, password: String): User {
         if (!isValidPassword(password))
             throw UserValidationException("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")
