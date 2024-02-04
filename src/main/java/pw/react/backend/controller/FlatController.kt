@@ -138,7 +138,7 @@ class FlatController(
         )
         //val newAddress = addressService.save(address)
 
-        val newFlat = newFlatDto.toDomain(address,flatOwner)
+        val newFlat = newFlatDto.toDomain(address,flatOwner, timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate())
         val savedFlat = flatService.saveNewFlat(newFlat)
 
         val price = flatPriceService.savePriceByFlat(savedFlat, newFlatDto.pricePerNight)

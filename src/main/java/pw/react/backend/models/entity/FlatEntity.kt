@@ -12,6 +12,7 @@ import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.PrimaryKeyJoinColumn
 import jakarta.persistence.Table
+import java.time.LocalDate
 
 @Entity
 @Table(name = "flat_entity")
@@ -24,6 +25,7 @@ class FlatEntity(
     var bathrooms: Int,
     var capacity: Int,
     var type: String,
+    var created: LocalDate,
     @OneToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "address_entity_id", nullable = false)
     var address: AddressEntity,

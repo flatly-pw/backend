@@ -49,7 +49,8 @@ class FlatService(
             owner = owner.toDomain(),
             rating = reviewService.getRatingByFlatId(flatId),
             pricePerNight = priceService.getPriceByFlatId(flatId),
-            facilities = facilities.map { it.name }
+            facilities = facilities.map { it.name },
+            created = created
         )
     }
 
@@ -155,7 +156,7 @@ class FlatService(
             longitude = flatDto.longitude,
         )
 
-        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.id)
+        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.created, flat.id)
         flatEntityRepository.save(newFlat.toEntity())
     }
 }
