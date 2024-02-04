@@ -13,3 +13,8 @@ data class ChangeNameDto(
     val newName: String?,
     val newLastName: String?
 )
+
+@Serializable
+data class ChangeMailDto(
+    val newMail: String
+)

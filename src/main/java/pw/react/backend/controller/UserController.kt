@@ -13,6 +13,7 @@ import pw.react.backend.models.domain.User
 import pw.react.backend.security.common.AuthenticationService
 import pw.react.backend.security.jwt.services.JwtTokenService
 import pw.react.backend.services.UserService
+import pw.react.backend.web.ChangeMailDto
 import pw.react.backend.web.ChangeNameDto
 import pw.react.backend.web.ChangePasswordDto
 import pw.react.backend.web.toDto
@@ -66,6 +67,23 @@ class UserController(
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
+    } catch (e: UserValidationException) {
+        ResponseEntity.badRequest().body(e.message)
+    }
+
+    @PutMapping("/email")
+    fun changeMail(
+        @RequestBody changeMailDto: ChangeMailDto,
+        request: HttpServletRequest
+    ): ResponseEntity<*> = try {
+        val token = request.getHeader(AUTHORIZATION).substringAfter(BEARER)
+        val email = jwtTokenService.getUsernameFromToken(token)
+        val user = userService.findUserByEmail(email)
+            ?: throw UsernameNotFoundException("User with email: $email was not found")
+        val updatedUser = userService.updateEmail(user, changeMailDto.newMail)
+        ResponseEntity.ok(updatedUser.toDto())
+    } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: UserValidationException) {
         ResponseEntity.badRequest().body(e.message)
