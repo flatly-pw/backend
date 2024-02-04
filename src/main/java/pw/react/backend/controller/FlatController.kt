@@ -201,9 +201,7 @@ class FlatController(
     @PutMapping("/admin/flats/{flatId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun updateFlat(@PathVariable flatId: String, @RequestBody flatDto: NewFlatDto) = run {//nie wiem jaka składnia powinna być ale działa
-        val flat = flatService.findById(flatId)
-            ?: throw InvalidFileException("No flat of id ${flatId} was found")
-        flatService.updateFlat(flat, flatDto)
+        flatService.updateFlat(flatId, flatDto)
         flatPriceService.updatePriceByFlatId(flatId, flatDto.pricePerNight)
         //facil
     }

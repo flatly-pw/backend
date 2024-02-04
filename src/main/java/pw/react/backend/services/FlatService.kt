@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
+import pw.react.backend.exceptions.InvalidFileException
 import pw.react.backend.models.domain.*
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
@@ -131,7 +132,10 @@ class FlatService(
             //.toDomain()
     }
 
-    fun updateFlat(flat: Flat, flatDto: NewFlatDto) {
+    fun updateFlat(flatid: String, flatDto: NewFlatDto) {
+
+        val flat = flatEntityRepository.findById(flatid).getOrNull()?.toDomain()
+            ?: throw InvalidFileException("No flat of id ${flatid} was found")
 
         val newflatOwner = FlatOwner(
             name = flatDto.flatownername,
@@ -148,10 +152,10 @@ class FlatService(
             city = flatDto.city,
             country = flatDto.country,
             latitude = flatDto.latitude,
-            longitude = flatDto.longitude
+            longitude = flatDto.longitude,
         )
 
-        val newFlat = flatDto.toDomain(newaddress,newflatOwner)
+        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.id)
         flatEntityRepository.save(newFlat.toEntity())
     }
 }
