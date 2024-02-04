@@ -109,8 +109,9 @@ class FlatController(
     fun postFlat(@RequestBody newFlatDto: NewFlatDto): ResponseEntity<*> =
     try {
         val email = newFlatDto.flatowneremail
-        var flatOwner = flatOwnerRepository.findByEmail(email)?.toDomain()
-        if (flatOwner == null) {
+        val flatOwnerEntity = flatOwnerRepository.findByEmail(email)
+        var flatOwner: FlatOwner
+        if (flatOwnerEntity == null) {
             flatOwner = FlatOwner(
                 name = newFlatDto.flatownername,
                 lastName = newFlatDto.flatownerlastName,
@@ -118,8 +119,11 @@ class FlatController(
                 phoneNumber = newFlatDto.flatownerphoneNumber,
                 registeredAt = timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date,
             )
-            val newFlatOwner =  flatOwnerService.save(flatOwner)
-            flatOwner = newFlatOwner
+            //val newFlatOwner =  flatOwnerService.save(flatOwner)
+            //flatOwner = newFlatOwner
+        }
+        else{
+            flatOwner = flatOwnerEntity.toDomain()
         }
 
 
@@ -131,12 +135,14 @@ class FlatController(
             latitude = newFlatDto.latitude,
             longitude = newFlatDto.longitude
         )
-        val newAddress = addressService.save(address)
+        //val newAddress = addressService.save(address)
 
-        val newFlat = newFlatDto.toDomain(newAddress,flatOwner)
+        val newFlat = newFlatDto.toDomain(address,flatOwner)
         val savedFlat = flatService.saveNewFlat(newFlat)
 
         val price = flatPriceService.savePriceByFlat(savedFlat, newFlatDto.pricePerNight)
+
+        //save facils
 
         ResponseEntity.ok(savedFlat.id)
 
