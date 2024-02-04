@@ -159,5 +159,26 @@ class FlatService(
         val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.created, flat.id)
         flatEntityRepository.save(newFlat.toEntity())
     }
+
+    fun findAllOrderByName(page: Int, pageSize: Int, name: String?, sort: Int?): Page<Flat> {
+        val pageabledefult = PageRequest.of(page, pageSize, Sort.Direction.ASC, "created")
+        val pageable1 = PageRequest.of(page, pageSize, Sort.Direction.DESC, "price")
+        val pageable2 = PageRequest.of(page, pageSize, Sort.Direction.ASC, "price")
+        when(sort){
+            1 -> return flatEntityRepository.findAll(titleSpecification(name), pageable1).map { it.toDomain() }
+            2 -> return flatEntityRepository.findAll(titleSpecification(name), pageable2).map { it.toDomain() }
+            else -> return flatEntityRepository.findAll(titleSpecification(name), pageabledefult).map { it.toDomain() }
+        }
+    }
+
+    private fun titleSpecification(name: String?) = Specification<FlatEntity> { root, _, builder ->
+        val predicates = listOf(
+            name?.let {
+                    builder.like(root.get<String>("title"), "%${it}%")
+
+            }
+        ).mapNotNull { it }.toTypedArray()
+        builder.and(*predicates)
+    }
 }
 
