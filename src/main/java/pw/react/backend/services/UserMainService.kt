@@ -46,6 +46,13 @@ open class UserMainService(
         return userRepository.save(user.copy(lastName = lastName).toEntity()).toDomain()
     }
 
+    override fun updateEmail(user: User, email: String): User {
+        if (!isValidMail(email)) throw UserValidationException("Email: $email is not valid.")
+        val dbUser = userRepository.findByEmail(email).getOrNull()
+        if (dbUser != null) throw UserValidationException("User already exists.")
+        return userRepository.save(user.copy(email = email).toEntity()).toDomain()
+    }
+
     override fun updatePassword(user: User, password: String): User {
         if (!isValidPassword(password))
             throw UserValidationException("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")

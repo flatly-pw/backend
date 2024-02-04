@@ -9,6 +9,7 @@ interface UserService {
     fun validateAndSave(user: User): User
     fun updateName(user: User, name: String): User
     fun updateLastName(user: User, lastName: String): User
+    fun updateEmail(user: User, email: String): User
     fun updatePassword(user: User, password: String): User
     fun saveUnique(user: User): User
     fun batchSave(users: List<User>): List<User>
