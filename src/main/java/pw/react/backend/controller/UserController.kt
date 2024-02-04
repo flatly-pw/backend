@@ -2,8 +2,10 @@ package pw.react.backend.controller
 
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -25,6 +27,17 @@ class UserController(
     private val jwtTokenService: JwtTokenService,
     private val authenticationService: AuthenticationService,
 ) {
+
+    @GetMapping("/data")
+    fun getUserData(request: HttpServletRequest): ResponseEntity<*> = try {
+        val token = request.getHeader(AUTHORIZATION).substringAfter(BEARER)
+        val email = jwtTokenService.getUsernameFromToken(token)
+        val user = userService.findUserByEmail(email)
+            ?: throw UsernameNotFoundException("User with email: $email was not found")
+        ResponseEntity.ok(user.toDetailsDto())
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    }
 
     @PutMapping("/password")
     fun changePassword(
@@ -97,7 +110,7 @@ class UserController(
 
     companion object {
         private val log = LoggerFactory.getLogger(UserController::class.java)
-        const val USERS_PATH = "/users"
+        const val USERS_PATH = "/user"
         const val AUTHORIZATION = "Authorization"
         const val BEARER = "Bearer "
     }
