@@ -297,6 +297,63 @@ class ReservationController(
         ResponseEntity.badRequest().body(e.message)
     }
 
+    @Operation(
+        summary = "Get reservations on web",
+        description = "in filter write name o lastname of a person who booked a reservation"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got reservation list. Note that `UserReservationDto` is encapsulated in `PageDto` " +
+                "which has `data` - list of UserReservationDto and `last` field indicating whether the page was last or not",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "page or pageSize number was illegal or provided filter was not correct"
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "User from jwt token was not found."
+    )
+    @ApiResponse(
+        responseCode = "422",
+        description = "Reserved flat was not found"
+    )
+    @GetMapping("/admin/reservations")
+    fun getwebReservations(
+        @RequestParam page: Int,
+        @RequestParam pageSize: Int,
+        @RequestParam filter: String?
+    ): ResponseEntity<*> = try {
+        val reservationPage = reservationService.getwebReservations( page, pageSize, filter)
+        val reservationsPageDto: PageDto<List<UserReservationDto>> = reservationPage.toDto { reservation ->
+            with(reservation) {
+                val flat = flatService.findById(flatId)
+                    ?: throw FlatNotFoundException("flat with id: $flatId was not found")
+                val price = flatPriceService.getPriceByFlatId(flatId, startDate, endDate)
+                UserReservationDto(
+                    flatId = flatId,
+                    reservationId = id!!,
+                    title = flat.title,
+                    thumbnailUrl = flat.thumbnailUrl,
+                    city = flat.address.city,
+                    country = flat.address.country,
+                    startDate = startDate.toString(),
+                    endDate = endDate.toString(),
+                    totalPrice = price
+                )
+            }
+        }
+        ResponseEntity.ok().body(reservationsPageDto)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
+    } catch (e: FlatNotFoundException) {
+        ResponseEntity.unprocessableEntity().body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.notFound().build<Void>()
+    }
     companion object {
         private const val BEARER = "Bearer "
     }
