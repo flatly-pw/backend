@@ -1,10 +1,11 @@
 package pw.react.backend.services
 
-import kotlinx.datetime.TimeZone
+import jakarta.persistence.criteria.ParameterExpression
+import jakarta.persistence.criteria.Predicate
 import kotlinx.datetime.toJavaLocalDate
-import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.exceptions.InvalidFileException
@@ -15,6 +16,7 @@ import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.web.NewFlatDto
 import pw.react.backend.web.toDomain
 import kotlin.jvm.optionals.getOrNull
+
 
 class FlatService(
     private val flatEntityRepository: FlatEntityRepository,
