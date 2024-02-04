@@ -35,7 +35,8 @@ open class UserMainService(
     }
 
     override fun updatePassword(user: User, password: String): User {
-        requireValidUser(user)
+        if (!isValidPassword(password))
+            throw UserValidationException("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")
         log.debug("Encoding password.")
         val updatedUser = user.copy(password = passwordEncoder.encode(password))
         return userRepository.save(updatedUser.toEntity()).toDomain()
