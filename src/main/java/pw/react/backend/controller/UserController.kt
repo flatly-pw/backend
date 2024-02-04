@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import pw.react.backend.security.common.AuthenticationService
@@ -21,7 +22,10 @@ class UserController(
 ) {
 
     @PutMapping("/password")
-    fun changePassword(changePasswordDto: ChangePasswordDto, request: HttpServletRequest): ResponseEntity<*> = try {
+    fun changePassword(
+        @RequestBody changePasswordDto: ChangePasswordDto,
+        request: HttpServletRequest
+    ): ResponseEntity<*> = try {
         val token = request.getHeader(AUTHORIZATION).substringAfter(BEARER)
         val email = jwtTokenService.getUsernameFromToken(token)
         val user = userService.findUserByEmail(email)
