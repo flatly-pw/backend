@@ -55,6 +55,8 @@ class UserController(
         ResponseEntity.badRequest().body(e.message)
     } catch (e: IllegalArgumentException) {
         ResponseEntity.badRequest().body(e.message)
+    } catch (e: Exception) {
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
     }
 
     @PutMapping("/name")
