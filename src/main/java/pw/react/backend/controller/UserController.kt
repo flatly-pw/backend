@@ -39,6 +39,8 @@ class UserController(
         ResponseEntity.ok(updatedUser.toDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 
     @PutMapping("/name")
