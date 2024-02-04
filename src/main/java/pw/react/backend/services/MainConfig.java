@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pw.react.backend.batch.BatchConfig;
 import pw.react.backend.dao.*;
 import pw.react.backend.models.FlatQueryFactory;
+import pw.react.backend.models.domain.FlatOwner;
 import pw.react.backend.openapi.OpenApiConfig;
 import pw.react.backend.security.basic.BasicAuthenticationConfig;
 import pw.react.backend.security.jwt.services.JwtConfig;
@@ -102,8 +103,8 @@ public class MainConfig {
     }
 
     @Bean
-    public FlatImageService flatImageService(FlatImageRepository flatImageRepository) {
-        return new FlatImageService(flatImageRepository);
+    public FlatImageService flatImageService(FlatImageRepository flatImageRepository, FlatEntityRepository flatEntityRepository) {
+        return new FlatImageService(flatImageRepository, flatEntityRepository);
     }
 
     @Bean
@@ -116,6 +117,16 @@ public class MainConfig {
     public ReservationService reservationService(ReservationRepository reservationRepository, FlatEntityRepository flatRepository,
                                                  UserRepository userRepository, TimeProvider timeProvider) {
         return new ReservationService(reservationRepository, userRepository, flatRepository, timeProvider);
+    }
+
+    @Bean
+    public AddressService addressService(AddressRepository addressRepository){
+        return new AddressService(addressRepository);
+    }
+
+    @Bean
+    public FlatOwnerService flatOwnerService(FlatOwnerRepository flatOwnerRepository){
+        return new FlatOwnerService(flatOwnerRepository);
     }
 
     @Bean

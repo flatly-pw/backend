@@ -11,5 +11,13 @@ data class Address(
     val latitude: Double
 )
 
+fun Address.toEntity() = AddressEntity(
+    street =street,
+    postalCode = postalCode,
+    city = city,
+    country = country,
+    longitude = longitude,
+    latitude = latitude,
+)
 fun AddressEntity.toDomain() = Address(street, postalCode, city, country, longitude, latitude)
 
