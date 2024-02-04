@@ -7,3 +7,9 @@ data class ChangePasswordDto(
     val currentPassword: String,
     val newPassword: String,
 )
+
+@Serializable
+data class ChangeNameDto(
+    val newName: String?,
+    val newLastName: String?
+)
