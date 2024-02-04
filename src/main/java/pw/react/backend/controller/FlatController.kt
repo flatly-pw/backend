@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.hibernate.action.spi.Executable
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -187,6 +188,26 @@ class FlatController(
     catch (e: Exception){
         throw FlatValidationException(e.message, UserController.USERS_PATH)
     }
+
+    @Operation(summary = "Update existing flat")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Succesfully updated a flat",
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Something went wrong"
+    )
+    @PutMapping("/admin/flats/{flatId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateFlat(@PathVariable flatId: String, @RequestBody flatDto: NewFlatDto) = run {//nie wiem jaka składnia powinna być ale działa
+        val flat = flatService.findById(flatId)
+            ?: throw InvalidFileException("No flat of id ${flatId} was found")
+        flatService.updateFlat(flat, flatDto)
+        flatPriceService.updatePriceByFlatId(flatId, flatDto.pricePerNight)
+        //facil
+    }
+
 
     @Operation(summary = "Get flat offer details")
     @ApiResponse(
