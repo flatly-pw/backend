@@ -39,6 +39,7 @@ class FlatController(
     private val timeProvider: TimeProvider,
     private val flatOwnerRepository: FlatOwnerRepository,
     private val addressService: AddressService,
+    private val flatPriceService: FlatPriceService,
 ) {
 
     @Operation(
@@ -135,15 +136,9 @@ class FlatController(
         val newFlat = newFlatDto.toDomain(newAddress,flatOwner)
         val savedFlat = flatService.saveNewFlat(newFlat)
 
-        //val image = flatImageService.saveImage(savedFlat.id, newFlatDto.imagefile)
-        //albo dto image albo zrobic cos na zwrot albo logi, idk
+        val price = flatPriceService.savePriceByFlat(savedFlat, newFlatDto.pricePerNight)
 
-
-
-        ResponseEntity.ok(
-            //savedFlat.toDto() // nie ma thambnail wiec sie wywala
-            newFlatDto // del potem
-        )
+        ResponseEntity.ok(savedFlat.id)
 
     } catch (ex: Exception) {
     throw FlatValidationException(ex.message, UserController.USERS_PATH)

@@ -3,8 +3,12 @@ package pw.react.backend.services
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import pw.react.backend.dao.FlatPriceRepository
+import pw.react.backend.models.entity.FlatEntity
+import pw.react.backend.models.entity.PriceEntity
 
-class FlatPriceService(private val flatPriceRepository: FlatPriceRepository) {
+class FlatPriceService(
+    private val flatPriceRepository: FlatPriceRepository
+    ) {
 
     fun getPriceByFlatId(flatId: String) = flatPriceRepository.getPriceEntityByFlatId(flatId).priceDollars
 
@@ -12,5 +16,14 @@ class FlatPriceService(private val flatPriceRepository: FlatPriceRepository) {
         val pricePerNight = getPriceByFlatId(flatId)
         val nights = (end - start).days - 1
         return pricePerNight * nights
+    }
+
+    fun savePriceByFlat(flat: FlatEntity, price: Double): PriceEntity {
+        return flatPriceRepository.save(
+            PriceEntity(
+                priceDollars = price,
+                flat = flat,
+            )
+        )
     }
 }
