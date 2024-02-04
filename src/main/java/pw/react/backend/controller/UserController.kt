@@ -1,8 +1,13 @@
 package pw.react.backend.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,6 +23,7 @@ import pw.react.backend.web.ChangeLastNameDto
 import pw.react.backend.web.ChangeMailDto
 import pw.react.backend.web.ChangeNameDto
 import pw.react.backend.web.ChangePasswordDto
+import pw.react.backend.web.UserDetailsDto
 import pw.react.backend.web.toDetailsDto
 
 @RestController
@@ -28,6 +34,14 @@ class UserController(
     private val authenticationService: AuthenticationService,
 ) {
 
+    @Operation(summary = "Get user data")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Success",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserDetailsDto::class]))
+        ]
+    )
     @GetMapping("/data")
     fun getUserData(request: HttpServletRequest): ResponseEntity<*> = try {
         val token = request.getHeader(AUTHORIZATION).substringAfter(BEARER)
@@ -39,6 +53,25 @@ class UserController(
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
 
+    @Operation(
+        summary = "Change user password",
+        description = "Note that `currentPassword` must be valid in order to change it"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Success",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "User was not found or password length was not in range [8; 32]"
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Bad credentials - currentPassword was invalid"
+    )
     @PutMapping("/password")
     fun changePassword(
         @RequestBody changePasswordDto: ChangePasswordDto,
@@ -59,6 +92,18 @@ class UserController(
         ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
     }
 
+    @Operation(summary = "Change user name")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Success",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "User was not found or name was blank or empty"
+    )
     @PutMapping("/name")
     fun changeNameAndLastName(
         @RequestBody changeNameDto: ChangeNameDto,
@@ -76,6 +121,18 @@ class UserController(
         ResponseEntity.badRequest().body(e.message)
     }
 
+    @Operation(summary = "Change user last name")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Success",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "User was not found or last name was blank or empty"
+    )
     @PutMapping("/lastName")
     fun changeNameAndLastName(
         @RequestBody changeLastNameDto: ChangeLastNameDto,
@@ -93,6 +150,18 @@ class UserController(
         ResponseEntity.badRequest().body(e.message)
     }
 
+    @Operation(summary = "Change user last name")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Success",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [UserDetailsDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Email was not valid or was already taken."
+    )
     @PutMapping("/email")
     fun changeMail(
         @RequestBody changeMailDto: ChangeMailDto,
