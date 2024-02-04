@@ -248,4 +248,33 @@ class FlatController(
     } catch (e: FlatImageException.ImageNotFound) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     }
+
+    @Operation(
+        summary = "Get flat offers on web",
+        description = "price descending is 1, price ascending is 2 and by newest is 0 wich is also defult"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got flat list. data contains Flat",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [PageDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "FlatQueryDto contained invalid data.",
+    )
+    @GetMapping("/admin/flats")
+    fun getAllWebFlats(
+        @RequestParam page: Int,
+        @RequestParam pageSize: Int,
+        @RequestParam name: String?,
+        @RequestParam sort: Int?,
+    ): ResponseEntity<*> = try {
+        val webflatpage = flatService.findAllOrderByName(page, pageSize, name, sort)
+        ResponseEntity.ok(webflatpage.toDto(Flat::toDto))
+    }
+    catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
+    }
 }
