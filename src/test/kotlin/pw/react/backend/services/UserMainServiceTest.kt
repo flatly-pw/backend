@@ -1,6 +1,7 @@
 package pw.react.backend.services
 
 import io.kotest.assertions.throwables.shouldThrow
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -122,4 +123,115 @@ class UserMainServiceTest {
         }
     }
 
+    @Test
+    fun `updateName throws UserValidation exception if name is empty or blank`() {
+        shouldThrow<UserValidationException> {
+            service.updateName(stubUser(id = 1), "")
+            service.updateName(stubUser(id = 1), "  ")
+        }
+    }
+
+    @Test
+    fun `updateName throws UserValidation exception if user id is null`() {
+        shouldThrow<UserValidationException> {
+            service.updateName(stubUser(id = null), "Adam")
+        }
+    }
+
+    @Test
+    fun `updateName returns updated user`() {
+        val user = stubUser(id = 1)
+        every { repository.save(match<UserEntity> { it.id == 1L && it.name == "Adam" }) } returns stubUserEntity(
+            id = 1,
+            name = "Adam"
+        )
+        service.updateName(user, "Adam") shouldBe stubUser(id = 1, name = "Adam")
+    }
+
+    @Test
+    fun `updateLastName throws UserValidation exception if last name is empty or blank`() {
+        shouldThrow<UserValidationException> {
+            service.updateLastName(stubUser(id = 1), "")
+            service.updateName(stubUser(id = 1), "  ")
+        }
+    }
+
+    @Test
+    fun `updateLastName throws UserValidation exception if user id is null`() {
+        shouldThrow<UserValidationException> {
+            service.updateLastName(stubUser(id = null), "Adam")
+        }
+    }
+
+    @Test
+    fun `updateLastName return user with updated last name`() {
+        val user = stubUser(id = 1)
+        every { repository.save(match<UserEntity> { it.id == 1L && it.lastName == "Doberman" }) } returns stubUserEntity(
+            id = 1,
+            lastName = "Doberman"
+        )
+        service.updateLastName(user, "Doberman") shouldBe stubUser(id = 1, lastName = "Doberman")
+    }
+
+    @Test
+    fun `updateEmail throws UserValidation exception if email is not valid`() {
+        shouldThrow<UserValidationException> {
+            service.updateEmail(stubUser(id = 1), "mail")
+        }
+    }
+
+    @Test
+    fun `updateEmail throws UserValidation exception if email is taken`() {
+        every {
+            repository.findByEmail("adam@mail.com")
+        } returns Optional.of(stubUserEntity(id = 1, email = "adam@mail.com"))
+        shouldThrow<UserValidationException> {
+            service.updateEmail(stubUser(id = 1), "adam@mail.com")
+        }
+    }
+
+    @Test
+    fun `updateEmail throws UserValidation exception if id was null`() {
+        every {
+            repository.findByEmail("adam@mail.com")
+        } returns Optional.empty()
+        shouldThrow<UserValidationException> {
+            service.updateEmail(stubUser(id = null), "adam@mail.com")
+        }
+    }
+
+    @Test
+    fun `updateEmail returns user with updated mail`() {
+        every {
+            repository.findByEmail("adam@mail.com")
+        } returns Optional.empty()
+        every {
+            repository.save(match<UserEntity> { it.id == 1L && it.email == "adam@mail.com" })
+        } returns stubUserEntity(id = 1, email = "adam@mail.com")
+        service.updateEmail(stubUser(id = 1), "adam@mail.com") shouldBe stubUser(id = 1, email = "adam@mail.com")
+    }
+
+    @Test
+    fun `updatePassword throws UserValidation exception if password is invalid`() {
+        shouldThrow<UserValidationException> {
+            service.updatePassword(stubUser(id = 1), "halo")
+            service.updatePassword(stubUser(id = 1), "1".repeat(33))
+        }
+    }
+
+    @Test
+    fun `updatePassword throws UserValidation exception if user id is null`() {
+        shouldThrow<UserValidationException> {
+            service.updatePassword(stubUser(id = null), "halohalo")
+        }
+    }
+
+    @Test
+    fun `updatePassword returns user with updated password`() {
+        every { passwordEncoder.encode("newpassword") } returns "encoded-password"
+        every {
+            repository.save(match<UserEntity> { it.id == 1L && it.password == "encoded-password" })
+        } returns stubUserEntity(id = 1, password = "encoded-password")
+        service.updatePassword(stubUser(id = 1), "newpassword") shouldBe stubUser(id = 1, password = "encoded-password")
+    }
 }
