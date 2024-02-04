@@ -19,9 +19,8 @@ class FlatImageService(
     private val flatEntityRepository: FlatEntityRepository
 ) {
 
-    fun getThumbnailUriByFlatId(flatId: String): String {
-        val thumbnail = flatImageRepository.findThumbnailByFlatId(flatId)
-            ?: throw FlatImageException.ThumbnailNotFound("There was not thumbnail for flatId: $flatId")
+    fun getThumbnailUriByFlatId(flatId: String): String? {
+        val thumbnail = flatImageRepository.findThumbnailByFlatId(flatId) ?: return null
         return ServletUriComponentsBuilder.fromCurrentContextPath()
             .path("/flats/$flatId/image/${thumbnail.id}")
             .toUriString()

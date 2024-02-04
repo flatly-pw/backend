@@ -177,15 +177,6 @@ class FlatControllerTest {
 
     @Test
     @WithMockUser
-    fun `Responds with NotFound if Flat thumbnail was not found`() {
-        every { flatDetailsService.getFlatDetailsById("1") } throws FlatImageException.ThumbnailNotFound("")
-        webMvc.get("/flats/1").andExpect {
-            status { isNotFound() }
-        }
-    }
-
-    @Test
-    @WithMockUser
     fun `Responds with NotFound if image was not found`() {
         every { flatImageService.getImage(any(), any()) } throws FlatImageException.ImageNotFound("")
         webMvc.get("/flats/1/image/1").andExpect {

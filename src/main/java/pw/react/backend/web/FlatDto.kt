@@ -7,7 +7,7 @@ import pw.react.backend.models.domain.Flat
 data class FlatDto(
     val id: String,
     val title: String,
-    val thumbnail: String = "https://static.prod.r53.tablethotels.com/media/hotels/slideshow_images_staged/large/1070616.jpg",
+    val thumbnail: String? = "https://static.prod.r53.tablethotels.com/media/hotels/slideshow_images_staged/large/1070616.jpg",
     val city: String = "Warsaw",
     val rating: Float = 4.7f,
     val distanceFromCenter: Float = 470f,

@@ -10,7 +10,9 @@ import org.springframework.data.domain.PageRequest
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
+import pw.react.backend.exceptions.ReservationCancellationException
 import pw.react.backend.exceptions.ReservationException
+import pw.react.backend.exceptions.ReservationNotFoundException
 import pw.react.backend.models.domain.Reservation
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.domain.toDomain
@@ -80,6 +82,20 @@ class ReservationService(
 
     fun getReservation(reservationId: Long): Reservation? =
         reservationRepository.findById(reservationId).getOrNull()?.toDomain()
+
+    fun cancelReservation(reservationId: Long, userId: Long): Reservation {
+        val reservation = reservationRepository.findById(reservationId).getOrNull()
+            ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
+        require(reservation.user.id == userId) { "Only person that made reservation can cancel it" }
+        val currentDate = timeProvider().toJavaLocalDate()
+        when {
+            reservation.endDate < currentDate -> throw ReservationCancellationException("Cannot cancel passed reservation")
+            reservation.startDate < currentDate -> throw ReservationCancellationException("Reservation can only be cancelled before startDate.")
+            reservation.cancelled -> throw ReservationCancellationException("Reservation is already cancelled")
+        }
+        val canceledReservation = reservation.apply { cancelled = true }
+        return reservationRepository.save(canceledReservation).toDomain()
+    }
 
     private fun canReserveFlat(flatId: String, startDate: LocalDate, endDate: LocalDate): Boolean {
         require(startDate < endDate) { "startDate must be earlier than endDate." }
