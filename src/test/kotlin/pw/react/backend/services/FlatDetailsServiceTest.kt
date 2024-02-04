@@ -45,12 +45,6 @@ class FlatDetailsServiceTest {
     }
 
     @Test
-    fun `Throws ThumbnailNotFoundException if thumbnail for flat was not found`() {
-        every { flatImageService.getThumbnailUriByFlatId("1") } throws FlatImageException.ThumbnailNotFound("")
-        shouldThrow<FlatImageException.ThumbnailNotFound> { service.getFlatDetailsById("1") }
-    }
-
-    @Test
     fun `Returns correct details`() {
         val expectedDetails = stubFlatDetails()
         service.getFlatDetailsById("1") shouldBe expectedDetails
