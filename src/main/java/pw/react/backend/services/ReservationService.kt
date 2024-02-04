@@ -7,6 +7,8 @@ import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.dao.ReservationRepository
 import pw.react.backend.dao.UserRepository
@@ -17,7 +19,9 @@ import pw.react.backend.models.domain.Reservation
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.domain.toEntity
+import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
+import pw.react.backend.models.entity.UserEntity
 import pw.react.backend.utils.LocalDateRange
 import pw.react.backend.utils.LocalDateRange.Companion.intersect
 import pw.react.backend.utils.LocalDateRange.Companion.rangeTo
@@ -109,4 +113,19 @@ class ReservationService(
     }
 
     private fun Instant.toJavaLocalDate() = toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate()
+    fun getwebReservations(page: Int, pageSize: Int, filter: String?): Page<Reservation> {
+        val pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "startDate")
+        return reservationRepository.findAll(nameSpecification(filter), pageable).map(ReservationEntity::toDomain)
+    }
+    private fun nameSpecification(name: String?) = Specification<ReservationEntity> { root, _, builder ->
+        val predicates = listOf(
+            name?.let {
+                builder.like(root.get<UserEntity>("user").get<String>("name"), "%${it}%")
+            },
+            name?.let {
+                builder.like(root.get<UserEntity>("user").get<String>("lastName"), "%${it}%")
+            }
+        ).mapNotNull { it }.toTypedArray()
+        builder.or(*predicates)
+    }
 }

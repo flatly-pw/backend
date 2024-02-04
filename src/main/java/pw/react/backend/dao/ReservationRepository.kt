@@ -3,11 +3,13 @@ package pw.react.backend.dao
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
+import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
 import java.time.LocalDate
 
-interface ReservationRepository : JpaRepository<ReservationEntity, Long> {
+interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpecificationExecutor<ReservationEntity> {
 
     @Query(
         """
