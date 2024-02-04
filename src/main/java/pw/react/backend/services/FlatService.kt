@@ -1,17 +1,18 @@
 package pw.react.backend.services
 
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
-import pw.react.backend.models.domain.Flat
-import pw.react.backend.models.domain.FlatQuery
-import pw.react.backend.models.domain.toDomain
-import pw.react.backend.models.domain.toEntity
+import pw.react.backend.models.domain.*
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
+import pw.react.backend.web.NewFlatDto
+import pw.react.backend.web.toDomain
 import kotlin.jvm.optionals.getOrNull
 
 class FlatService(
@@ -128,6 +129,30 @@ class FlatService(
         val newFlatEntity = flat.toEntity()
         return flatEntityRepository.save(newFlatEntity)
             //.toDomain()
+    }
+
+    fun updateFlat(flat: Flat, flatDto: NewFlatDto) {
+
+        val newflatOwner = FlatOwner(
+            name = flatDto.flatownername,
+            lastName = flatDto.flatownerlastName,
+            email = flatDto.flatowneremail,
+            phoneNumber = flatDto.flatownerphoneNumber,
+            registeredAt = flat.owner.registeredAt,
+            id = flat.owner.id
+        )
+
+        val newaddress = Address(
+            street = flatDto.street,
+            postalCode = flatDto.postalCode,
+            city = flatDto.city,
+            country = flatDto.country,
+            latitude = flatDto.latitude,
+            longitude = flatDto.longitude
+        )
+
+        val newFlat = flatDto.toDomain(newaddress,newflatOwner)
+        flatEntityRepository.save(newFlat.toEntity())
     }
 }
 

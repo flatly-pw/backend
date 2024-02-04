@@ -26,4 +26,8 @@ class FlatPriceService(
             )
         )
     }
+
+    fun updatePriceByFlatId(flatId: String, pricePerNight: Double) {
+        flatPriceRepository.getPriceEntityByFlatId(flatId).priceDollars = pricePerNight
+    }
 }
