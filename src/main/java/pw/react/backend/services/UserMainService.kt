@@ -34,9 +34,31 @@ open class UserMainService(
         return userRepository.save(userToSave.toEntity()).toDomain().also { log.info("User was saved") }
     }
 
+    override fun updateName(user: User, name: String): User {
+        if (!isNonEmptyAndBlank(name)) throw UserValidationException("Name cannot be blank or empty")
+        if (user.id == null) throw UserValidationException("User id was null")
+        return userRepository.save(user.copy(name = name).toEntity()).toDomain()
+    }
+
+    override fun updateLastName(user: User, lastName: String): User {
+        if (!isNonEmptyAndBlank(lastName)) throw UserValidationException("Last name cannot be blank or empty")
+        if (user.id == null) throw UserValidationException("User id was null")
+        return userRepository.save(user.copy(lastName = lastName).toEntity()).toDomain()
+    }
+
+    override fun updateEmail(user: User, email: String): User {
+        if (!isValidMail(email)) throw UserValidationException("Email: $email is not valid.")
+        val dbUser = userRepository.findByEmail(email).getOrNull()
+        if (dbUser != null) throw UserValidationException("User already exists.")
+        if (user.id == null) throw UserValidationException("User id was null")
+        return userRepository.save(user.copy(email = email).toEntity()).toDomain()
+    }
+
     override fun updatePassword(user: User, password: String): User {
-        requireValidUser(user)
+        if (!isValidPassword(password))
+            throw UserValidationException("Password length must be between $MIN_PASSWORD_LENGTH and $MAX_PASSWORD_LENGTH")
         log.debug("Encoding password.")
+        if (user.id == null) throw UserValidationException("User id was null")
         val updatedUser = user.copy(password = passwordEncoder.encode(password))
         return userRepository.save(updatedUser.toEntity()).toDomain()
     }
