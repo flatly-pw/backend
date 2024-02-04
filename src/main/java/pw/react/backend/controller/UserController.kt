@@ -16,7 +16,7 @@ import pw.react.backend.services.UserService
 import pw.react.backend.web.ChangeMailDto
 import pw.react.backend.web.ChangeNameDto
 import pw.react.backend.web.ChangePasswordDto
-import pw.react.backend.web.toDto
+import pw.react.backend.web.toDetailsDto
 
 @RestController
 @RequestMapping(UserController.USERS_PATH)
@@ -37,7 +37,7 @@ class UserController(
             ?: throw UsernameNotFoundException("User with email: $email was not found")
         authenticationService.authenticate(user.email, changePasswordDto.currentPassword)
         val updatedUser = userService.updatePassword(user, changePasswordDto.newPassword)
-        ResponseEntity.ok(updatedUser.toDto())
+        ResponseEntity.ok(updatedUser.toDetailsDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: IllegalArgumentException) {
@@ -63,7 +63,7 @@ class UserController(
         changeNameDto.newLastName?.let { newLastName ->
             updatedUser = userService.updateLastName(user, newLastName)
         }
-        ResponseEntity.ok(updatedUser!!.toDto())
+        ResponseEntity.ok(updatedUser!!.toDetailsDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: IllegalArgumentException) {
@@ -82,7 +82,7 @@ class UserController(
         val user = userService.findUserByEmail(email)
             ?: throw UsernameNotFoundException("User with email: $email was not found")
         val updatedUser = userService.updateEmail(user, changeMailDto.newMail)
-        ResponseEntity.ok(updatedUser.toDto())
+        ResponseEntity.ok(updatedUser.toDetailsDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.badRequest().body(e.message)
     } catch (e: UserValidationException) {
