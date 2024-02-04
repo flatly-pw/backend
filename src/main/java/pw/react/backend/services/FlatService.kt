@@ -158,7 +158,20 @@ class FlatService(
             longitude = flatDto.longitude,
         )
 
-        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.created, flat.id)
+        val newFlat = flat.copy(
+            title = flatDto.title,
+            description = flatDto.description,
+            area = flatDto.area,
+            beds = flatDto.beds,
+            bedrooms = flatDto.bedrooms,
+            bathrooms = flatDto.bathrooms,
+            capacity = flatDto.capacity,
+            type = flatDto.type,
+            facilities = flatDto.facilities,
+            address = newaddress,
+            owner = newflatOwner
+        )
+
         flatEntityRepository.save(newFlat.toEntity())
     }
 
