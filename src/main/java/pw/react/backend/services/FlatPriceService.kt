@@ -28,6 +28,15 @@ class FlatPriceService(
     }
 
     fun updatePriceByFlatId(flatId: String, pricePerNight: Double) {
-        flatPriceRepository.getPriceEntityByFlatId(flatId).priceDollars = pricePerNight
+        val oldpriceEntity = flatPriceRepository.getPriceEntityByFlatId(flatId)
+        val flatEntity = oldpriceEntity.flat
+        flatPriceRepository.delete(oldpriceEntity)
+        flatPriceRepository.save(
+            PriceEntity(
+                priceDollars = pricePerNight,
+                flat = flatEntity
+            )
+        )
+
     }
 }
