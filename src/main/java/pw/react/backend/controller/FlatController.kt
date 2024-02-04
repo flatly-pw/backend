@@ -169,7 +169,7 @@ class FlatController(
 
         val image = flatImageService.saveImage(flatId, file)
 
-        val fileDownloadUri = flatImageService.getThumbnailUriByFlatId(flatId)
+        val fileDownloadUri = flatImageService.getdownlandUri(flatId, image.id)
 
         val response = UploadFileResponse(
             image.name,
