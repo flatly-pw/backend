@@ -1,8 +1,11 @@
 package pw.react.backend.services
 
+
+import kotlinx.datetime.TimeZone
 import jakarta.persistence.criteria.ParameterExpression
 import jakarta.persistence.criteria.Predicate
 import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -158,7 +161,20 @@ class FlatService(
             longitude = flatDto.longitude,
         )
 
-        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.created, flat.id)
+        val newFlat = flat.copy(
+            title = flatDto.title,
+            description = flatDto.description,
+            area = flatDto.area,
+            beds = flatDto.beds,
+            bedrooms = flatDto.bedrooms,
+            bathrooms = flatDto.bathrooms,
+            capacity = flatDto.capacity,
+            type = flatDto.type,
+            facilities = flatDto.facilities,
+            address = newaddress,
+            owner = newflatOwner
+        )
+
         flatEntityRepository.save(newFlat.toEntity())
     }
 
