@@ -31,6 +31,7 @@ data class NewFlatDto(
     val flatownerphoneNumber: String,
 )
 
+
 fun NewFlatDto.toDomain(address: Address, owner: FlatOwner,created: LocalDate,  id: String? = null) = Flat(
     title = title,
     description = description,
