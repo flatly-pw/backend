@@ -28,5 +28,6 @@ class ReservationEntity(
     val specialRequests: String? = null,
     var cancelled: Boolean = false,
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var externalUserId: Long? = null,
     var id: Long? = null
 )
