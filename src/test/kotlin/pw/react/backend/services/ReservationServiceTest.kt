@@ -47,21 +47,37 @@ class ReservationServiceTest {
         every { userRepository.findById(1) } returns Optional.of(stubUserEntity())
         every { flatRepository.findById("1") } returns Optional.of(stubFlatEntity())
         every { timeProvider.invoke() } returns Instant.DISTANT_PAST
-        every { reservationRepository.findAllByUserIdOrderByStartDateAsc(1, any()) } returns PageImpl(
+        every { reservationRepository.findAllByUserId(1, not(1), any()) } returns PageImpl(
             listOf(
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("3"))
             )
         )
-        every { reservationRepository.findAllActiveByUserId(1, any(), any()) } returns PageImpl(
+        every { reservationRepository.findAllByUserId(2, 1, any()) } returns PageImpl(
+            listOf(
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1),
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1),
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1)
+            )
+        )
+        every { reservationRepository.findAllActiveByUserId(1, any(), not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")))
         )
-        every { reservationRepository.findAllPassedByUserId(1, any(), any()) } returns PageImpl(
+        every { reservationRepository.findAllActiveByUserId(2, any(), 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1))
+        )
+        every { reservationRepository.findAllPassedByUserId(1, any(), not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")))
         )
-        every { reservationRepository.findAllCancelledByUserId(1, any()) } returns PageImpl(
+        every { reservationRepository.findAllPassedByUserId(2, any(), 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1))
+        )
+        every { reservationRepository.findAllCancelledByUserId(1, not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("3")))
+        )
+        every { reservationRepository.findAllCancelledByUserId(2, 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1))
         )
     }
 
@@ -309,6 +325,51 @@ class ReservationServiceTest {
         )
         val expected = stubReservation(id = 1, userId = 2, flatId = "1", cancelled = true)
         service.cancelReservation(1, 2) shouldBe expected
+    }
+
+    @Test
+    fun `Returns all reservations for external user`() {
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "4", externalUserId = 1),
+                stubReservation(userId = 2, flatId = "5", externalUserId = 1),
+                stubReservation(userId = 2, flatId = "6", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.All, 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns active reservation for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "4", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Active, externalUserId = 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns passed reservations for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "5", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Passed, externalUserId = 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns cancelled reservations for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "6", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Cancelled, externalUserId = 1) shouldBe expected
     }
 
     private fun date(d: Int, m: Int, y: Int = 2024) = LocalDate(y, m, d)
