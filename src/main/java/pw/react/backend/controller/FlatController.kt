@@ -38,10 +38,8 @@ class FlatController(
     private val flatDetailsService: FlatDetailsService,
     private val flatImageService: FlatImageService,
     private val flatQueryFactory: FlatQueryFactory,
-    private val flatOwnerService: FlatOwnerService,
     private val timeProvider: TimeProvider,
     private val flatOwnerRepository: FlatOwnerRepository,
-    private val addressService: AddressService,
     private val flatPriceService: FlatPriceService,
 ) {
 
