@@ -109,4 +109,10 @@ class ReservationService(
     }
 
     private fun Instant.toJavaLocalDate() = toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate()
+    fun adminCancelReservation(reservationId: Long): Reservation {
+        val reservation = reservationRepository.findById(reservationId).getOrNull()
+            ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
+        val canceledReservation = reservation.apply { cancelled = true }
+        return reservationRepository.save(canceledReservation).toDomain()
+    }
 }
