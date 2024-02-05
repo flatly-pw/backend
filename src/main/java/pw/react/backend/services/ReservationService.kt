@@ -119,6 +119,7 @@ class ReservationService(
             ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
         val canceledReservation = reservation.apply { cancelled = true }
         return reservationRepository.save(canceledReservation).toDomain()
+    }
 
     fun getwebReservations(page: Int, pageSize: Int, filter: String?): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
@@ -126,17 +127,18 @@ class ReservationService(
         val pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "startDate")
         return reservationRepository.findAll(nameSpecification(filter), pageable).map(ReservationEntity::toDomain)
     }
+
     private fun nameSpecification(name: String?) = Specification<ReservationEntity> { root, _, builder ->
-        val filter = name?: ""
+        val filter = name ?: ""
         val predicates = listOf(
             filter.let {
-                builder.like(root.get<UserEntity>("user").get<String>("name"), "%${it}%")
+                builder.like(root.get<UserEntity>("user").get("name"), "%${it}%")
             },
             filter.let {
-                builder.like(root.get<UserEntity>("user").get<String>("lastName"), "%${it}%")
+                builder.like(root.get<UserEntity>("user").get("lastName"), "%${it}%")
             }
         ).mapNotNull { it }.toTypedArray()
-        builder.and(builder.not(root.get<Boolean>("cancelled")),builder.or(*predicates))
+        builder.and(builder.not(root.get("cancelled")), builder.or(*predicates))
 
     }
 }
