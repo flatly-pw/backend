@@ -296,6 +296,37 @@ class ReservationController(
     } catch (e: ReservationCancellationException) {
         ResponseEntity.badRequest().body(e.message)
     }
+    @Operation(
+        summary = "Cancel any reservation",
+        description = "Only for admins"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully cancelled reservation",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [ReservationDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "Reservation could not be cancelled"
+    )
+    @ApiResponse(
+        responseCode = "404",
+        description = "Reservation was not found."
+    )
+    @PutMapping("/admin/reservation/cancel/{reservationId}")
+    fun cancelReservation(@PathVariable reservationId: Long): ResponseEntity<*> = try {
+        ResponseEntity.ok(reservationService.adminCancelReservation(reservationId).toDto())
+    } catch (e: ReservationNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: IllegalArgumentException) {
+        ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
+    } catch (e: UsernameNotFoundException) {
+        ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    } catch (e: ReservationCancellationException) {
+        ResponseEntity.badRequest().body(e.message)
+    }
 
     companion object {
         private const val BEARER = "Bearer "
