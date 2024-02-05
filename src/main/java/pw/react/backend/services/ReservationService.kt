@@ -114,18 +114,21 @@ class ReservationService(
 
     private fun Instant.toJavaLocalDate() = toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate()
     fun getwebReservations(page: Int, pageSize: Int, filter: String?): Page<Reservation> {
+        require(page >= 0) { "page must not be negative" }
+        require(pageSize > 0) { "page must be positive" }
         val pageable = PageRequest.of(page, pageSize, Sort.Direction.ASC, "startDate")
         return reservationRepository.findAll(nameSpecification(filter), pageable).map(ReservationEntity::toDomain)
     }
     private fun nameSpecification(name: String?) = Specification<ReservationEntity> { root, _, builder ->
+        val filter = name?: ""
         val predicates = listOf(
-            name?.let {
+            filter.let {
                 builder.like(root.get<UserEntity>("user").get<String>("name"), "%${it}%")
             },
-            name?.let {
+            filter.let {
                 builder.like(root.get<UserEntity>("user").get<String>("lastName"), "%${it}%")
             }
         ).mapNotNull { it }.toTypedArray()
-        builder.or(*predicates)
+        builder.and(builder.not(root.get<Boolean>("cancelled")),builder.or(*predicates))
     }
 }
