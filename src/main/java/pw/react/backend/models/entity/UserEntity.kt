@@ -7,6 +7,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 @Entity
@@ -16,6 +17,7 @@ class UserEntity(
     var lastName: String,
     var email: String,
     private var password: String,
+    var authority: String,
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) var id: Long? = null
 ) : UserDetails {
 
@@ -30,7 +32,7 @@ class UserEntity(
         this.password = password
     }
 
-    override fun getAuthorities() = emptyList<GrantedAuthority>()
+    override fun getAuthorities() = listOf(SimpleGrantedAuthority(authority))
 
     override fun isAccountNonExpired() = true
 
@@ -60,6 +62,7 @@ class UserEntity(
         if (email != other.email) return false
         if (password != other.password) return false
         if (id != other.id) return false
+        if (authority != other.authority) return false
 
         return true
     }

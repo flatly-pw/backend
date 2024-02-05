@@ -1,5 +1,6 @@
 package pw.react.backend.models.domain
 
+import org.springframework.security.core.GrantedAuthority
 import pw.react.backend.models.entity.UserEntity
 
 data class User(
@@ -7,9 +8,10 @@ data class User(
     val lastName: String,
     val email: String,
     val password: String,
-    val id: Long? = null
+    val id: Long? = null,
+    val authority: String
 )
 
-fun User.toEntity() = UserEntity(name, lastName, email, password, id)
+fun User.toEntity() = UserEntity(name, lastName, email, password, authority, id)
 
-fun UserEntity.toDomain() = User(name, lastName, email, password, id)
+fun UserEntity.toDomain() = User(name, lastName, email, password, id, authority)
