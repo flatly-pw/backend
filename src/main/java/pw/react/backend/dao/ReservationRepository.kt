@@ -53,7 +53,8 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
+            where reservation.user.id = ?1 and reservation.externalUserId = null 
+            and reservation.endDate >= ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
     )
@@ -81,7 +82,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 
+            where reservation.user.id = ?1 and reservation.externalUserId = null
             and reservation.endDate < ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
@@ -109,7 +110,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.cancelled = true
+            where reservation.user.id = ?1 and reservation.cancelled = true and reservation.externalUserId = null 
             order by reservation.startDate asc
         """
     )
