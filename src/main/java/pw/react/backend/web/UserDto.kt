@@ -12,8 +12,7 @@ data class UserDto(
     val lastName: String,
     val password: String?,
     val email: @Email String,
-    val authority: String = "user"
 ) {
 
-    fun toDomain() = User(name, lastName, email, password!!, id, authority)
+    fun toDomain() = User(name, lastName, email, password!!, id, "user")
 }
