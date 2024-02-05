@@ -50,7 +50,8 @@ class ReservationController(
     @Operation(
         summary = "Post new reservation",
         description = "Tries to place new reservation. If the given term is invalid " +
-                "or already taken then appropriate status code is going to be returned."
+                "or already taken then appropriate status code is going to be returned." +
+                "Note: `externalUserId is the id of user from external client"
     )
     @ApiResponse(
         responseCode = "200",
@@ -74,6 +75,7 @@ class ReservationController(
     @PostMapping("/reservation")
     fun makeReservation(
         @RequestBody reservationDto: ReservationDto,
+        @RequestParam externalUserId: Long? = null,
         request: HttpServletRequest
     ): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
@@ -81,7 +83,11 @@ class ReservationController(
         val userId = userService.findUserByEmail(email)?.id
             ?: throw UsernameNotFoundException("user with email: $email not found")
         val reservation = reservationDto.toDomain(userId)
-        val savedReservation = reservationService.saveReservation(reservation)
+        val savedReservation = if (externalUserId == null) {
+            reservationService.saveReservation(reservation)
+        } else {
+            reservationService.saveReservation(reservation.copy(externalUserId = externalUserId))
+        }
         ResponseEntity.ok(savedReservation.toDto())
     } catch (e: UsernameNotFoundException) {
         ResponseEntity.notFound().build<Void>()
