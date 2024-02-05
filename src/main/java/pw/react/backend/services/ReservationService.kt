@@ -50,26 +50,38 @@ class ReservationService(
         userId: Long,
         page: Int,
         pageSize: Int,
-        filter: ReservationFilter = ReservationFilter.All
+        filter: ReservationFilter = ReservationFilter.All,
+        externalUserId: Long? = null,
     ): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
         require(pageSize > 0) { "page must be positive" }
         val pageRequest = PageRequest.of(page, pageSize)
         return when (filter) {
-            is ReservationFilter.All -> reservationRepository.findAllByUserIdOrderByStartDateAsc(userId, pageRequest)
+            is ReservationFilter.All -> reservationRepository.findAllByUserId(
+                userId = userId,
+                externalUserId = externalUserId,
+                pageable = pageRequest
+            )
+
             is ReservationFilter.Active -> reservationRepository.findAllActiveByUserId(
                 userId = userId,
                 today = timeProvider().toJavaLocalDate(),
-                pageable = pageRequest
+                externalUserId = externalUserId,
+                pageable = pageRequest,
             )
 
             is ReservationFilter.Passed -> reservationRepository.findAllPassedByUserId(
                 userId = userId,
                 today = timeProvider().toJavaLocalDate(),
+                externalUserId = externalUserId,
                 pageable = pageRequest
             )
 
-            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(userId, pageRequest)
+            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(
+                userId = userId,
+                externalUserId = externalUserId,
+                pageable = pageRequest
+            )
         }.map(ReservationEntity::toDomain)
     }
 

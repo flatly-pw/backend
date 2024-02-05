@@ -121,6 +121,7 @@ class ReservationController(
         @RequestParam page: Int,
         @RequestParam pageSize: Int,
         @RequestParam filter: String?,
+        @RequestParam externalUserId: Long? = null,
         request: HttpServletRequest
     ): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
@@ -135,7 +136,8 @@ class ReservationController(
             "cancelled" -> ReservationFilter.Cancelled
             else -> throw IllegalArgumentException("Invalid reservationStatus. Possible values are: all, active, passed or cancelled")
         }
-        val reservationPage = reservationService.getReservations(userId, page, pageSize, reservationFilter)
+        val reservationPage =
+            reservationService.getReservations(userId, page, pageSize, reservationFilter, externalUserId)
         val reservationsPageDto: PageDto<List<UserReservationDto>> = reservationPage.toDto { reservation ->
             with(reservation) {
                 val flat = flatService.findById(flatId)
