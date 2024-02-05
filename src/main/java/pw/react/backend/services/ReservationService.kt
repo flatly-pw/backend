@@ -50,26 +50,38 @@ class ReservationService(
         userId: Long,
         page: Int,
         pageSize: Int,
-        filter: ReservationFilter = ReservationFilter.All
+        filter: ReservationFilter = ReservationFilter.All,
+        externalUserId: Long? = null,
     ): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
         require(pageSize > 0) { "page must be positive" }
         val pageRequest = PageRequest.of(page, pageSize)
         return when (filter) {
-            is ReservationFilter.All -> reservationRepository.findAllByUserIdOrderByStartDateAsc(userId, pageRequest)
+            is ReservationFilter.All -> reservationRepository.findAllByUserId(
+                userId = userId,
+                externalUserId = externalUserId,
+                pageable = pageRequest
+            )
+
             is ReservationFilter.Active -> reservationRepository.findAllActiveByUserId(
                 userId = userId,
                 today = timeProvider().toJavaLocalDate(),
-                pageable = pageRequest
+                externalUserId = externalUserId,
+                pageable = pageRequest,
             )
 
             is ReservationFilter.Passed -> reservationRepository.findAllPassedByUserId(
                 userId = userId,
                 today = timeProvider().toJavaLocalDate(),
+                externalUserId = externalUserId,
                 pageable = pageRequest
             )
 
-            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(userId, pageRequest)
+            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(
+                userId = userId,
+                externalUserId = externalUserId,
+                pageable = pageRequest
+            )
         }.map(ReservationEntity::toDomain)
     }
 
@@ -87,10 +99,13 @@ class ReservationService(
     fun getReservation(reservationId: Long): Reservation? =
         reservationRepository.findById(reservationId).getOrNull()?.toDomain()
 
-    fun cancelReservation(reservationId: Long, userId: Long): Reservation {
+    fun cancelReservation(reservationId: Long, userId: Long, externalUserId: Long? = null): Reservation {
         val reservation = reservationRepository.findById(reservationId).getOrNull()
             ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
         require(reservation.user.id == userId) { "Only person that made reservation can cancel it" }
+        require(reservation.externalUserId == externalUserId) {
+            "External reservation: only user with id that made the reservation can cancel it"
+        }
         val currentDate = timeProvider().toJavaLocalDate()
         when {
             reservation.endDate < currentDate -> throw ReservationCancellationException("Cannot cancel passed reservation")

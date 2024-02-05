@@ -17,7 +17,7 @@ class FlatPriceServiceTest {
 
     @Test
     fun `Return correct price for nights between start and end dates`() {
-        val priceFor8Nights = flatPriceService.getPriceByFlatId("1", LocalDate(2023, 1, 1), LocalDate(2023, 1, 10))
-        priceFor8Nights shouldBe 800.0
+        val priceFor9Nights = flatPriceService.getPriceByFlatId("1", LocalDate(2023, 1, 1), LocalDate(2023, 1, 10))
+        priceFor9Nights shouldBe 900.0
     }
 }

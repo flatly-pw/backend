@@ -1,9 +1,12 @@
 package pw.react.backend.dao
 
 import io.kotest.matchers.collections.shouldContainOnly
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+import org.springframework.data.domain.Pageable
 
 /**
  * Data for this test is provided by *data.sql* from resources folder.
@@ -48,7 +51,7 @@ class ReservationRepositoryTest {
 
     @Test
     fun `Should return reservations that start in month before target and end in month after target`() {
-        val expectedReservationIds = listOf<Long>(10)
+        val expectedReservationIds = listOf<Long>(10, 13)
         val actual = reservationRepository.getReservationsByFlatIdAndMonthYear("2", 4, 2026)
         val actualIds = actual.map { it.id }
         actualIds shouldContainOnly expectedReservationIds
@@ -67,9 +70,53 @@ class ReservationRepositoryTest {
 
     @Test
     fun `Should not return cancelled reservations`() {
-        val expectedNonCancelledReservations = listOf<Long>(10)
+        val expectedNonCancelledReservations = listOf<Long>(10, 13)
         val actual = reservationRepository.getReservationsByFlatIdAndMonthYear("2", 3, 2026)
         val actualIds = actual.map { it.id }
         actualIds shouldContainOnly expectedNonCancelledReservations
+    }
+
+    @Test
+    fun `Should return all external user reservations`() {
+        val expectedAllReservations = listOf<Long>(13, 14, 15, 16)
+        val actual = reservationRepository.findAllByUserId(1000, externalUserId = 123L, Pageable.ofSize(10))
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expectedAllReservations
+    }
+
+    @Test
+    fun `Should return active external user reservations`() {
+        val expectedActiveReservations = listOf<Long>(15, 16)
+        val actual = reservationRepository.findAllActiveByUserId(
+            1000,
+            LocalDate(2026, 6, 1).toJavaLocalDate(), externalUserId = 123L,
+            Pageable.ofSize(10)
+        )
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expectedActiveReservations
+    }
+
+    @Test
+    fun `Should return passed external user reservations`() {
+        val expectedPassedReservations = listOf<Long>(13)
+        val actual = reservationRepository.findAllPassedByUserId(
+            1000,
+            LocalDate(2026, 6, 1).toJavaLocalDate(), externalUserId = 123L,
+            Pageable.ofSize(10)
+        )
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expectedPassedReservations
+    }
+
+    @Test
+    fun `Should return cancelled external user reservations`() {
+        val expectedCancelledReservations = listOf<Long>(14)
+        val actual = reservationRepository.findAllCancelledByUserId(
+            1000,
+            externalUserId = 123L,
+            Pageable.ofSize(10)
+        )
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expectedCancelledReservations
     }
 }

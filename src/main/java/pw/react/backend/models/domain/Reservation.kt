@@ -17,6 +17,7 @@ data class Reservation(
     val pets: Int,
     val specialRequests: String? = null,
     val cancelled: Boolean = false,
+    val externalUserId: Long? = null,
     val id: Long? = null,
 )
 
@@ -29,6 +30,7 @@ fun Reservation.toEntity(userEntity: UserEntity, flatEntity: FlatEntity) = Reser
     children = children,
     pets = pets,
     specialRequests = specialRequests,
+    externalUserId = externalUserId,
     id = id
 )
 
@@ -42,6 +44,7 @@ fun ReservationEntity.toDomain() = Reservation(
     pets = pets,
     specialRequests = specialRequests,
     cancelled = cancelled,
+    externalUserId = externalUserId,
     id = id
 )
 

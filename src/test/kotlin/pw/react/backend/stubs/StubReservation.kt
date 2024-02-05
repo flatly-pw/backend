@@ -18,6 +18,7 @@ fun stubReservationEntity(
     pets: Int = 0,
     specialRequests: String? = "Pink pillow",
     cancelled: Boolean = false,
+    externalUserId: Long? = null,
     id: Long? = null
 ) = ReservationEntity(
     user = user,
@@ -29,6 +30,7 @@ fun stubReservationEntity(
     pets = pets,
     specialRequests = specialRequests,
     cancelled = cancelled,
+    externalUserId = externalUserId,
     id = id
 )
 
@@ -42,8 +44,21 @@ fun stubReservation(
     pets: Int = 0,
     specialRequests: String? = "Pink pillow",
     cancelled: Boolean = false,
+    externalUserId: Long? = null,
     id: Long? = null
-) = Reservation(userId, flatId, startDate, endDate, adults, children, pets, specialRequests, cancelled, id)
+) = Reservation(
+    userId,
+    flatId,
+    startDate,
+    endDate,
+    adults,
+    children,
+    pets,
+    specialRequests,
+    cancelled,
+    externalUserId,
+    id
+)
 
 fun stubReservationDto(
     flatId: String,

@@ -21,34 +21,45 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     )
     fun countAllActiveWithOverlappingDates(flatId: String, start: LocalDate, end: LocalDate): Int
 
-    fun findAllByUserIdOrderByStartDateAsc(userId: Long, pageable: Pageable): Page<ReservationEntity>
-
-    @Query(
-        value = """
-            select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
-            order by reservation.startDate asc
-        """
-    )
-    fun findAllActiveByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and reservation.endDate < ?2 and reservation.cancelled = false
+            where reservation.user.id = ?1 and ?2 = reservation.externalUserId
             order by reservation.startDate asc
         """
     )
-    fun findAllPassedByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
+    fun findAllByUserId(userId: Long, externalUserId: Long?, pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.cancelled = true
+            where reservation.user.id = ?1 and reservation.externalUserId = ?3 
+            and reservation.endDate >= ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
     )
-    fun findAllCancelledByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
+    fun findAllActiveByUserId(userId: Long, today: LocalDate, externalUserId: Long?, pageable: Pageable): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation
+            where reservation.user.id = ?1 and reservation.externalUserId = ?3 
+            and reservation.endDate < ?2 and reservation.cancelled = false
+            order by reservation.startDate asc
+        """
+    )
+    fun findAllPassedByUserId(userId: Long, today: LocalDate, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation 
+            where reservation.user.id = ?1 and reservation.externalUserId = ?2 
+            and reservation.cancelled = true
+            order by reservation.startDate asc
+        """
+    )
+    fun findAllCancelledByUserId(userId: Long, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """

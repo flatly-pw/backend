@@ -47,21 +47,37 @@ class ReservationServiceTest {
         every { userRepository.findById(1) } returns Optional.of(stubUserEntity())
         every { flatRepository.findById("1") } returns Optional.of(stubFlatEntity())
         every { timeProvider.invoke() } returns Instant.DISTANT_PAST
-        every { reservationRepository.findAllByUserIdOrderByStartDateAsc(1, any()) } returns PageImpl(
+        every { reservationRepository.findAllByUserId(1, not(1), any()) } returns PageImpl(
             listOf(
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("3"))
             )
         )
-        every { reservationRepository.findAllActiveByUserId(1, any(), any()) } returns PageImpl(
+        every { reservationRepository.findAllByUserId(2, 1, any()) } returns PageImpl(
+            listOf(
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1),
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1),
+                stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1)
+            )
+        )
+        every { reservationRepository.findAllActiveByUserId(1, any(), not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")))
         )
-        every { reservationRepository.findAllPassedByUserId(1, any(), any()) } returns PageImpl(
+        every { reservationRepository.findAllActiveByUserId(2, any(), 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1))
+        )
+        every { reservationRepository.findAllPassedByUserId(1, any(), not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")))
         )
-        every { reservationRepository.findAllCancelledByUserId(1, any()) } returns PageImpl(
+        every { reservationRepository.findAllPassedByUserId(2, any(), 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1))
+        )
+        every { reservationRepository.findAllCancelledByUserId(1, not(1), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("3")))
+        )
+        every { reservationRepository.findAllCancelledByUserId(2, 1, any()) } returns PageImpl(
+            listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1))
         )
     }
 
@@ -309,6 +325,98 @@ class ReservationServiceTest {
         )
         val expected = stubReservation(id = 1, userId = 2, flatId = "1", cancelled = true)
         service.cancelReservation(1, 2) shouldBe expected
+    }
+
+    @Test
+    fun `Returns all reservations for external user`() {
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "4", externalUserId = 1),
+                stubReservation(userId = 2, flatId = "5", externalUserId = 1),
+                stubReservation(userId = 2, flatId = "6", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.All, 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns active reservation for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "4", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Active, externalUserId = 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns passed reservations for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "5", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Passed, externalUserId = 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns cancelled reservations for external user`() {
+        every { timeProvider() } returns Instant.DISTANT_FUTURE
+        val expected = PageImpl(
+            listOf(
+                stubReservation(userId = 2, flatId = "6", externalUserId = 1),
+            )
+        )
+        service.getReservations(2, 1, 10, ReservationFilter.Cancelled, externalUserId = 1) shouldBe expected
+    }
+
+    @Test
+    fun `Returns cancelled reservation made by external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = 123, id = 1)
+        )
+        every {
+            reservationRepository.save(match<ReservationEntity> { it.id == 1L && it.externalUserId == 123L })
+        } returns stubReservationEntity(
+            stubUserEntity(id = 1),
+            stubFlatEntity(id = "1"),
+            externalUserId = 123,
+            id = 1,
+            cancelled = true
+        )
+
+        service.cancelReservation(1, 1, 123) shouldBe stubReservation(
+            userId = 1,
+            flatId = "1",
+            externalUserId = 123,
+            cancelled = true,
+            id = 1
+        )
+    }
+
+    @Test
+    fun `Throws exception if trying to cancel reservation made by external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = 123L, id = 1)
+        )
+        shouldThrow<IllegalArgumentException> {
+            service.cancelReservation(1, 1, null)
+        }
+    }
+
+    @Test
+    fun `Throws exception if external user tries to cancel reservation made by client`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = null, id = 1)
+        )
+        shouldThrow<IllegalArgumentException> {
+            service.cancelReservation(1, 1, 123)
+        }
     }
 
     private fun date(d: Int, m: Int, y: Int = 2024) = LocalDate(y, m, d)
