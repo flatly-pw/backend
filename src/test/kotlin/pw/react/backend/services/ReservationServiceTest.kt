@@ -372,5 +372,52 @@ class ReservationServiceTest {
         service.getReservations(2, 1, 10, ReservationFilter.Cancelled, externalUserId = 1) shouldBe expected
     }
 
+    @Test
+    fun `Returns cancelled reservation made by external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = 123, id = 1)
+        )
+        every {
+            reservationRepository.save(match<ReservationEntity> { it.id == 1L && it.externalUserId == 123L })
+        } returns stubReservationEntity(
+            stubUserEntity(id = 1),
+            stubFlatEntity(id = "1"),
+            externalUserId = 123,
+            id = 1,
+            cancelled = true
+        )
+
+        service.cancelReservation(1, 1, 123) shouldBe stubReservation(
+            userId = 1,
+            flatId = "1",
+            externalUserId = 123,
+            cancelled = true,
+            id = 1
+        )
+    }
+
+    @Test
+    fun `Throws exception if trying to cancel reservation made by external user`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = 123L, id = 1)
+        )
+        shouldThrow<IllegalArgumentException> {
+            service.cancelReservation(1, 1, null)
+        }
+    }
+
+    @Test
+    fun `Throws exception if external user tries to cancel reservation made by client`() {
+        every { timeProvider() } returns Instant.DISTANT_PAST
+        every { reservationRepository.findById(1) } returns Optional.of(
+            stubReservationEntity(stubUserEntity(id = 1), stubFlatEntity(id = "1"), externalUserId = null, id = 1)
+        )
+        shouldThrow<IllegalArgumentException> {
+            service.cancelReservation(1, 1, 123)
+        }
+    }
+
     private fun date(d: Int, m: Int, y: Int = 2024) = LocalDate(y, m, d)
 }
