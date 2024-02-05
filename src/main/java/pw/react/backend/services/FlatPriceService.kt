@@ -14,7 +14,7 @@ class FlatPriceService(
 
     fun getPriceByFlatId(flatId: String, start: LocalDate, end: LocalDate): Double {
         val pricePerNight = getPriceByFlatId(flatId)
-        val nights = (end - start).days - 1
+        val nights = (end - start).days
         return pricePerNight * nights
     }
 
