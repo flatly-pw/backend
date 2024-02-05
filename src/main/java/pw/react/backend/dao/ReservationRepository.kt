@@ -25,7 +25,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and (?2 is null or ?2 = reservation.externalUserId)
+            where reservation.user.id = ?1 and ?2 = reservation.externalUserId
             order by reservation.startDate asc
         """
     )
@@ -34,7 +34,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and (?3 is null or reservation.externalUserId = ?3) 
+            where reservation.user.id = ?1 and reservation.externalUserId = ?3 
             and reservation.endDate >= ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
@@ -44,7 +44,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and (?3 is null or reservation.externalUserId = ?3) 
+            where reservation.user.id = ?1 and reservation.externalUserId = ?3 
             and reservation.endDate < ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
@@ -54,7 +54,7 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and (?2 is null or reservation.externalUserId = ?2) 
+            where reservation.user.id = ?1 and reservation.externalUserId = ?2 
             and reservation.cancelled = true
             order by reservation.startDate asc
         """
