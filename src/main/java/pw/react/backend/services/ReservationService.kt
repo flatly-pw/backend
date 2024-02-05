@@ -113,6 +113,13 @@ class ReservationService(
     }
 
     private fun Instant.toJavaLocalDate() = toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate()
+
+    fun adminCancelReservation(reservationId: Long): Reservation {
+        val reservation = reservationRepository.findById(reservationId).getOrNull()
+            ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
+        val canceledReservation = reservation.apply { cancelled = true }
+        return reservationRepository.save(canceledReservation).toDomain()
+
     fun getwebReservations(page: Int, pageSize: Int, filter: String?): Page<Reservation> {
         require(page >= 0) { "page must not be negative" }
         require(pageSize > 0) { "page must be positive" }
@@ -130,5 +137,6 @@ class ReservationService(
             }
         ).mapNotNull { it }.toTypedArray()
         builder.and(builder.not(root.get<Boolean>("cancelled")),builder.or(*predicates))
+
     }
 }
