@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
-import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
 import java.time.LocalDate
 
@@ -25,11 +24,16 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and ?2 = reservation.externalUserId
+            where reservation.user.id = ?1 and reservation.externalUserId = ?2
             order by reservation.startDate asc
         """
     )
-    fun findAllByUserId(userId: Long, externalUserId: Long?, pageable: Pageable): Page<ReservationEntity>
+    fun findAllExternalByUserId(userId: Long, externalUserId: Long, pageable: Pageable): Page<ReservationEntity>
+
+    fun findAllByUserIdAndExternalUserIdIsNullOrderByStartDateAsc(
+        userId: Long,
+        pageable: Pageable
+    ): Page<ReservationEntity>
 
     @Query(
         value = """
@@ -39,7 +43,25 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
             order by reservation.startDate asc
         """
     )
-    fun findAllActiveByUserId(userId: Long, today: LocalDate, externalUserId: Long?, pageable: Pageable): Page<ReservationEntity>
+    fun findAllExternalActiveByUserId(
+        userId: Long,
+        today: LocalDate,
+        externalUserId: Long,
+        pageable: Pageable
+    ): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation 
+            where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
+            order by reservation.startDate asc
+        """
+    )
+    fun findAllActiveByUserId(
+        userId: Long,
+        today: LocalDate,
+        pageable: Pageable
+    ): Page<ReservationEntity>
 
     @Query(
         value = """
@@ -49,7 +71,26 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
             order by reservation.startDate asc
         """
     )
-    fun findAllPassedByUserId(userId: Long, today: LocalDate, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
+    fun findAllExternalPassedByUserId(
+        userId: Long,
+        today: LocalDate,
+        externalUserId: Long,
+        pageable: Pageable
+    ): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation
+            where reservation.user.id = ?1 
+            and reservation.endDate < ?2 and reservation.cancelled = false
+            order by reservation.startDate asc
+        """
+    )
+    fun findAllPassedByUserId(
+        userId: Long,
+        today: LocalDate,
+        pageable: Pageable
+    ): Page<ReservationEntity>
 
     @Query(
         value = """
@@ -59,7 +100,20 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
             order by reservation.startDate asc
         """
     )
-    fun findAllCancelledByUserId(userId: Long, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
+    fun findAllExternalCancelledByUserId(
+        userId: Long,
+        externalUserId: Long?,
+        pageable: Pageable
+    ): Page<ReservationEntity>
+
+    @Query(
+        value = """
+            select reservation from ReservationEntity reservation 
+            where reservation.user.id = ?1 and reservation.cancelled = true
+            order by reservation.startDate asc
+        """
+    )
+    fun findAllCancelledByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
