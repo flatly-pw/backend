@@ -99,10 +99,13 @@ class ReservationService(
     fun getReservation(reservationId: Long): Reservation? =
         reservationRepository.findById(reservationId).getOrNull()?.toDomain()
 
-    fun cancelReservation(reservationId: Long, userId: Long): Reservation {
+    fun cancelReservation(reservationId: Long, userId: Long, externalUserId: Long? = null): Reservation {
         val reservation = reservationRepository.findById(reservationId).getOrNull()
             ?: throw ReservationNotFoundException("Reservation with id: $reservationId was not found")
         require(reservation.user.id == userId) { "Only person that made reservation can cancel it" }
+        require(reservation.externalUserId == externalUserId) {
+            "External reservation: only user with id that made the reservation can cancel it"
+        }
         val currentDate = timeProvider().toJavaLocalDate()
         when {
             reservation.endDate < currentDate -> throw ReservationCancellationException("Cannot cancel passed reservation")

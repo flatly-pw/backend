@@ -289,12 +289,16 @@ class ReservationController(
         description = "Reservation was not found."
     )
     @PutMapping("/reservation/cancel/{reservationId}")
-    fun cancelReservation(@PathVariable reservationId: Long, request: HttpServletRequest): ResponseEntity<*> = try {
+    fun cancelReservation(
+        @PathVariable reservationId: Long,
+        @RequestParam externalUserId: Long? = null,
+        request: HttpServletRequest
+    ): ResponseEntity<*> = try {
         val token = request.getHeader(HttpHeaders.AUTHORIZATION).substringAfter(BEARER)
         val email = jwtTokenService.getUsernameFromToken(token)
         val userId = userService.findUserByEmail(email)?.id
             ?: throw UsernameNotFoundException("user with email: $email not found")
-        ResponseEntity.ok(reservationService.cancelReservation(reservationId, userId).toDto())
+        ResponseEntity.ok(reservationService.cancelReservation(reservationId, userId, externalUserId).toDto())
     } catch (e: ReservationNotFoundException) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
     } catch (e: IllegalArgumentException) {
