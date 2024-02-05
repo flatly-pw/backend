@@ -18,18 +18,21 @@ import org.springframework.test.web.servlet.get
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import pw.react.backend.dao.FlatOwnerRepository
 import pw.react.backend.exceptions.FlatImageException
 import pw.react.backend.exceptions.FlatNotFoundException
 import pw.react.backend.models.FlatQueryFactory
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.services.FlatDetailsService
 import pw.react.backend.services.FlatImageService
+import pw.react.backend.services.FlatPriceService
 import pw.react.backend.services.FlatService
 import pw.react.backend.stubs.stubFlat
 import pw.react.backend.stubs.stubFlatDetails
 import pw.react.backend.stubs.stubFlatDetailsDto
 import pw.react.backend.stubs.stubFlatImage
 import pw.react.backend.stubs.stubFlatQuery
+import pw.react.backend.utils.TimeProvider
 import pw.react.backend.web.toDto
 
 @WebMvcTest(controllers = [FlatController::class])
@@ -48,6 +51,15 @@ class FlatControllerTest {
 
     @MockkBean
     private lateinit var flatQueryFactory: FlatQueryFactory
+
+    @MockkBean
+    private lateinit var timeProvider: TimeProvider
+
+    @MockkBean
+    private lateinit var flatOwnerRepository: FlatOwnerRepository
+
+    @MockkBean
+    private lateinit var flatPriceService: FlatPriceService
 
     @Autowired
     private lateinit var context: WebApplicationContext
