@@ -26,29 +26,32 @@ interface ReservationRepository : JpaRepository<ReservationEntity, Long>, JpaSpe
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.endDate >= ?2 and reservation.cancelled = false
+            where reservation.user.id = ?1 and (?3 is null or reservation.externalUserId = ?3) 
+            and reservation.endDate >= ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
     )
-    fun findAllActiveByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
+    fun findAllActiveByUserId(userId: Long, today: LocalDate, externalUserId: Long?, pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
             select reservation from ReservationEntity reservation
-            where reservation.user.id = ?1 and reservation.endDate < ?2 and reservation.cancelled = false
+            where reservation.user.id = ?1 and (?3 is null or reservation.externalUserId = ?3) 
+            and reservation.endDate < ?2 and reservation.cancelled = false
             order by reservation.startDate asc
         """
     )
-    fun findAllPassedByUserId(userId: Long, today: LocalDate, pageable: Pageable): Page<ReservationEntity>
+    fun findAllPassedByUserId(userId: Long, today: LocalDate, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
             select reservation from ReservationEntity reservation 
-            where reservation.user.id = ?1 and reservation.cancelled = true
+            where reservation.user.id = ?1 and (?2 is null or reservation.externalUserId = ?2) 
+            and reservation.cancelled = true
             order by reservation.startDate asc
         """
     )
-    fun findAllCancelledByUserId(userId: Long, pageable: Pageable): Page<ReservationEntity>
+    fun findAllCancelledByUserId(userId: Long, externalUserId: Long?,pageable: Pageable): Page<ReservationEntity>
 
     @Query(
         value = """
