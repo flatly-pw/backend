@@ -1,10 +1,14 @@
 package pw.react.backend.services
 
+
 import kotlinx.datetime.TimeZone
+import jakarta.persistence.criteria.ParameterExpression
+import jakarta.persistence.criteria.Predicate
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toLocalDateTime
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import pw.react.backend.dao.FlatEntityRepository
 import pw.react.backend.exceptions.InvalidFileException
@@ -15,6 +19,7 @@ import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.web.NewFlatDto
 import pw.react.backend.web.toDomain
 import kotlin.jvm.optionals.getOrNull
+
 
 class FlatService(
     private val flatEntityRepository: FlatEntityRepository,
@@ -49,7 +54,8 @@ class FlatService(
             owner = owner.toDomain(),
             rating = reviewService.getRatingByFlatId(flatId),
             pricePerNight = priceService.getPriceByFlatId(flatId),
-            facilities = facilities.map { it.name }
+            facilities = facilities.map { it.name },
+            created = created
         )
     }
 
@@ -155,8 +161,42 @@ class FlatService(
             longitude = flatDto.longitude,
         )
 
-        val newFlat = flatDto.toDomain(newaddress,newflatOwner, flat.id)
+        val newFlat = flat.copy(
+            title = flatDto.title,
+            description = flatDto.description,
+            area = flatDto.area,
+            beds = flatDto.beds,
+            bedrooms = flatDto.bedrooms,
+            bathrooms = flatDto.bathrooms,
+            capacity = flatDto.capacity,
+            type = flatDto.type,
+            facilities = flatDto.facilities,
+            address = newaddress,
+            owner = newflatOwner
+        )
+
         flatEntityRepository.save(newFlat.toEntity())
+    }
+
+    fun findAllOrderByName(page: Int, pageSize: Int, name: String?, sort: Int?): Page<Flat> {
+        val pageabledefult = PageRequest.of(page, pageSize, Sort.Direction.ASC, "created")
+        val pageable1 = PageRequest.of(page, pageSize, Sort.Direction.DESC, "price")
+        val pageable2 = PageRequest.of(page, pageSize, Sort.Direction.ASC, "price")
+        when(sort){
+            1 -> return flatEntityRepository.findAll(titleSpecification(name), pageable1).map { it.toDomain() }
+            2 -> return flatEntityRepository.findAll(titleSpecification(name), pageable2).map { it.toDomain() }
+            else -> return flatEntityRepository.findAll(titleSpecification(name), pageabledefult).map { it.toDomain() }
+        }
+    }
+
+    private fun titleSpecification(name: String?) = Specification<FlatEntity> { root, _, builder ->
+        val predicates = listOf(
+            name?.let {
+                    builder.like(root.get<String>("title"), "%${it}%")
+
+            }
+        ).mapNotNull { it }.toTypedArray()
+        builder.and(*predicates)
     }
 }
 

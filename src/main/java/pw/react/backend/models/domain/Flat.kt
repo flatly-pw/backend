@@ -1,6 +1,7 @@
 package pw.react.backend.models.domain
 
 import pw.react.backend.models.entity.FlatEntity
+import java.time.LocalDate
 
 data class Flat(
     val title: String,
@@ -18,6 +19,7 @@ data class Flat(
     val rating: Float,
     val pricePerNight: Double,
     val id: String? = null,
+    val created: LocalDate,
 )
 
 fun Flat.toEntity() = FlatEntity(
@@ -31,6 +33,7 @@ fun Flat.toEntity() = FlatEntity(
     type = type,
     address = address.toEntity(),
     owner = owner.toEntity(),
+    created = created,
     id = id,
 )
 
