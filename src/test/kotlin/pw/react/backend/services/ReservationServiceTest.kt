@@ -47,36 +47,39 @@ class ReservationServiceTest {
         every { userRepository.findById(1) } returns Optional.of(stubUserEntity())
         every { flatRepository.findById("1") } returns Optional.of(stubFlatEntity())
         every { timeProvider.invoke() } returns Instant.DISTANT_PAST
-        every { reservationRepository.findAllByUserId(1, not(1), any()) } returns PageImpl(
+
+        every {
+            reservationRepository.findAllByUserIdAndExternalUserIdIsNullOrderByStartDateAsc(1, any())
+        } returns PageImpl(
             listOf(
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")),
                 stubReservationEntity(stubUserEntity(1), stubFlatEntity("3"))
             )
         )
-        every { reservationRepository.findAllByUserId(2, 1, any()) } returns PageImpl(
+        every { reservationRepository.findAllExternalByUserId(2, 1, any()) } returns PageImpl(
             listOf(
                 stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1),
                 stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1),
                 stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1)
             )
         )
-        every { reservationRepository.findAllActiveByUserId(1, any(), not(1), any()) } returns PageImpl(
+        every { reservationRepository.findAllActiveByUserId(1, any(), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("1")))
         )
-        every { reservationRepository.findAllActiveByUserId(2, any(), 1, any()) } returns PageImpl(
+        every { reservationRepository.findAllExternalActiveByUserId(2, any(), 1, any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("4"), externalUserId = 1))
         )
-        every { reservationRepository.findAllPassedByUserId(1, any(), not(1), any()) } returns PageImpl(
+        every { reservationRepository.findAllPassedByUserId(1, any(), any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("2")))
         )
-        every { reservationRepository.findAllPassedByUserId(2, any(), 1, any()) } returns PageImpl(
+        every { reservationRepository.findAllExternalPassedByUserId(2, any(), 1, any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("5"), externalUserId = 1))
         )
-        every { reservationRepository.findAllCancelledByUserId(1, not(1), any()) } returns PageImpl(
+        every { reservationRepository.findAllCancelledByUserId(1, any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(1), stubFlatEntity("3")))
         )
-        every { reservationRepository.findAllCancelledByUserId(2, 1, any()) } returns PageImpl(
+        every { reservationRepository.findAllExternalCancelledByUserId(2, 1, any()) } returns PageImpl(
             listOf(stubReservationEntity(stubUserEntity(2), stubFlatEntity("6"), externalUserId = 1))
         )
     }
