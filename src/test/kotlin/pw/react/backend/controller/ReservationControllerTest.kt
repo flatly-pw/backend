@@ -2,6 +2,7 @@ package pw.react.backend.controller
 
 import com.ninjasquad.springmockk.MockkBean
 import io.mockk.every
+import io.mockk.verify
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
@@ -349,14 +350,32 @@ class ReservationControllerTest {
         }
     }
 
-    private fun MockMvc.postReservation(dto: ReservationDto? = null) = post("/reservation") {
-        with(csrf())
-        header("Authorization", "Bearer jwt")
-        dto?.let {
-            contentType = MediaType.APPLICATION_JSON
-            content = Json.encodeToString(dto)
-        }
+    @Test
+    @WithMockUser
+    fun `Return saved reservation with external user id`() {
+        every {
+            reservationService.saveReservation(stubReservation(userId = 1, flatId = "1", externalUserId = 123L))
+        } returns stubReservation(userId = 1, flatId = "1", externalUserId = 123L)
+        val expectedDto = stubReservationDto(flatId = "1")
+        webMvc.postReservation(stubReservationDto(flatId = "1"), externalUserId = 123L)
+            .andExpect {
+                content { json(Json.encodeToString(expectedDto)) }
+            }
+        verify { reservationService.saveReservation(stubReservation(userId = 1, flatId = "1", externalUserId = 123L)) }
     }
+
+    private fun MockMvc.postReservation(dto: ReservationDto? = null, externalUserId: Long? = null) =
+        post("/reservation") {
+            with(csrf())
+            header("Authorization", "Bearer jwt")
+            externalUserId?.let {
+                param("externalUserId", "$externalUserId")
+            }
+            dto?.let {
+                contentType = MediaType.APPLICATION_JSON
+                content = Json.encodeToString(dto)
+            }
+        }
 
     private fun MockMvc.getReservations(page: Int, pageSize: Int, filter: String? = null) =
         get("/reservations") {
