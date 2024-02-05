@@ -19,7 +19,6 @@ import pw.react.backend.models.domain.Reservation
 import pw.react.backend.models.domain.ReservationFilter
 import pw.react.backend.models.domain.toDomain
 import pw.react.backend.models.domain.toEntity
-import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.ReservationEntity
 import pw.react.backend.models.entity.UserEntity
 import pw.react.backend.utils.LocalDateRange
@@ -57,31 +56,47 @@ class ReservationService(
         require(pageSize > 0) { "page must be positive" }
         val pageRequest = PageRequest.of(page, pageSize)
         return when (filter) {
-            is ReservationFilter.All -> reservationRepository.findAllByUserId(
-                userId = userId,
-                externalUserId = externalUserId,
-                pageable = pageRequest
-            )
+            is ReservationFilter.All -> if (externalUserId == null) {
+                reservationRepository.findAllByUserIdAndExternalUserIdIsNullOrderByStartDateAsc(userId, pageRequest)
+            } else {
+                reservationRepository.findAllExternalByUserId(userId, externalUserId, pageRequest)
+            }
 
-            is ReservationFilter.Active -> reservationRepository.findAllActiveByUserId(
-                userId = userId,
-                today = timeProvider().toJavaLocalDate(),
-                externalUserId = externalUserId,
-                pageable = pageRequest,
-            )
+            is ReservationFilter.Active -> if (externalUserId == null) {
+                reservationRepository.findAllActiveByUserId(
+                    userId = userId,
+                    today = timeProvider().toJavaLocalDate(),
+                    pageable = pageRequest,
+                )
+            } else {
+                reservationRepository.findAllExternalActiveByUserId(
+                    userId = userId,
+                    today = timeProvider().toJavaLocalDate(),
+                    externalUserId = externalUserId,
+                    pageable = pageRequest
+                )
+            }
 
-            is ReservationFilter.Passed -> reservationRepository.findAllPassedByUserId(
-                userId = userId,
-                today = timeProvider().toJavaLocalDate(),
-                externalUserId = externalUserId,
-                pageable = pageRequest
-            )
+            is ReservationFilter.Passed -> if (externalUserId == null) {
+                reservationRepository.findAllPassedByUserId(userId, timeProvider().toJavaLocalDate(), pageRequest)
+            } else {
+                reservationRepository.findAllExternalPassedByUserId(
+                    userId = userId,
+                    today = timeProvider().toJavaLocalDate(),
+                    externalUserId = externalUserId,
+                    pageable = pageRequest
+                )
+            }
 
-            is ReservationFilter.Cancelled -> reservationRepository.findAllCancelledByUserId(
-                userId = userId,
-                externalUserId = externalUserId,
-                pageable = pageRequest
-            )
+            is ReservationFilter.Cancelled -> if (externalUserId == null) {
+                reservationRepository.findAllCancelledByUserId(userId, pageRequest)
+            } else {
+                reservationRepository.findAllExternalCancelledByUserId(
+                    userId = userId,
+                    externalUserId = externalUserId,
+                    pageable = pageRequest
+                )
+            }
         }.map(ReservationEntity::toDomain)
     }
 

@@ -79,7 +79,7 @@ class ReservationRepositoryTest {
     @Test
     fun `Should return all external user reservations`() {
         val expectedAllReservations = listOf<Long>(13, 14, 15, 16)
-        val actual = reservationRepository.findAllByUserId(1000, externalUserId = 123L, Pageable.ofSize(10))
+        val actual = reservationRepository.findAllExternalByUserId(1000, externalUserId = 123L, Pageable.ofSize(10))
         val actualIds = actual.map { it.id }
         actualIds shouldContainOnly expectedAllReservations
     }
@@ -87,7 +87,7 @@ class ReservationRepositoryTest {
     @Test
     fun `Should return active external user reservations`() {
         val expectedActiveReservations = listOf<Long>(15, 16)
-        val actual = reservationRepository.findAllActiveByUserId(
+        val actual = reservationRepository.findAllExternalActiveByUserId(
             1000,
             LocalDate(2026, 6, 1).toJavaLocalDate(), externalUserId = 123L,
             Pageable.ofSize(10)
@@ -99,7 +99,7 @@ class ReservationRepositoryTest {
     @Test
     fun `Should return passed external user reservations`() {
         val expectedPassedReservations = listOf<Long>(13)
-        val actual = reservationRepository.findAllPassedByUserId(
+        val actual = reservationRepository.findAllExternalPassedByUserId(
             1000,
             LocalDate(2026, 6, 1).toJavaLocalDate(), externalUserId = 123L,
             Pageable.ofSize(10)
@@ -111,12 +111,51 @@ class ReservationRepositoryTest {
     @Test
     fun `Should return cancelled external user reservations`() {
         val expectedCancelledReservations = listOf<Long>(14)
-        val actual = reservationRepository.findAllCancelledByUserId(
+        val actual = reservationRepository.findAllExternalCancelledByUserId(
             1000,
             externalUserId = 123L,
             Pageable.ofSize(10)
         )
         val actualIds = actual.map { it.id }
         actualIds shouldContainOnly expectedCancelledReservations
+    }
+
+    @Test
+    fun `Should return all reservations from normal user`() {
+        val expected = listOf<Long>(6, 7, 8, 9, 10, 11, 12)
+        val actual =
+            reservationRepository.findAllByUserIdAndExternalUserIdIsNullOrderByStartDateAsc(1003L, Pageable.ofSize(120))
+        val actualIds = actual.map { it.id }
+        actualIds shouldContainOnly expected
+    }
+
+    @Test
+    fun `Should return all active reservation from normal user`() {
+        val expected = listOf<Long>(8, 9, 10, 11)
+        val actual = reservationRepository.findAllActiveByUserId(
+            1003,
+            LocalDate(2026, 1, 1).toJavaLocalDate(),
+            Pageable.ofSize(20)
+        ).map { it.id }
+        actual shouldContainOnly expected
+    }
+
+    @Test
+    fun `Should return passed reservation from normal user`() {
+        val expected = listOf<Long>(6, 7)
+        val actual = reservationRepository.findAllPassedByUserId(
+            1003L,
+            LocalDate(2026, 1, 1).toJavaLocalDate(),
+            Pageable.ofSize(20)
+        ).map { it.id }
+        actual shouldContainOnly expected
+    }
+
+    @Test
+    fun `Should return cancelled reservation from normal user`() {
+        val expected = listOf<Long>(12)
+        val actual = reservationRepository.findAllCancelledByUserId(1003, Pageable.ofSize(20)).map { it.id }
+        actual shouldContainOnly expected
+
     }
 }
