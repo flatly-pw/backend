@@ -5,7 +5,10 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toJavaLocalDate
+import kotlinx.datetime.toJavaLocalDateTime
 import kotlinx.datetime.toLocalDateTime
+import org.hibernate.action.spi.Executable
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -137,7 +140,7 @@ class FlatController(
         )
         //val newAddress = addressService.save(address)
 
-        val newFlat = newFlatDto.toDomain(address,flatOwner)
+        val newFlat = newFlatDto.toDomain(address,flatOwner, timeProvider().toLocalDateTime(TimeZone.currentSystemDefault()).date.toJavaLocalDate())
         val savedFlat = flatService.saveNewFlat(newFlat)
 
         val price = flatPriceService.savePriceByFlat(savedFlat, newFlatDto.pricePerNight)
@@ -186,6 +189,24 @@ class FlatController(
         throw FlatValidationException(e.message, UserController.USERS_PATH)
     }
 
+    @Operation(summary = "Update existing flat")
+    @ApiResponse(
+        responseCode = "200",
+        description = "Succesfully updated a flat",
+    )
+    @ApiResponse(
+        responseCode = "401",
+        description = "Something went wrong"
+    )
+    @PutMapping("/admin/flats/{flatId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun updateFlat(@PathVariable flatId: String, @RequestBody flatDto: NewFlatDto) = run {//nie wiem jaka składnia powinna być ale działa
+        flatService.updateFlat(flatId, flatDto)
+        flatPriceService.updatePriceByFlatId(flatId, flatDto.pricePerNight)
+        //facil
+    }
+
+
     @Operation(summary = "Get flat offer details")
     @ApiResponse(
         responseCode = "200",
@@ -226,5 +247,34 @@ class FlatController(
             .body(ByteArrayResource(image.bytes))
     } catch (e: FlatImageException.ImageNotFound) {
         ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+    }
+
+    @Operation(
+        summary = "Get flat offers on web",
+        description = "price descending is 1, price ascending is 2 and by newest is 0 wich is also defult"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Successfully got flat list. data contains Flat",
+        content = [
+            Content(mediaType = "application/json", schema = Schema(oneOf = [PageDto::class]))
+        ]
+    )
+    @ApiResponse(
+        responseCode = "400",
+        description = "FlatQueryDto contained invalid data.",
+    )
+    @GetMapping("/admin/flats")
+    fun getAllWebFlats(
+        @RequestParam page: Int,
+        @RequestParam pageSize: Int,
+        @RequestParam name: String?,
+        @RequestParam sort: Int?,
+    ): ResponseEntity<*> = try {
+        val webflatpage = flatService.findAllOrderByName(page, pageSize, name, sort)
+        ResponseEntity.ok(webflatpage.toDto(Flat::toDto))
+    }
+    catch (e: IllegalArgumentException) {
+        ResponseEntity.badRequest().body(e.message)
     }
 }

@@ -6,6 +6,7 @@ import pw.react.backend.models.domain.FlatOwner
 import pw.react.backend.models.entity.AddressEntity
 import pw.react.backend.models.entity.FlatEntity
 import pw.react.backend.models.entity.FlatOwnerEntity
+import java.time.LocalDate
 
 fun stubFlat(
     id: String? = "1",
@@ -22,7 +23,8 @@ fun stubFlat(
     rating: Float = 4.7f,
     type: String = "Hotel",
     facilities: List<String> = listOf("wi-fi"),
-    owner: FlatOwner = stubFlatOwner()
+    owner: FlatOwner = stubFlatOwner(),
+    created: LocalDate = LocalDate.of(2020, 1, 8)
 ) = Flat(
     title,
     description,
@@ -38,7 +40,8 @@ fun stubFlat(
     facilities,
     rating,
     pricePerNight,
-    id
+    id,
+    created
 )
 
 fun stubFlatEntity(
@@ -53,7 +56,8 @@ fun stubFlatEntity(
     type: String = "Hotel",
     owner: FlatOwnerEntity = stubFlatOwnerEntity(),
     address: AddressEntity = stubAddressEntity(),
-    facilities: List<String> = listOf("wi-fi")
-) = FlatEntity(title, description, area, beds, bedrooms, bathrooms, capacity, type, address, owner, id).apply {
+    facilities: List<String> = listOf("wi-fi"),
+    created: LocalDate = LocalDate.of(2020, 1, 8)
+) = FlatEntity(title, description, area, beds, bedrooms, bathrooms, capacity, type, created, address, owner, id).apply {
     this.facilities = facilities.map { stubFlatFacilityEntity(name = it, this) }.toSet()
 }

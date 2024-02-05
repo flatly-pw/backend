@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 import pw.react.backend.models.domain.Address
 import pw.react.backend.models.domain.Flat
 import pw.react.backend.models.domain.FlatOwner
+import java.time.LocalDate
 
 
 @Serializable
@@ -30,7 +31,7 @@ data class NewFlatDto(
     val flatownerphoneNumber: String,
 )
 
-fun NewFlatDto.toDomain(address: Address, owner: FlatOwner) = Flat(
+fun NewFlatDto.toDomain(address: Address, owner: FlatOwner,created: LocalDate,  id: String? = null) = Flat(
     title = title,
     description = description,
     thumbnailUrl = "",
@@ -45,4 +46,6 @@ fun NewFlatDto.toDomain(address: Address, owner: FlatOwner) = Flat(
     facilities = facilities,
     rating = 0f,
     pricePerNight = pricePerNight,
+    created = created,
+    id = id,
 )
