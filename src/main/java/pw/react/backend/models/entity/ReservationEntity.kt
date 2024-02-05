@@ -27,7 +27,7 @@ class ReservationEntity(
     val pets: Int = 0,
     val specialRequests: String? = null,
     var cancelled: Boolean = false,
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var externalUserId: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null
 )
